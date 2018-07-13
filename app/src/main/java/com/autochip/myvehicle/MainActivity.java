@@ -7,6 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
@@ -15,6 +18,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
     private View viewActionBar;
 
     Toolbar toolbar;
+
+    private RecyclerView recyclerView;
+    public MyVehicleTrackingRVAdapter myVehicleTrackingRVAdapter;
 
     // FOR NAVIGATION VIEW ITEM TEXT COLOR
     int[][] states = new int[][]{
@@ -72,6 +80,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
+
+        ArrayList<String> alMakeModel = new ArrayList<>();
+        alMakeModel.add("Mahindra Xuv 500");
+        alMakeModel.add("Audi A8");
+        alMakeModel.add("BMW X6");
+        alMakeModel.add("Tesla X");
+        ArrayList<String> alRegNo = new ArrayList<>();
+        alRegNo.add("KA 04 H 5515");
+        alRegNo.add("KA 02 LL 9999");
+        alRegNo.add("KA 51 BI 3546");
+        alRegNo.add("KA 04 UU 340");
+
+        ArrayList<Integer> alYearOfManufacture = new ArrayList<>();
+        alYearOfManufacture.add(2012);
+        alYearOfManufacture.add(2017);
+        alYearOfManufacture.add(2016);
+        alYearOfManufacture.add(2018);
+
+
+
+        myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alMakeModel, alRegNo, alYearOfManufacture);
+        recyclerView.setAdapter(myVehicleTrackingRVAdapter);
     }
 
     void init() {
@@ -104,6 +134,13 @@ public class MainActivity extends AppCompatActivity {
         navigation.setItemTextColor(navigationViewColorStateList);
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        recyclerView = findViewById(R.id.rv_vehicle_list);
+        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(MainActivity.this);
+        mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(mLinearLayoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(MainActivity.this, DividerItemDecoration.VERTICAL));
+        recyclerView.setHasFixedSize(true);
     }
 
 
