@@ -11,7 +11,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 
 /**
@@ -33,6 +36,7 @@ public class RegisterVehicleFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     EditText etMake, etModel, etRegNo, etYOM;
+    Spinner spinnerVehicle;
 
     public RegisterVehicleFragment() {
         // Required empty public constructor
@@ -69,13 +73,9 @@ public class RegisterVehicleFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_register_vehicle, container, false);
-
-
         init(view);
         //ColorStateList etViewColorStateList = new ColorStateList(editTextStates, editTextColors);
         //etMake.setTextColor(etViewColorStateList);
-
-
 
         return view;
     }
@@ -85,6 +85,13 @@ public class RegisterVehicleFragment extends Fragment {
         etModel = view.findViewById(R.id.et_model);
         etRegNo = view.findViewById(R.id.et_reg_no);
         etYOM = view.findViewById(R.id.et_yom);
+
+        spinnerVehicle= view.findViewById(R.id.spinner_vehicle);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, getResources()
+                .getStringArray(R.array.vehicle_array));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerVehicle.setAdapter(adapter);
+
         try {
             @SuppressLint("ResourceType") XmlResourceParser parser = getResources().getXml(R.drawable.eee);
             ColorStateList colors = ColorStateList.createFromXml(getResources(), parser);
@@ -95,6 +102,17 @@ public class RegisterVehicleFragment extends Fragment {
         } catch (Exception e) {
             // handle exceptions
         }
+
+        spinnerVehicle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int position, long id) {
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
     }
 
     @Override

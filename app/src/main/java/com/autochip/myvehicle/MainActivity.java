@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -60,32 +62,8 @@ public class MainActivity extends AppCompatActivity {
             Color.parseColor("#03A9F4"),
             Color.parseColor("#757575"),
     };
+    BottomNavigationView navigation;
 
-
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-            switch (item.getItemId()) {
-                case R.id.navigation_insurance:
-                    tvSubtitle.setText(R.string.title_insurance);
-                    return true;
-                case R.id.navigation_Emission:
-                    tvSubtitle.setText(R.string.title_emission);
-                    return true;
-                case R.id.navigation_rc_fc:
-                    tvSubtitle.setText(R.string.title_rc);
-                    return true;
-                case R.id.navigation_service_history:
-                    tvSubtitle.setText(R.string.title_service_history);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
         alYearOfManufacture.add(2016);
         alYearOfManufacture.add(2018);
 
-
-
         myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alMakeModel, alRegNo, alYearOfManufacture);
         recyclerView.setAdapter(myVehicleTrackingRVAdapter);
     }
@@ -122,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
     void init() {
         toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
-
         viewActionBar = View.inflate(MainActivity.this, R.layout.toolbar_textview, null);
         tvTitle = viewActionBar.findViewById(R.id.tv_actionbar_app_name);
         tvTitle.setText(R.string.app_name);
@@ -143,12 +118,15 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
 
         //mTextMessage = findViewById(R.id.message);
-        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation = findViewById(R.id.navigation);
         ColorStateList navigationViewColorStateList = new ColorStateList(states, colors);
         navigation.setItemIconTintList(navigationViewColorStateList);
         navigation.setItemTextColor(navigationViewColorStateList);
+        navigation.setVisibility(View.GONE);
+        //navigation.getMenu().getItem(0).setCheckable(false);
 
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        setUpBottomNavigationContent(navigation);
+        //navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         recyclerView = findViewById(R.id.rv_vehicle_list);
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(MainActivity.this);
@@ -156,6 +134,96 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(mLinearLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(MainActivity.this, DividerItemDecoration.VERTICAL));
         recyclerView.setHasFixedSize(true);
+
+    }
+
+    private void setUpBottomNavigationContent(final BottomNavigationView navigationView) {
+
+        //String backStateName;
+
+        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            Fragment newFragment = null;
+            FragmentTransaction transaction;
+            Bundle bundle;
+            String sBackStack = "";
+            int nMenuVisibility;
+            boolean isFragmentVisible;
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_register:
+                        //item.setCheckable(true);
+                        item.setChecked(true);
+                        newFragment = RegisterVehicleFragment.newInstance("", "");
+                        sBackStack = newFragment.getClass().getName();
+                        tvSubtitle.setText(R.string.register);
+                        break;
+                    case R.id.navigation_insurance:
+                        //item.setCheckable(true);
+                        item.setChecked(true);
+                        newFragment = InsuranceFragment.newInstance("", "");
+                        sBackStack = newFragment.getClass().getName();
+                        tvSubtitle.setText(R.string.title_insurance);
+                        break;
+                    case R.id.navigation_Emission:
+                        //item.setCheckable(true);
+                        item.setChecked(true);
+                        newFragment = EmissionFragment.newInstance("", "");
+                        sBackStack = newFragment.getClass().getName();
+                        tvSubtitle.setText(R.string.title_emission);
+                        break;
+                    case R.id.navigation_rc_fc:
+                        //item.setCheckable(true);
+                        item.setChecked(true);
+                        newFragment = RCFCFragment.newInstance("", "");
+                        sBackStack = newFragment.getClass().getName();
+                        tvSubtitle.setText(R.string.title_rc);
+                        break;
+                    case R.id.navigation_service_history:
+                        //item.setCheckable(true);
+                        item.setChecked(true);
+                        newFragment = ServiceHistoryFragment.newInstance("", "");
+                        sBackStack = newFragment.getClass().getName();
+                        tvSubtitle.setText(R.string.title_service_history);
+                        break;
+                }
+
+                /*FragmentManager manager = getSupportFragmentManager();
+                boolean fragmentPopped = manager.popBackStackImmediate (sBackStack, 0);
+
+                if(!newFragment.isVisible() && !fragmentPopped && manager.findFragmentByTag(sBackStack) == null) {
+                    transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.container, newFragment, sBackStack);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                } else {
+                    newFragment = getSupportFragmentManager().findFragmentByTag(sBackStack);
+                    transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.container, newFragment);
+                    //transaction.addToBackStack(null);
+                    transaction.commit();
+                }*/
+                FragmentManager fm = getSupportFragmentManager();
+
+                if (newFragment != null && !newFragment.isVisible() && fm.findFragmentByTag(sBackStack)==null) {
+                    transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.container, newFragment, null);
+                    transaction.addToBackStack(sBackStack);
+                    transaction.commit();
+                } else if(newFragment != null && !newFragment.isVisible() && fm.findFragmentByTag(sBackStack)!=null){
+                    newFragment = getSupportFragmentManager().findFragmentByTag(sBackStack);
+                    transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.container, newFragment);
+                    transaction.commit();
+                    getSupportFragmentManager().popBackStack(sBackStack, 0);
+                }
+                /*if(fm.getFragments().size()>1){
+                    getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryAt(0).getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }*/
+                return false;
+            }
+        });
     }
 
 
@@ -171,10 +239,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
+                navigation.setVisibility(View.VISIBLE);
                 //startCircularReveal(findViewById(R.id.action_add));
                 Fragment newFragment;
                 FragmentTransaction transaction;
                 newFragment = RegisterVehicleFragment.newInstance("", "");
+                String sBackStack = newFragment.getClass().getName();
                 transaction = getSupportFragmentManager().beginTransaction();
                 transaction.setCustomAnimations(R.anim.t2b, R.anim.b2t);
                 transaction.replace(R.id.container, newFragment, null);
@@ -184,6 +254,24 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    /*@Override
+    public void onBackPressed() {
+        int size = getSupportFragmentManager().getFragments().size();
+        FragmentManager fm = getSupportFragmentManager();
+        *//*if (getSupportFragmentManager().getFragments().size() > 1) {
+
+            //for(int i=0; i<size; i++){
+            //Fragment fragment = fm.getFragments().get(size-1).getTag();
+            //}
+            fm.popBackStackImmediate();
+            fm.popBackStack(fm.getFragments().get(size - 1).getTag(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else if (getSupportFragmentManager().getFragments().size() == 1) {
+            fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else {
+            super.onBackPressed();
+        }*//*
+    }*/
 
     /*
      To reveal a previously invisible view using this effect:

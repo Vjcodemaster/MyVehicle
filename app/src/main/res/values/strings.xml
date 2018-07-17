@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">My Vehicle</string>
     <string name="title_home">Home</string>
+    <string name="register">Register</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
@@ -10,6 +11,14 @@
     <string name="title_rc">Rc/Fc</string>
     <string name="title_service_history">Service History</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="vehicle_array">
+        <item>Select</item>
+        <item>2 wheeler</item>
+        <item>3 wheeler</item>
+        <item>4 wheeler</item>
+        <item>Commercial</item>
+        <item>Passenger</item>
+    </string-array>
 </resources>
