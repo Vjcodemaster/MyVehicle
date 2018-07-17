@@ -1,14 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context=".InsuranceFragment">
+    android:orientation="vertical">
 
-    <TextView
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Insurance" />
+        android:fillViewport="true"
+        android:measureAllChildren="false"
+        android:scrollbars="none">
 
-</FrameLayout>
+        <TableLayout
+            android:id="@+id/tabla_cuerpo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <TableRow
+                android:id="@+id/table_heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/cell_shape"
+                        android:padding="5dp"
+                        android:text="Policy Provider"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/cell_shape"
+                        android:padding="5dp"
+                        android:text="Policy No."
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/cell_shape"
+                        android:padding="5dp"
+                        android:text="Date of Start"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/cell_shape"
+                        android:padding="5dp"
+                        android:text="Date of Expiry"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/cell_shape"
+                        android:padding="5dp"
+                        android:text="Remainder Date"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+            </TableRow>
+
+
+            <TableRow
+                android:id="@+id/tableRow1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cell_shape"
+                    android:padding="5dp"
+                    android:text="TextView"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            </TableRow>
+        </TableLayout>
+
+    </HorizontalScrollView>
+</LinearLayout>

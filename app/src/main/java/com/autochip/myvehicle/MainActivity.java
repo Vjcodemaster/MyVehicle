@@ -6,11 +6,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -35,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTextMessage;
     Menu menu;
     View popupView;
-
+    String sBackStackParent;
     private TextView tvTitle, tvSubtitle;
     private View viewActionBar;
 
@@ -148,12 +145,14 @@ public class MainActivity extends AppCompatActivity {
             String sBackStack = "";
             int nMenuVisibility;
             boolean isFragmentVisible;
+            View view;
 
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigation_register:
                         //item.setCheckable(true);
+                        view = findViewById(R.id.navigation_register);
                         item.setChecked(true);
                         newFragment = RegisterVehicleFragment.newInstance("", "");
                         sBackStack = newFragment.getClass().getName();
@@ -161,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.navigation_insurance:
                         //item.setCheckable(true);
+                        view = findViewById(R.id.navigation_insurance);
                         item.setChecked(true);
                         newFragment = InsuranceFragment.newInstance("", "");
                         sBackStack = newFragment.getClass().getName();
@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.navigation_Emission:
                         //item.setCheckable(true);
+                        view = findViewById(R.id.navigation_Emission);
                         item.setChecked(true);
                         newFragment = EmissionFragment.newInstance("", "");
                         sBackStack = newFragment.getClass().getName();
@@ -175,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.navigation_rc_fc:
                         //item.setCheckable(true);
+                        view = findViewById(R.id.navigation_rc_fc);
                         item.setChecked(true);
                         newFragment = RCFCFragment.newInstance("", "");
                         sBackStack = newFragment.getClass().getName();
@@ -182,41 +184,21 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.navigation_service_history:
                         //item.setCheckable(true);
+                        view = findViewById(R.id.navigation_service_history);
                         item.setChecked(true);
                         newFragment = ServiceHistoryFragment.newInstance("", "");
                         sBackStack = newFragment.getClass().getName();
                         tvSubtitle.setText(R.string.title_service_history);
                         break;
                 }
-
-                /*FragmentManager manager = getSupportFragmentManager();
-                boolean fragmentPopped = manager.popBackStackImmediate (sBackStack, 0);
-
-                if(!newFragment.isVisible() && !fragmentPopped && manager.findFragmentByTag(sBackStack) == null) {
+                //FragmentManager fm = getSupportFragmentManager();
+                if (newFragment != null && !newFragment.isVisible()) {
                     transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.container, newFragment, sBackStack);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
-                } else {
-                    newFragment = getSupportFragmentManager().findFragmentByTag(sBackStack);
-                    transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.container, newFragment);
-                    //transaction.addToBackStack(null);
-                    transaction.commit();
-                }*/
-                FragmentManager fm = getSupportFragmentManager();
 
-                if (newFragment != null && !newFragment.isVisible() && fm.findFragmentByTag(sBackStack)==null) {
-                    transaction = getSupportFragmentManager().beginTransaction();
+                    show(view, findViewById(R.id.container));
                     transaction.replace(R.id.container, newFragment, null);
                     transaction.addToBackStack(sBackStack);
                     transaction.commit();
-                } else if(newFragment != null && !newFragment.isVisible() && fm.findFragmentByTag(sBackStack)!=null){
-                    newFragment = getSupportFragmentManager().findFragmentByTag(sBackStack);
-                    transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.container, newFragment);
-                    transaction.commit();
-                    getSupportFragmentManager().popBackStack(sBackStack, 0);
                 }
                 /*if(fm.getFragments().size()>1){
                     getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryAt(0).getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -244,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                 Fragment newFragment;
                 FragmentTransaction transaction;
                 newFragment = RegisterVehicleFragment.newInstance("", "");
-                String sBackStack = newFragment.getClass().getName();
+                sBackStackParent = newFragment.getClass().getName();
                 transaction = getSupportFragmentManager().beginTransaction();
                 transaction.setCustomAnimations(R.anim.t2b, R.anim.b2t);
                 transaction.replace(R.id.container, newFragment, null);
@@ -277,18 +259,18 @@ public class MainActivity extends AppCompatActivity {
      To reveal a previously invisible view using this effect:
      below method show is used to produce circular animation effect on home screen buttons.
      */
-    /*private void show(final View mParentView) {
+    private void show(final View view, final View mParentView) {
         // get the center for the clipping circle
-        *//*int cx = (mAnimView.getLeft() + mAnimView.getRight()) / 2;
-        int cy = (mAnimView.getTop() + mParentView.getBottom()) / 2;*//*
+        //int cx = (mAnimView.getLeft() + mAnimView.getRight()) / 2;
+        //int cy = (mAnimView.getTop() + mParentView.getBottom()) / 2;
 
-        nUserDisplayWidth = getResources().getDisplayMetrics().widthPixels;
-        popupView = mParentView;
+        nUserDisplayHeight = getResources().getDisplayMetrics().heightPixels; //holds height of screen in pixels
+
         nOffSetLocation = new int[2];
-        popupView.getLocationInWindow(nOffSetLocation);
-        nDisplayOffSetD3 = (nUserDisplayWidth - nOffSetLocation[0]) / 2;
+        view.getLocationInWindow(nOffSetLocation);
+        nDisplayOffSetD3 = (nUserDisplayHeight + nOffSetLocation[1]) / 10;
 
-        nDisplayDDXOffSet = (nUserDisplayWidth - nOffSetLocation[0]) + nDisplayOffSetD3;
+        nDisplayDDXOffSet = (nOffSetLocation[0] / 2) + nDisplayOffSetD3;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // get the final radius for the clipping circle
@@ -300,42 +282,8 @@ public class MainActivity extends AppCompatActivity {
                     0, finalRadius);
             anim.setInterpolator(new AccelerateDecelerateInterpolator());
             anim.setDuration(300);
-            //mParentView.setVisibility(View.VISIBLE);
+            mParentView.setVisibility(View.VISIBLE);
             anim.start();
         }
-    }*/
-
-    /*@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void startCircularReveal(View startView) {
-        final View view = findViewById(R.id.cl_parent);
-        int cx = (startView.getLeft() + startView.getRight()) / 2;
-        int cy = (startView.getTop() + startView.getBottom()) / 2;
-        //view.setBackgroundColor(Color.parseColor("#6FA6FF"));
-        int finalRadius = Math.max(cy , view.getHeight() - cy);
-        Animator anim = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
-        anim.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        anim.setDuration(350);
-        view.setVisibility(View.VISIBLE);
-        anim.start();
-    }*/
+    }
 }
