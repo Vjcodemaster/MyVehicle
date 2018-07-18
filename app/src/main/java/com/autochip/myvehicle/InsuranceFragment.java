@@ -1,16 +1,23 @@
 package com.autochip.myvehicle;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.DatePicker;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 
 /**
@@ -31,6 +38,10 @@ public class InsuranceFragment extends Fragment {
     private String mParam2;
 
     private int viewHeight;
+
+    Dialog dialog;
+    TextView tvStartDate, tvExpiryDate, tvRemainderDate;
+    final Calendar myCalendar = Calendar.getInstance();
 
     FloatingActionButton fab;
     TableLayout tlPolicy;
@@ -80,10 +91,12 @@ public class InsuranceFragment extends Fragment {
         params.bottomMargin = viewHeight + 6;
         fab.setLayoutParams(params);
 
+        initReadMoreDialog();
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                dialog.show();
             }
         });
 
@@ -104,6 +117,76 @@ public class InsuranceFragment extends Fragment {
         tlPolicy.addView(trHeading, 0);
         // Inflate the layout for this fragment
         return view;
+    }
+
+    public void initReadMoreDialog() {
+        dialog = new Dialog(getActivity(), R.style.CustomDialogTheme90);
+        dialog.setContentView(R.layout.dialog_add_insurance_policy);
+        dialog.setCancelable(true);
+
+        tvStartDate = dialog.findViewById(R.id.tv_start_date);
+        tvExpiryDate = dialog.findViewById(R.id.tv_expiry_date);
+        tvRemainderDate = dialog.findViewById(R.id.tv_remainder_date);
+
+        View.OnClickListener l = new View.OnClickListener()
+        {
+            TextView textView;
+            @Override
+            public void onClick(View v)
+            {
+                switch (v.getId()){
+                    case R.id.tv_start_date:
+                        textView = tvStartDate;
+                        break;
+                    case R.id.tv_expiry_date:
+                        textView = tvExpiryDate;
+                        break;
+                    case R.id.tv_remainder_date:
+                        textView = tvRemainderDate;
+                        break;
+
+                }
+
+                DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                          int dayOfMonth) {
+                        myCalendar.set(Calendar.YEAR, year);
+                        myCalendar.set(Calendar.MONTH, monthOfYear);
+                        myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        updateLabel(textView);
+                    }
+
+                };
+                DatePickerDialog dialog = new DatePickerDialog(getActivity(), date,
+                        myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH));
+                dialog.show();
+            }
+        };
+
+        tvStartDate.setOnClickListener(l);
+
+        tvExpiryDate.setOnClickListener(l);
+
+        tvRemainderDate.setOnClickListener(l);
+
+        /*TextView tvHeading = (TextView) dialog.findViewById(R.id.tv_readmore_heading);
+        TextView tvSubHeading = (TextView) dialog.findViewById(R.id.tv_readmore_sub_heading);
+        TextView tvDescription = (TextView) dialog.findViewById(R.id.tv_readmore_description);
+        Typeface lightFace = Typeface.createFromAsset(getResources().getAssets(), "fonts/myriad_pro_light.ttf");
+        Typeface regularFace = Typeface.createFromAsset(getResources().getAssets(), "fonts/myriad_pro_regular.ttf");
+        tvHeading.setTypeface(regularFace);
+        tvSubHeading.setTypeface(lightFace);
+        tvDescription.setTypeface(lightFace);*/
+    }
+
+    private void updateLabel(TextView textView) {
+        String myFormat = "MM/dd/yy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        textView.setText(sdf.format(myCalendar.getTime()));
     }
 
 
