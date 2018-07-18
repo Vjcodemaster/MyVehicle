@@ -3,10 +3,14 @@ package com.autochip.myvehicle;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 
 
 /**
@@ -23,9 +27,13 @@ public class InsuranceFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private int viewHeight;
+
+    FloatingActionButton fab;
+    TableLayout tlPolicy;
 
     private OnFragmentInteractionListener mListener;
 
@@ -57,14 +65,45 @@ public class InsuranceFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            viewHeight = Integer.valueOf(mParam1);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_insurance, container, false);
+
+        tlPolicy = view.findViewById(R.id.tl_policy);
+        fab = view.findViewById(R.id.fab);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+        params.bottomMargin = viewHeight + 6;
+        fab.setLayoutParams(params);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        /*
+        inflating views dynamically for table layout where we always add the data dynamically from odoo not from xml
+        here we are inflating table rows first using for loop depending on the data we receive and then add table row header
+        by inflating it and setting it to 0th index of Table Layout tlPolicy.addView(trHeading, 0);. to set text we can use,
+        TextView tv = (TextView) row.childAt(0);| tv.setText("Text"); or row.findViewById()
+         */
+        TableRow trHeading = (TableRow)inflater.inflate(R.layout.table_row_heading, null);
+
+        for(int i = 0; i < 6; i ++){
+            LayoutInflater trInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            TableRow row = (TableRow) trInflater.inflate(R.layout.table_row,null);
+            row.setTag(i);
+            tlPolicy.addView(row,i);
+        }
+        tlPolicy.addView(trHeading, 0);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_insurance, container, false);
+        return view;
     }
 
 
@@ -76,6 +115,5 @@ public class InsuranceFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        //mListener = null;
     }
 }

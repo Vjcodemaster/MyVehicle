@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     int[] nOffSetLocation;
     int nDisplayDDXOffSet; //display drop down x off set
     int nDisplayOffSetD3;
+    int viewHeight;
 
     private RecyclerView recyclerView;
     public MyVehicleTrackingRVAdapter myVehicleTrackingRVAdapter;
@@ -123,6 +125,23 @@ public class MainActivity extends AppCompatActivity {
         //navigation.getMenu().getItem(0).setCheckable(false);
 
         setUpBottomNavigationContent(navigation);
+
+        /*
+        we will use the height of bottom navigation view to set as margin for insuranceFragment floating button.
+        its height is sent via bundle
+         */
+        ViewTreeObserver viewTreeObserver = navigation.getViewTreeObserver();
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    viewHeight = navigation.getHeight();
+                    if (viewHeight != 0)
+                        navigation.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    //viewWidth = view.getWidth();
+                }
+            });
+        }
         //navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         recyclerView = findViewById(R.id.rv_vehicle_list);
@@ -162,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                         //item.setCheckable(true);
                         view = findViewById(R.id.navigation_insurance);
                         item.setChecked(true);
-                        newFragment = InsuranceFragment.newInstance("", "");
+                        newFragment = InsuranceFragment.newInstance(String.valueOf(viewHeight), "");
                         sBackStack = newFragment.getClass().getName();
                         tvSubtitle.setText(R.string.title_insurance);
                         break;
@@ -281,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
             anim = ViewAnimationUtils.createCircularReveal(mParentView, nDisplayDDXOffSet, nOffSetLocation[1],
                     0, finalRadius);
             anim.setInterpolator(new AccelerateDecelerateInterpolator());
-            anim.setDuration(300);
+            anim.setDuration(250);
             mParentView.setVisibility(View.VISIBLE);
             anim.start();
         }
