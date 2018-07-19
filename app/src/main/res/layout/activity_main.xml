@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         tools:ignore="UselessParent">
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/fl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
                 android:background="@drawable/toolbar_shadow"
                 android:visibility="visible" />
 
-        </LinearLayout>
+        </FrameLayout>
 
 
         <FrameLayout

@@ -160,10 +160,10 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             Fragment newFragment = null;
             FragmentTransaction transaction;
-            Bundle bundle;
+            //Bundle bundle;
             String sBackStack = "";
-            int nMenuVisibility;
-            boolean isFragmentVisible;
+            //int nMenuVisibility;
+            //boolean isFragmentVisible;
             View view;
 
             @Override
@@ -214,10 +214,14 @@ public class MainActivity extends AppCompatActivity {
                 if (newFragment != null && !newFragment.isVisible()) {
                     transaction = getSupportFragmentManager().beginTransaction();
 
-                    show(view, findViewById(R.id.container));
+                    //this is extra line added for smoother animation and reveal effects. not sure why replace is helping it.
+                    transaction.replace(R.id.container, newFragment, null);
+
+                    transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_up);
                     transaction.replace(R.id.container, newFragment, null);
                     transaction.addToBackStack(sBackStack);
                     transaction.commit();
+                    show(view, findViewById(R.id.container));
                 }
                 /*if(fm.getFragments().size()>1){
                     getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryAt(0).getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -238,19 +242,25 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        View view;
         switch (item.getItemId()) {
             case R.id.action_add:
-                navigation.setVisibility(View.VISIBLE);
                 //startCircularReveal(findViewById(R.id.action_add));
                 Fragment newFragment;
                 FragmentTransaction transaction;
                 newFragment = RegisterVehicleFragment.newInstance("", "");
                 sBackStackParent = newFragment.getClass().getName();
                 transaction = getSupportFragmentManager().beginTransaction();
+
                 transaction.setCustomAnimations(R.anim.t2b, R.anim.b2t);
                 transaction.replace(R.id.container, newFragment, null);
                 transaction.addToBackStack(null);
                 transaction.commit();
+
+                view = findViewById(R.id.action_add);
+                show(view, findViewById(R.id.container));
+
+                navigation.setVisibility(View.VISIBLE);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -279,6 +289,7 @@ public class MainActivity extends AppCompatActivity {
      below method show is used to produce circular animation effect on home screen buttons.
      */
     private void show(final View view, final View mParentView) {
+        //mParentView.setVisibility(View.INVISIBLE);
         // get the center for the clipping circle
         //int cx = (mAnimView.getLeft() + mAnimView.getRight()) / 2;
         //int cy = (mAnimView.getTop() + mParentView.getBottom()) / 2;
@@ -300,9 +311,35 @@ public class MainActivity extends AppCompatActivity {
             anim = ViewAnimationUtils.createCircularReveal(mParentView, nDisplayDDXOffSet, nOffSetLocation[1],
                     0, finalRadius);
             anim.setInterpolator(new AccelerateDecelerateInterpolator());
-            anim.setDuration(250);
+            anim.setDuration(350);
             mParentView.setVisibility(View.VISIBLE);
             anim.start();
         }
     }
+
+    /*@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 1414) { //PICTURE_REQUEST_CODE
+                final boolean isCamera;
+                if (data == null) {
+                    isCamera = true;
+                } else {
+                    final String action = data.getAction();
+                    if (action == null) {
+                        isCamera = false;
+                    } else {
+                        isCamera = action.equals(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    }
+                }
+
+                Uri selectedImageUri;
+                if (isCamera) {
+                    selectedImageUri = outputFileUri;
+                } else {
+                    selectedImageUri = data.getData();
+                }
+            }
+        }
+    }*/
 }
