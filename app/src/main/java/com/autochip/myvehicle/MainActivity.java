@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
                         //item.setCheckable(true);
                         view = findViewById(R.id.navigation_Emission);
                         item.setChecked(true);
-                        newFragment = EmissionFragment.newInstance("", "");
+                        newFragment = EmissionFragment.newInstance(String.valueOf(viewHeight), "");
                         sBackStack = newFragment.getClass().getName();
                         tvSubtitle.setText(R.string.title_emission);
                         break;

@@ -116,7 +116,7 @@ public class InsuranceFragment extends Fragment implements OnImageUtilsListener 
         params.bottomMargin = viewHeight + 6;
         fab.setLayoutParams(params);
 
-        initReadMoreDialog();
+        initAddDialog();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,7 +144,7 @@ public class InsuranceFragment extends Fragment implements OnImageUtilsListener 
         return view;
     }
 
-    public void initReadMoreDialog() {
+    public void initAddDialog() {
         dialog = new Dialog(getActivity(), R.style.CustomDialogTheme90);
         dialog.setContentView(R.layout.dialog_add_insurance_policy);
         dialog.setCancelable(true);
