@@ -120,7 +120,7 @@ public class ImageUtils {
         byte[] byteArray = out.toByteArray();
 
         Bitmap updatedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        InsuranceFragment.mBitmapCompressListener.onBitmapCompressed("BITMAP_COMPRESSED", 0, updatedBitmap);
+        MainActivity.mBitmapCompressListener.onBitmapCompressed("BITMAP_COMPRESSED", 0, updatedBitmap, null, null);
         return updatedBitmap;
     }
 

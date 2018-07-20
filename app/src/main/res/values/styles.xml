@@ -8,15 +8,15 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <!-- related to dialog review rating edit text -->
+    <!-- related to DialogMultiple review rating edit text -->
     <style name="EditText.Style" parent="Widget.AppCompat.EditText">
         <item name="colorControlNormal">@android:color/white</item>
         <item name="colorControlActivated">@color/colorAccent</item>
         <item name="colorControlHighlight">@android:color/white</item>
     </style>
 
-    <!-- This theme is related to readmore dialog of Home Screen to achieve the result -->
-    <!--<style name="CustomDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+    <!-- This theme is related to readmore DialogMultiple of Home Screen to achieve the result -->
+    <!--<style name="CustomDialogTheme" parent="Theme.AppCompat.Light.DialogMultiple">
         <item name="android:alertDialogStyle">@style/CustomAlertDialogStyle</item>
         <item name="android:windowBackground">@color/transparent</item>
         <item name="android:textColorPrimary">#FFFFFF</item>

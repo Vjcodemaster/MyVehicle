@@ -23,4 +23,40 @@
         <item>Commercial</item>
         <item>Passenger</item>
     </string-array>
+
+    <string-array name="insurance_array">
+        <item>Add Insurance</item>
+        <item>Insurance Doc No</item>
+        <item>Vendor Name</item>
+        <item>Insurance Start Date</item>
+        <item>Insurance End Date</item>
+        <item>Remainder Date</item>
+    </string-array>
+
+    <string-array name="emission_array">
+        <item>Add Emission</item>
+        <item>Emission Doc No</item>
+        <item>Agency Name</item>
+        <item>Emission Start Date</item>
+        <item>Emission End Date</item>
+        <item>Remainder Date</item>
+    </string-array>
+
+    <string-array name="rc_fc_array">
+        <item>Add RC</item>
+        <item>Customer Name</item>
+        <item>Address</item>
+        <item>Mobile</item>
+        <item>Date of Ownership</item>
+    </string-array>
+
+    <string-array name="service_array">
+        <item>Add Service History</item>
+        <item>RO No</item>
+        <item>Service Type</item>
+        <item>Mileage</item>
+        <item>Date :</item>
+        <item>Next Service Date:</item>
+        <item>Remainder Date :</item>
+    </string-array>
 </resources>

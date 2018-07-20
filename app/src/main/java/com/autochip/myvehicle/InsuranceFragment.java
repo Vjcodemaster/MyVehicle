@@ -34,7 +34,10 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import dialogs.DialogMultiple;
+
 import static android.app.Activity.RESULT_OK;
+import static com.autochip.myvehicle.MainActivity.mBitmapCompressListener;
 
 
 /**
@@ -45,7 +48,7 @@ import static android.app.Activity.RESULT_OK;
  * Use the {@link InsuranceFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class InsuranceFragment extends Fragment implements OnImageUtilsListener {
+public class InsuranceFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -69,9 +72,10 @@ public class InsuranceFragment extends Fragment implements OnImageUtilsListener 
     TableLayout tlPolicy;
 
     private OnFragmentInteractionListener mListener;
+    DialogMultiple dialogMultiple;
 
     private CircularProgressBar circularProgressBar;
-    public static OnImageUtilsListener mBitmapCompressListener;
+    //public static OnImageUtilsListener mBitmapCompressListener;
 
     public InsuranceFragment() {
         // Required empty public constructor
@@ -97,8 +101,8 @@ public class InsuranceFragment extends Fragment implements OnImageUtilsListener 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBitmapCompressListener = this;
-        circularProgressBar = new CircularProgressBar(getActivity());
+        //mBitmapCompressListener = this;
+        circularProgressBar = new CircularProgressBar(getActivity(), false);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -116,12 +120,14 @@ public class InsuranceFragment extends Fragment implements OnImageUtilsListener 
         params.bottomMargin = viewHeight + 6;
         fab.setLayoutParams(params);
 
-        initAddDialog();
+        //initAddDialog();
+        dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.show();
+                //dialog.show();
+                dialogMultiple.dialog.show();
             }
         });
 
@@ -223,9 +229,9 @@ public class InsuranceFragment extends Fragment implements OnImageUtilsListener 
                 openImageIntent();
             }
         });
-        /*TextView tvHeading = (TextView) dialog.findViewById(R.id.tv_readmore_heading);
-        TextView tvSubHeading = (TextView) dialog.findViewById(R.id.tv_readmore_sub_heading);
-        TextView tvDescription = (TextView) dialog.findViewById(R.id.tv_readmore_description);
+        /*TextView tvHeading = (TextView) DialogMultiple.findViewById(R.id.tv_readmore_heading);
+        TextView tvSubHeading = (TextView) DialogMultiple.findViewById(R.id.tv_readmore_sub_heading);
+        TextView tvDescription = (TextView) DialogMultiple.findViewById(R.id.tv_readmore_description);
         Typeface lightFace = Typeface.createFromAsset(getResources().getAssets(), "fonts/myriad_pro_light.ttf");
         Typeface regularFace = Typeface.createFromAsset(getResources().getAssets(), "fonts/myriad_pro_regular.ttf");
         tvHeading.setTypeface(regularFace);
@@ -316,7 +322,8 @@ public class InsuranceFragment extends Fragment implements OnImageUtilsListener 
                     if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
                         ImageUtils imageUtils = new ImageUtils(root, selectedImageUri);
                     } else {
-                        ivPreview.setImageBitmap(bitmap);
+                        DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                        //ivPreview.setImageBitmap(bitmap);
                     }
                     //Bitmap bitmap = ImageUtils.getInstant().getCompressedBitmap("Your_Image_Path_Here");
                     //ivPreview.setImageBitmap(bitmap);
@@ -332,27 +339,36 @@ public class InsuranceFragment extends Fragment implements OnImageUtilsListener 
                     if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
                         ImageUtils imageUtils = new ImageUtils(root, selectedImageUri);
                     } else {
-                        ivPreview.setImageBitmap(bitmap);
+                        DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                        //ivPreview.setImageBitmap(bitmap);
                     }
                     //Bitmap bitmap = ImageUtils.getInstant().getCompressedBitmap("Your_Image_Path_Here");
                     //ivPreview.setImageBitmap(bitmap);
                     //uriImageToCompressedBitmap(selectedImageUri);
                 }
             }
-        } else {
+        } //else {
             stopProgressBar();
-        }
+        //}
     }
 
-    @Override
-    public void onBitmapCompressed(String sMessage, int nCase, Bitmap bitmap) {
+    /*@Override
+    public void onBitmapCompressed(String sMessage, int nCase, Bitmap bitmap, Intent intent, Uri outputFileUri) {
         switch (sMessage) {
-            case "BITMAP_COMPRESSED":
-                ivPreview.setImageBitmap(bitmap);
+            *//*case "BITMAP_COMPRESSED": //this is triggered from ImageUtils, which gets compressed bitmap and the same is sent back to Dialog Multiple
+                DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                //ivPreview.setImageBitmap(bitmap);
                 stopProgressBar();
                 break;
+            case "START_ACTIVITY_FOR_RESULT":  //this is triggered from DialogMultiple class to start Activity for result instead of doing there
+                this.outputFileUri = outputFileUri;
+                startActivityForResult(intent, PICTURE_REQUEST_CODE);
+                break;
+            case "SHOW_PROGRESS_BAR": //triggered from DialogMultiple class to start progress
+                showProgressBar();
+                break;*//*
         }
-    }
+    }*/
 
     private void showProgressBar() {
         circularProgressBar.setCanceledOnTouchOutside(false);

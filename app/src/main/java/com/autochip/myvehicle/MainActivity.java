@@ -1,10 +1,16 @@
 package com.autochip.myvehicle;
 
 import android.animation.Animator;
+import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -26,10 +32,19 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+import dialogs.DialogMultiple;
 
+public class MainActivity extends AppCompatActivity implements HomeInterfaceListener, OnImageUtilsListener {
+
+    public static HomeInterfaceListener homeInterfaceListener;
+    public static OnImageUtilsListener mBitmapCompressListener;
+
+    public static final int PICTURE_REQUEST_CODE = 1414;
     private TextView mTextMessage;
     Menu menu;
     View popupView;
@@ -37,13 +52,20 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvTitle, tvSubtitle;
     private View viewActionBar;
 
+    private Uri outputFileUri;
+
+    File root;
+
     Toolbar toolbar;
+
     int nUserDisplayWidth;
     int nUserDisplayHeight;
     int[] nOffSetLocation;
     int nDisplayDDXOffSet; //display drop down x off set
     int nDisplayOffSetD3;
     int viewHeight;
+
+    private CircularProgressBar circularProgressBar;
 
     private RecyclerView recyclerView;
     public MyVehicleTrackingRVAdapter myVehicleTrackingRVAdapter;
@@ -70,7 +92,8 @@ public class MainActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-
+        homeInterfaceListener = this;
+        mBitmapCompressListener = this;
         init();
 
         ArrayList<String> alMakeModel = new ArrayList<>();
@@ -95,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void init() {
+        circularProgressBar = new CircularProgressBar(MainActivity.this, false);
         toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         viewActionBar = View.inflate(MainActivity.this, R.layout.toolbar_textview, null);
@@ -317,29 +341,111 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*@Override
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            if (requestCode == 1414) { //PICTURE_REQUEST_CODE
+            if (requestCode == PICTURE_REQUEST_CODE) {
+
                 final boolean isCamera;
                 if (data == null) {
                     isCamera = true;
                 } else {
                     final String action = data.getAction();
-                    if (action == null) {
-                        isCamera = false;
-                    } else {
-                        isCamera = action.equals(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                    }
+                    isCamera = action != null && action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
                 }
-
+                root = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + "Android/data/" + File.separator + getPackageName() + File.separator);
                 Uri selectedImageUri;
                 if (isCamera) {
                     selectedImageUri = outputFileUri;
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), selectedImageUri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
+                        ImageUtils imageUtils = new ImageUtils(root, selectedImageUri);
+                    } else {
+                        DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                    }
                 } else {
                     selectedImageUri = data.getData();
+                    //Bitmap bitmap = BitmapFactory.decodeFile(selectedImageUri.getPath());
+                    //saveFileAsBitmap(selectedImageUri);
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), selectedImageUri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
+                        ImageUtils imageUtils = new ImageUtils(root, selectedImageUri);
+                    } else {
+                        DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                    }
                 }
             }
         }
+        stopProgressBar();
+    }
+
+    /*private void saveFileAsBitmap(Uri selectedImageUri) {
+        Bitmap bitmap = BitmapFactory.decodeFile(selectedImageUri.getPath());
+        //Bitmap bitmap = ImageUtils.getInstant().getCompressedBitmap(selectedImageUri.getPath());
+        FileOutputStream fileOutputStream = null;
+
+        final String fname = System.currentTimeMillis() + "insurance";
+        final File root = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + "Android/data/" + File.separator + getPackageName() + File.separator);
+        File sdImageMainDirectory = new File(root, fname);
+        outputFileUri = Uri.fromFile(sdImageMainDirectory);
+
+        try {
+            fileOutputStream = new FileOutputStream(sdImageMainDirectory);
+            // PNG is a loss less format, the compression factor (100) is ignored
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream); // bmp is your Bitmap instance
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fileOutputStream != null) {
+                    fileOutputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }*/
+
+    private void showProgressBar() {
+        circularProgressBar.setCanceledOnTouchOutside(false);
+        circularProgressBar.setCancelable(false);
+        circularProgressBar.show();
+    }
+
+    private void stopProgressBar() {
+        if (circularProgressBar != null && circularProgressBar.isShowing())
+            circularProgressBar.dismiss();
+    }
+
+
+    @Override
+    public void onHomeCalled(String sMessage, int nCase, String sActivityName, Uri outputFileUri) {
+        switch (sMessage) {
+            case "SHOW_PROGRESS_BAR":
+                showProgressBar();
+                break;
+            case "FILE_URI":
+                this.outputFileUri = outputFileUri;
+                break;
+        }
+    }
+
+    @Override
+    public void onBitmapCompressed(String sMessage, int nCase, Bitmap bitmap, Intent intent, Uri outputFileUri) {
+        switch (sMessage) {
+            case "BITMAP_COMPRESSED": //this is triggered from ImageUtils, which gets compressed bitmap and the same is sent back to Dialog Multiple
+                DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                break;
+        }
+    }
 }
