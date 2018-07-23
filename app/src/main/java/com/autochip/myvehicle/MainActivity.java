@@ -39,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import app_utility.MyVehicleAsyncTask;
 import dialogs.DialogMultiple;
 
 public class MainActivity extends AppCompatActivity implements HomeInterfaceListener, OnImageUtilsListener {
@@ -99,6 +100,10 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         setContentView(R.layout.activity_main);
         homeInterfaceListener = this;
         mBitmapCompressListener = this;
+
+        MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
+        myVehicleAsyncTask.execute(String.valueOf(1), "");
+
         init();
 
         ArrayList<String> alMakeModel = new ArrayList<>();
@@ -120,6 +125,9 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alMakeModel, alRegNo, alYearOfManufacture);
         recyclerView.setAdapter(myVehicleTrackingRVAdapter);
+
+        myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
+        myVehicleAsyncTask.execute(String.valueOf(5), "");
     }
 
     void init() {
