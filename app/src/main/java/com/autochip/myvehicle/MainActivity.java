@@ -31,6 +31,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -371,26 +372,31 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 } else {
                     selectedImageUri = data.getData();
                     //Bitmap bitmap = BitmapFactory.decodeFile(selectedImageUri.getPath());
-                    //saveFileAsBitmap(selectedImageUri);
+                    saveFileAsBitmap(selectedImageUri);
                     Bitmap bitmap = null;
                     try {
                         bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), selectedImageUri);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
+                    /*if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
                         ImageUtils imageUtils = new ImageUtils(root, selectedImageUri);
-                    } else {
+                    } else {*/
                         DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
-                    }
+                    //}
                 }
             }
         }
         stopProgressBar();
     }
 
-    /*private void saveFileAsBitmap(Uri selectedImageUri) {
-        Bitmap bitmap = BitmapFactory.decodeFile(selectedImageUri.getPath());
+    private void saveFileAsBitmap(Uri selectedImageUri) {
+        Bitmap bitmap = null;
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), selectedImageUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //Bitmap bitmap = ImageUtils.getInstant().getCompressedBitmap(selectedImageUri.getPath());
         FileOutputStream fileOutputStream = null;
 
@@ -402,7 +408,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         try {
             fileOutputStream = new FileOutputStream(sdImageMainDirectory);
             // PNG is a loss less format, the compression factor (100) is ignored
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream); // bmp is your Bitmap instance
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -414,7 +421,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 e.printStackTrace();
             }
         }
-    }*/
+        ImageUtils imageUtils = new ImageUtils(root, outputFileUri);
+    }
 
     private void showProgressBar() {
         circularProgressBar.setCanceledOnTouchOutside(false);
