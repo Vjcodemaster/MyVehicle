@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -54,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     private View viewActionBar;
 
     private Uri outputFileUri;
+    Intent data;
+    Bitmap bitmapImageUtils;
+
 
     File root;
 
@@ -343,51 +347,64 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == PICTURE_REQUEST_CODE) {
+                this.data = data;
+                new attractionNameAsyncTask().execute();
+                /*runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
-                final boolean isCamera;
-                if (data == null) {
-                    isCamera = true;
-                } else {
-                    final String action = data.getAction();
-                    isCamera = action != null && action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
-                }
-                root = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + "Android/data/" + File.separator + getPackageName() + File.separator);
-                Uri selectedImageUri;
-                if (isCamera) {
-                    selectedImageUri = outputFileUri;
-                    Bitmap bitmap = null;
+                        final boolean isCamera;
+                        if (data == null) {
+                            isCamera = true;
+                        } else {
+                            final String action = data.getAction();
+                            isCamera = action != null && action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
+                        }
+                        root = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + "Android/data/" + File.separator + getPackageName() + File.separator);
+                        Uri selectedImageUri;
+                        if (isCamera) {
+                            selectedImageUri = outputFileUri;
+                            Bitmap bitmap = null;
+                            try {
+                                bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), selectedImageUri);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
+                                ImageUtils imageUtils = new ImageUtils(root, selectedImageUri);
+                            } else {
+                                DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                            }
+                        } else {
+                            selectedImageUri = data.getData();
+                            //Bitmap bitmap = BitmapFactory.decodeFile(selectedImageUri.getPath());
+                            saveFileAsBitmap(selectedImageUri);
+                    *//*Bitmap bitmap = null;
                     try {
                         bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), selectedImageUri);
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
-                    if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
+                    }*//*
+                 *//*if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
                         ImageUtils imageUtils = new ImageUtils(root, selectedImageUri);
-                    } else {
-                        DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                    } else {*//*
+                            //DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                            //}
+                        }
+                        stopProgressBar();
                     }
-                } else {
-                    selectedImageUri = data.getData();
-                    //Bitmap bitmap = BitmapFactory.decodeFile(selectedImageUri.getPath());
-                    saveFileAsBitmap(selectedImageUri);
-                    Bitmap bitmap = null;
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), selectedImageUri);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    /*if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
-                        ImageUtils imageUtils = new ImageUtils(root, selectedImageUri);
-                    } else {*/
-                        DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
-                    //}
-                }
+
+                });*/
             }
+
+        } else {
+            stopProgressBar();
         }
-        stopProgressBar();
+
+
     }
 
     private void saveFileAsBitmap(Uri selectedImageUri) {
@@ -421,7 +438,13 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 e.printStackTrace();
             }
         }
-        ImageUtils imageUtils = new ImageUtils(root, outputFileUri);
+
+        if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
+            ImageUtils imageUtils = new ImageUtils(root, outputFileUri);
+        } else {
+            bitmapImageUtils = bitmap;
+            //DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+        }
     }
 
     private void showProgressBar() {
@@ -452,8 +475,65 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     public void onBitmapCompressed(String sMessage, int nCase, Bitmap bitmap, Intent intent, Uri outputFileUri) {
         switch (sMessage) {
             case "BITMAP_COMPRESSED": //this is triggered from ImageUtils, which gets compressed bitmap and the same is sent back to Dialog Multiple
-                DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                bitmapImageUtils = bitmap;
+                //DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
                 break;
+        }
+    }
+
+
+    private class attractionNameAsyncTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            final boolean isCamera;
+            if (data == null) {
+                isCamera = true;
+            } else {
+                final String action = data.getAction();
+                isCamera = action != null && action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
+            }
+            root = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + "Android/data/" + File.separator + getPackageName() + File.separator);
+            Uri selectedImageUri;
+            if (isCamera) {
+                selectedImageUri = outputFileUri;
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
+                    ImageUtils imageUtils = new ImageUtils(root, selectedImageUri);
+                } else {
+                    //DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                    bitmapImageUtils = bitmap;
+                }
+            } else {
+                selectedImageUri = data.getData();
+                //Bitmap bitmap = BitmapFactory.decodeFile(selectedImageUri.getPath());
+                saveFileAsBitmap(selectedImageUri);
+                    /*Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), selectedImageUri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }*/
+                    /*if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
+                        ImageUtils imageUtils = new ImageUtils(root, selectedImageUri);
+                    } else {*/
+                //DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
+                //}
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (bitmapImageUtils != null)
+                DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmapImageUtils, null, null);
+            stopProgressBar();
         }
     }
 }
