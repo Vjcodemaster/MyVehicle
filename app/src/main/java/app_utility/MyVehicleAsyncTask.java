@@ -24,6 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -218,6 +219,11 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         try {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
 
+            HashMap<String, Object> object = new HashMap<>();
+            object.put("model_id", "Bmw");
+            object.put("licence_plate", "KA 05 YT 9710");
+
+            //int partner_id= Many2one.getMany2One(object, "model_id").getId();
             /*@SuppressWarnings("unchecked")
             Integer idC = oc.create("res.partner", new HashMap() {{
                 put("name", "Vijay");
@@ -225,11 +231,15 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             }});*/
 
             @SuppressWarnings("unchecked")
-            Integer idC = oc.create("fleet.vehicle", new HashMap() {{
-                put("model_id", "Bmw");
-                put("licence_plate", "KA 05 YT 9710");
-            }});
+            /*Integer idC = oc.create("fleet.vehicle.model.brand", new HashMap() {{
+                put("name", "Audi");
+                //put("licence_plate", "KA 05 YT 9710"); //
+            }});*/
 
+            Integer idC = oc.create("fleet.vehicle", new HashMap() {{
+                put("name", "Audi");
+                //put("licence_plate", "KA 05 YT 9710"); //
+            }});
             /*int idC = oc.create("fleet.vehicle", new HashMap() {{
                 put("driver_id", "admin");
                 put("model_id", "BMW");
@@ -316,6 +326,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle", new Object[]{
                 new Object[]{new Object[]{"initial_reg_no", "=", "KA 50 YU 5110"}}}, "model_id");
+                //new Object[]{new Object[]{"licence_plate", "=", "KA04JJ5555"}}}, "model_id");
 
                 /*for (int i = 0; i < data.size(); ++i) {
                     if (data.get(i).get("id").toString().length()>1) {

@@ -6,6 +6,7 @@ import android.util.Log;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Set;
 import de.timroes.axmlrpc.XMLRPCClient;
 import de.timroes.axmlrpc.XMLRPCException;
 
+import static de.timroes.axmlrpc.XMLRPCClient.FLAGS_DEFAULT_TYPE_STRING;
 import static de.timroes.axmlrpc.XMLRPCClient.FLAGS_FORWARD;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
@@ -244,10 +246,37 @@ public class OdooConnect {
     public Integer create(String model, HashMap values) {
         Integer newObjectId = null;
         try {
-            XMLRPCClient client = new XMLRPCClient(mUrl, FLAGS_FORWARD);
+            /*XMLRPCClient client = new XMLRPCClient(mUrl, FLAGS_FORWARD);
 
             Object[] parameters = {mDatabase, mUserId, mPassword, model, "create", new Object[]{values}};
+            newObjectId = (Integer) client.call("execute_kw", parameters);*/
+
+            XMLRPCClient client = new XMLRPCClient(mUrl);
+
+            Object[] parameters = {mDatabase, mUserId, mPassword, model, "create" ,new Object[]{values}}; //"product.template"
             newObjectId = (Integer) client.call("execute_kw", parameters);
+
+            /*Object[] param = {mDatabase, mUserId, mPassword,
+                    model, "fields_get", new Object[]{"model_id"}, new HashMap() {{
+                put("attributes", new Object[]{"relation", "type"});
+            }}};
+            Map<String, Map<String, Object>> attrRelation =
+                    (Map<String, Map<String, Object>>) client.call("execute_kw", param);
+
+            if (attrRelation.get("model_id").containsValue("many2one")) {
+                String modelR = attrRelation.get("model_id").get("relation").toString();
+                final Object[] fieldR = {"name"};
+
+                Object[] parame = {mDatabase, mUserId, mPassword,
+                        modelR, "create", new HashMap() {{
+                    put("name", "Audi");
+                }}};
+                Object[] parameters = {mDatabase, mUserId, mPassword, model, "create", modelR,new Object[]{values}};
+                newObjectId = (Integer) client.call("execute_kw", parameters);
+                *//*List fRelation = asList((Object[]) listFields.get(key));
+                Object f = (Object) fRelation.get(1); // 1 => name
+                listFields.put(key, f);*//*
+            }*/
 
         } catch (XMLRPCException e) {
             Log.d(CONNECTOR_NAME, e.toString());
