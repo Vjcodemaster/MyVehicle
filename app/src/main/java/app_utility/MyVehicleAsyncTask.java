@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +47,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private CircularProgressBar circularProgressBar;
     private double dLatitude, dLongitude;
     private Context context;
+
+    HashMap<String, Object> value = new HashMap<>();
     //private AsyncInterface asyncInterface;
 
     public MyVehicleAsyncTask(Activity aActivity) {
@@ -216,6 +219,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     }*/
 
     private void createTask(){
+
         try {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
 
@@ -236,16 +240,85 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 put("name", "Audi");
                 put("mvariant_id", 5); //
             }});*/
+
+            //value.put("name", "Pubg");
+            //value.put("mobile", "1654165446");
             @SuppressWarnings("unchecked")
             Integer idC = oc.create("web.service", new HashMap() {{
-                put("name", "test no 4");
+                put("name", "test no 6");
                 put("value", 8); //
                 put("partner_id", 9);
+                //put("session_ids", value);
             }});
 
+            //readTask(idC);
+            updateTask(idC);
         }
         catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+    private void readTask(int idC) {
+        OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
+        List<HashMap<String, Object>> data = oc.search_read("web.service", new Object[]{
+                new Object[]{new Object[]{"name", "=", "test no 6"}}}, "name", "mobile");
+
+        for (int i = 0; i < data.size(); ++i) {
+            if (data.get(i).get("id").toString().length()>1) {
+                //listD.add("Id: " + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
+            }else{
+                //listD.add("Id: 0" + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
+            }
+        }
+        String sEmail = data.get(0).get("email").toString();
+        String[] sLatLng = sEmail.split(",");
+        dLatitude = Double.valueOf(sLatLng[0]);
+        dLongitude = Double.valueOf(sLatLng[1]);
+    }
+
+    private void updateTask(int id) {
+        String msgResult = "";
+        try {
+            OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
+
+            /*String list = sC.getSelectedItem().toString();
+            Boolean iscomp;
+            if (list.equals("Individual")) {
+                iscomp = false;
+            } else {
+                iscomp = true;
+            }*/
+
+            final Boolean isComp = false;
+            //final String n = "Vijay";
+            final String p = "";
+            final String e = String.valueOf(dLatitude) + "," + String.valueOf(dLongitude);
+
+            // Create record
+            @SuppressWarnings("unchecked")
+            /*Integer idC = oc.create("fleet.vehicle", new HashMap() {{
+                put("name", n);
+                put("phone", p);
+                put("is_company", isComp);
+            }});*/
+
+                    //LinkedHashMap<String, >
+                    Boolean idC = oc.write("web.service", new Object[]{id}, new HashMap() {{
+                //put("name", n);
+                //put("phone", p);
+                //put("email", e);
+                put("session_ids.name", "Pubg");
+                put("session_ids.mobile", "9847794944");
+                //put("name", "product.template");
+                //put("model_id","Audi A3");
+            }});
+
+            msgResult += "Id of customer updated: " + idC.toString();
+            Log.e("Update result", msgResult);
+        } catch (Exception ex) {
+            //msgResult = "Error: " + ex;
+            Log.e("Updating error", ex.toString());
         }
     }
 
@@ -268,12 +341,6 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             final String e = String.valueOf(dLatitude) + "," + String.valueOf(dLongitude);
             int id;
 
-            /*if (!list.isEmpty())
-                id = Integer.parseInt(list.substring(4, 6));
-            else {
-                Toast.makeText(getApplicationContext(), "Empty List", Toast.LENGTH_LONG).show();
-                return;
-            }*/
             id = 104;
             // Create record
             @SuppressWarnings("unchecked")
