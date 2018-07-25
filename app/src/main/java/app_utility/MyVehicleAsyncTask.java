@@ -221,7 +221,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
             HashMap<String, Object> object = new HashMap<>();
             object.put("model_id", "Bmw");
-            object.put("licence_plate", "KA 05 YT 9710");
+            object.put("mvariant_id", "KA 05 YT 9710");
 
             //int partner_id= Many2one.getMany2One(object, "model_id").getId();
             /*@SuppressWarnings("unchecked")
@@ -230,24 +230,19 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 put("phone", "1231231231");
             }});*/
 
-            @SuppressWarnings("unchecked")
-            /*Integer idC = oc.create("fleet.vehicle.model.brand", new HashMap() {{
-                put("name", "Audi");
-                //put("licence_plate", "KA 05 YT 9710"); //
-            }});*/
-
+            //this is the correct one
+            /*@SuppressWarnings("unchecked")
             Integer idC = oc.create("fleet.vehicle", new HashMap() {{
                 put("name", "Audi");
-                //put("licence_plate", "KA 05 YT 9710"); //
+                put("mvariant_id", 5); //
+            }});*/
+            @SuppressWarnings("unchecked")
+            Integer idC = oc.create("web.service", new HashMap() {{
+                put("name", "test no 4");
+                put("value", 8); //
+                put("partner_id", 9);
             }});
-            /*int idC = oc.create("fleet.vehicle", new HashMap() {{
-                put("driver_id", "admin");
-                put("model_id", "BMW");
-                put("mvariant_id", "X6");
-                put("initial_reg_no", "KA 04 HH 3491");
-            }});
-            int idplus = idC + idC + 1;
-            String aa = String.valueOf(idplus);*/
+
         }
         catch (Exception e){
             e.printStackTrace();
@@ -294,6 +289,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 //put("phone", p);
                 //put("email", e);
                 put("initial_reg_no", "KA 50 YU 5110");
+                //put("name", "product.template");
+                //put("model_id","Audi A3");
             }});
 
             msgResult += "Id of customer updated: " + idC.toString();
@@ -304,10 +301,29 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         }
     }
 
-    /*private void readTask() {
+    private void readTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("res.users", new Object[]{
                 new Object[]{new Object[]{"customer", "=", true}}}, "name", "email");
+
+                for (int i = 0; i < data.size(); ++i) {
+                    if (data.get(i).get("id").toString().length()>1) {
+                        //listD.add("Id: " + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
+                    }else{
+                        //listD.add("Id: 0" + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
+                    }
+                }
+        String sEmail = data.get(0).get("email").toString();
+        String[] sLatLng = sEmail.split(",");
+        dLatitude = Double.valueOf(sLatLng[0]);
+        dLongitude = Double.valueOf(sLatLng[1]);
+    }
+
+    /*private void readTask() {
+        OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
+        List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle", new Object[]{
+                new Object[]{new Object[]{"initial_reg_no", "=", "KA 50 YU 5110"}}}, "model_id");
+                //new Object[]{new Object[]{"licence_plate", "=", "KA04JJ5555"}}}, "model_id");
 
                 *//*for (int i = 0; i < data.size(); ++i) {
                     if (data.get(i).get("id").toString().length()>1) {
@@ -316,31 +332,12 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                         listD.add("Id: 0" + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
                     }
                 }*//*
-        String sEmail = data.get(0).get("email").toString();
-        String[] sLatLng = sEmail.split(",");
-        dLatitude = Double.valueOf(sLatLng[0]);
-        dLongitude = Double.valueOf(sLatLng[1]);
-    }*/
-
-    private void readTask() {
-        OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
-        List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle", new Object[]{
-                new Object[]{new Object[]{"initial_reg_no", "=", "KA 50 YU 5110"}}}, "model_id");
-                //new Object[]{new Object[]{"licence_plate", "=", "KA04JJ5555"}}}, "model_id");
-
-                /*for (int i = 0; i < data.size(); ++i) {
-                    if (data.get(i).get("id").toString().length()>1) {
-                        listD.add("Id: " + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
-                    }else{
-                        listD.add("Id: 0" + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
-                    }
-                }*/
         //String driver_id = data.get(0).get("driver_id").toString();
         String d = data.get(0).toString();
         String regNo = data.get(0).get("initial_reg_no").toString();
         //dLatitude = Double.valueOf(sLatLng[0]);
         //dLongitude = Double.valueOf(sLatLng[1]);
-    }
+    }*/
 
     private String snapRoadTask(String uri) {
         HttpsURLConnection urlConnection;

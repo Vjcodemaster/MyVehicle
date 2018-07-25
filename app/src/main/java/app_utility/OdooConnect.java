@@ -253,9 +253,31 @@ public class OdooConnect {
 
             XMLRPCClient client = new XMLRPCClient(mUrl);
 
-            Object[] parameters = {mDatabase, mUserId, mPassword, model, "create" ,new Object[]{values}}; //"product.template"
+            Object[] parameters = {mDatabase, mUserId, mPassword, model, "create" ,new Object[]{values}}; //"product.template"//model_id", "=" ,"Audi
             newObjectId = (Integer) client.call("execute_kw", parameters);
 
+            /*Object[] param = {mDatabase, mUserId, mPassword,
+                    model, "fields_get", new Object[]{""}, new HashMap() {{
+                put("attributes", new Object[]{"string","relation", "type"});
+            }}};
+
+            Map<String, Map<String, Object>> attrRelation =
+                    (Map<String, Map<String, Object>>) client.call("execute_kw", param);
+
+            if (attrRelation.get("model_id").containsValue("many2one")) {
+                String modelR = attrRelation.get("model_id").get("relation").toString();
+                final Object[] fieldR = {"name"};
+
+                Object[] parame = {mDatabase, mUserId, mPassword,
+                        modelR, "create", new HashMap() {{
+                    put("name", "Audi");
+                }}};
+                Object[] parameterss = {mDatabase, mUserId, mPassword, model, "create", modelR,new Object[]{values}};
+                newObjectId = (Integer) client.call("execute_kw", parameterss);
+                *//*List fRelation = asList((Object[]) listFields.get(key));
+                Object f = (Object) fRelation.get(1); // 1 => name
+                listFields.put(key, f);*//*
+            }*/
             /*Object[] param = {mDatabase, mUserId, mPassword,
                     model, "fields_get", new Object[]{"model_id"}, new HashMap() {{
                 put("attributes", new Object[]{"relation", "type"});
