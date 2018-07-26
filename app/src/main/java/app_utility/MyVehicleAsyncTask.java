@@ -92,6 +92,12 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             case 5:
                 createTask();
                 break;
+            case 6:
+                updateOne2Many(9);
+                break;
+            case 7:
+                delete(9);
+                break;
         }
         return res;
     }
@@ -218,7 +224,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         }
     }*/
 
-    private void createTask(){
+    private void createTask() {
 
         try {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
@@ -243,18 +249,30 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
             //value.put("name", "Pubg");
             //value.put("mobile", "1654165446");
-            @SuppressWarnings("unchecked")
-            Integer idC = oc.create("web.service", new HashMap() {{
-                put("name", "test no 6");
-                put("value", 8); //
-                put("partner_id", 9);
+            @SuppressWarnings("unchecked") final Integer idC = oc.create("web.service", new HashMap() {{
+                put("name", "Final Test");
+                put("value", 29); //
+                put("partner_id", 9); //many2One field. here we are using pre defined value i,e setting a value of other relation model to partner_id
                 //put("session_ids", value);
             }});
 
+            @SuppressWarnings("unchecked")
+            Integer one2Many = oc.create("web.service.child", new HashMap() {{
+                put("name", "Autochip");
+                put("mobile", "4103246464");
+                put("service_id", idC); //one to many
+                //put("session_ids", value);
+            }});
+           /* Integer newRecord = oc.create("web.service", new HashMap() {{
+                put("name", "test no 6");
+                put("value", 8); //
+                put("partner_id", 9);
+                //put("session_ids", 4);
+            }});*/
+
             //readTask(idC);
-            updateTask(idC);
-        }
-        catch (Exception e){
+            //updateTask(newRecord);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -262,12 +280,12 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private void readTask(int idC) {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("web.service", new Object[]{
-                new Object[]{new Object[]{"name", "=", "test no 6"}}}, "name", "mobile");
+                new Object[]{new Object[]{"name", "=", "test no 6"}}}, "name", "mobile", "session_ids");
 
         for (int i = 0; i < data.size(); ++i) {
-            if (data.get(i).get("id").toString().length()>1) {
+            if (data.get(i).get("id").toString().length() > 1) {
                 //listD.add("Id: " + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
-            }else{
+            } else {
                 //listD.add("Id: 0" + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
             }
         }
@@ -277,39 +295,21 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         dLongitude = Double.valueOf(sLatLng[1]);
     }
 
-    private void updateTask(int id) {
+    /*
+    int id = get id of the one2many from the main model which it is connected to.
+    here we are editing one of the data of web.service.child
+     */
+    private void updateOne2Many(int id) {
         String msgResult = "";
         try {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
 
-            /*String list = sC.getSelectedItem().toString();
-            Boolean iscomp;
-            if (list.equals("Individual")) {
-                iscomp = false;
-            } else {
-                iscomp = true;
-            }*/
-
-            final Boolean isComp = false;
-            //final String n = "Vijay";
-            final String p = "";
-            final String e = String.valueOf(dLatitude) + "," + String.valueOf(dLongitude);
-
-            // Create record
-            @SuppressWarnings("unchecked")
-            /*Integer idC = oc.create("fleet.vehicle", new HashMap() {{
-                put("name", n);
-                put("phone", p);
-                put("is_company", isComp);
-            }});*/
-
-                    //LinkedHashMap<String, >
-                    Boolean idC = oc.write("web.service", new Object[]{id}, new HashMap() {{
+            Boolean idC = oc.write("web.service.child", new Object[]{id}, new HashMap() {{
                 //put("name", n);
                 //put("phone", p);
                 //put("email", e);
-                put("session_ids.name", "Pubg");
-                put("session_ids.mobile", "9847794944");
+                put("name", "Supreeth");
+                //put("mobile", "9847794944");
                 //put("name", "product.template");
                 //put("model_id","Audi A3");
             }});
@@ -373,13 +373,13 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         List<HashMap<String, Object>> data = oc.search_read("res.users", new Object[]{
                 new Object[]{new Object[]{"customer", "=", true}}}, "name", "email");
 
-                for (int i = 0; i < data.size(); ++i) {
-                    if (data.get(i).get("id").toString().length()>1) {
-                        //listD.add("Id: " + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
-                    }else{
-                        //listD.add("Id: 0" + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
-                    }
-                }
+        for (int i = 0; i < data.size(); ++i) {
+            if (data.get(i).get("id").toString().length() > 1) {
+                //listD.add("Id: " + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
+            } else {
+                //listD.add("Id: 0" + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
+            }
+        }
         String sEmail = data.get(0).get("email").toString();
         String[] sLatLng = sEmail.split(",");
         dLatitude = Double.valueOf(sLatLng[0]);
@@ -444,6 +444,11 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             }
         }
         return res;
+    }
+
+    public void delete(int id){
+        OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
+        Boolean idC = oc.unlink("web.service.child", new Object[]{id});
     }
 
     /*private List<HashMap<String, Object>> search_read(String model, final Integer offset,

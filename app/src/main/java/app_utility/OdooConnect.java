@@ -22,7 +22,7 @@ import static java.util.Collections.emptyMap;
 
 /**
  * Original Class: https://github.com/zikzakmedia/android-openerp
- *
+ * <p>
  * This class provides access to basic methods in OpenObject, so you can use
  * them from an Android device. The operations supported are: <br>
  * <ul>
@@ -34,7 +34,7 @@ import static java.util.Collections.emptyMap;
  * <li>unlink</li>
  * <li>call (This is a generic method to call whatever you need)</li>
  * </ul>
- *
+ * <p>
  * You can extend OdooConnect to implement more specific methods of your need.
  *
  * @author Edu <eduojerb@gmail.com>
@@ -194,11 +194,10 @@ public class OdooConnect {
                         }}};
                         Object[] recordd = (Object[]) client.call("execute_kw", parame);
 
-                        /*
-                         * You can change the string format of this result like you prefer.
-                         */
+
+                         //You can change the string format of this result like you prefer.
                         String extra = "";
-                        for (Object r : recordd){
+                        for (Object r : recordd) {
                             extra += r;
                         }
                         Object fResult = (Object) extra;
@@ -212,6 +211,7 @@ public class OdooConnect {
         }
         return result;
     }
+
 
     /**
      * You can pass new Object[0] to specify an empty list of conditions,
@@ -253,52 +253,8 @@ public class OdooConnect {
 
             XMLRPCClient client = new XMLRPCClient(mUrl);
 
-            Object[] parameters = {mDatabase, mUserId, mPassword, model, "create" ,new Object[]{values}}; //"product.template"//model_id", "=" ,"Audi
+            Object[] parameters = {mDatabase, mUserId, mPassword, model, "create", new Object[]{values}}; //"product.template"//model_id", "=" ,"Audi
             newObjectId = (Integer) client.call("execute_kw", parameters);
-
-            /*Object[] param = {mDatabase, mUserId, mPassword,
-                    model, "fields_get", new Object[]{""}, new HashMap() {{
-                put("attributes", new Object[]{"string","relation", "type"});
-            }}};
-
-            Map<String, Map<String, Object>> attrRelation =
-                    (Map<String, Map<String, Object>>) client.call("execute_kw", param);
-
-            if (attrRelation.get("model_id").containsValue("many2one")) {
-                String modelR = attrRelation.get("model_id").get("relation").toString();
-                final Object[] fieldR = {"name"};
-
-                Object[] parame = {mDatabase, mUserId, mPassword,
-                        modelR, "create", new HashMap() {{
-                    put("name", "Audi");
-                }}};
-                Object[] parameterss = {mDatabase, mUserId, mPassword, model, "create", modelR,new Object[]{values}};
-                newObjectId = (Integer) client.call("execute_kw", parameterss);
-                *//*List fRelation = asList((Object[]) listFields.get(key));
-                Object f = (Object) fRelation.get(1); // 1 => name
-                listFields.put(key, f);*//*
-            }*/
-            /*Object[] param = {mDatabase, mUserId, mPassword,
-                    model, "fields_get", new Object[]{"model_id"}, new HashMap() {{
-                put("attributes", new Object[]{"relation", "type"});
-            }}};
-            Map<String, Map<String, Object>> attrRelation =
-                    (Map<String, Map<String, Object>>) client.call("execute_kw", param);
-
-            if (attrRelation.get("model_id").containsValue("many2one")) {
-                String modelR = attrRelation.get("model_id").get("relation").toString();
-                final Object[] fieldR = {"name"};
-
-                Object[] parame = {mDatabase, mUserId, mPassword,
-                        modelR, "create", new HashMap() {{
-                    put("name", "Audi");
-                }}};
-                Object[] parameters = {mDatabase, mUserId, mPassword, model, "create", modelR,new Object[]{values}};
-                newObjectId = (Integer) client.call("execute_kw", parameters);
-                *//*List fRelation = asList((Object[]) listFields.get(key));
-                Object f = (Object) fRelation.get(1); // 1 => name
-                listFields.put(key, f);*//*
-            }*/
 
         } catch (XMLRPCException e) {
             Log.d(CONNECTOR_NAME, e.toString());
@@ -326,7 +282,7 @@ public class OdooConnect {
     }
 
     /**
-     * A method to delete the matching records width the ids given
+     * A method to delete the matching records with the ids given
      */
     public Boolean unlink(String model, Object[] ids) {
         Boolean unlinkOk = false;
@@ -346,8 +302,8 @@ public class OdooConnect {
      */
     @SuppressWarnings("unchecked")
     public Object[] call(String model, String method, final Integer offset,
-                       final Integer limit, Object[] conditions,
-                       final Object[] field) {
+                         final Integer limit, Object[] conditions,
+                         final Object[] field) {
         Object[] response = null;
         try {
             XMLRPCClient client = new XMLRPCClient(mUrl);
