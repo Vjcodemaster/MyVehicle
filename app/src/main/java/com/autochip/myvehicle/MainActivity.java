@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         recyclerView.setAdapter(myVehicleTrackingRVAdapter);
 
         myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
-        myVehicleAsyncTask.execute(String.valueOf(7), "");
+        myVehicleAsyncTask.execute(String.valueOf(3), "");
     }
 
     void init() {

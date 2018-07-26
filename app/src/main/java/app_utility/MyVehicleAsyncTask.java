@@ -230,8 +230,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
 
             HashMap<String, Object> object = new HashMap<>();
-            object.put("model_id", "Bmw");
-            object.put("mvariant_id", "KA 05 YT 9710");
+            object.put("model_id", 26);
+            object.put("mvariant_id", 106);
 
             //int partner_id= Many2one.getMany2One(object, "model_id").getId();
             /*@SuppressWarnings("unchecked")
@@ -246,10 +246,21 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 put("name", "Audi");
                 put("mvariant_id", 5); //
             }});*/
-
-            //value.put("name", "Pubg");
-            //value.put("mobile", "1654165446");
-            @SuppressWarnings("unchecked") final Integer idC = oc.create("web.service", new HashMap() {{
+            /*@SuppressWarnings("unchecked") final Integer idC = oc.create("web.service", new HashMap() {{
+                put("name", "asdasdasd");
+                put("value", 2); //
+                put("partner_id", 9); //many2One field. here we are using pre defined value i,e setting a value of other relation model to partner_id
+                //put("session_ids", value);
+            }});
+            @SuppressWarnings("unchecked")
+            Integer one2Many = oc.create("web.service.child", new HashMap() {{
+                put("name", "TTTTTTT");
+                put("mobile", "555555555");
+                put("service_id", idC); //one to many
+                //put("session_ids", value);
+            }});*/
+            //below 2 is what we were using in supreeth server
+            /*@SuppressWarnings("unchecked") final Integer idC = oc.create("web.service", new HashMap() {{
                 put("name", "Final Test");
                 put("value", 29); //
                 put("partner_id", 9); //many2One field. here we are using pre defined value i,e setting a value of other relation model to partner_id
@@ -262,17 +273,30 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 put("mobile", "4103246464");
                 put("service_id", idC); //one to many
                 //put("session_ids", value);
-            }});
-           /* Integer newRecord = oc.create("web.service", new HashMap() {{
-                put("name", "test no 6");
-                put("value", 8); //
-                put("partner_id", 9);
-                //put("session_ids", 4);
             }});*/
 
-            //readTask(idC);
-            //updateTask(newRecord);
+            @SuppressWarnings("unchecked") final Integer idC = oc.create("fleet.vehicle", new HashMap() {{
+                put("model_id", 110);
+                put("license_plate", "KA 41 KL 5129");
+                put("odometer", 7.108);
+            }});
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createOne2Many(String Model,final int ID){
+        try {
+            OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
+
+            @SuppressWarnings("unchecked")
+            Integer one2Many = oc.create("web.service.child", new HashMap() {{
+                put("name", "Autochip");
+                put("mobile", "4103246464");
+                put("service_id", ID); //one to many
+            }});
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -368,7 +392,29 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         }
     }
 
+    /*
+    finds all the data created by this user and returns required fields, which searches for create_uid = 1 condition
+     */
     private void readTask() {
+        OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
+        List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle", new Object[]{
+                new Object[]{new Object[]{"create_uid", "=", 1}}}, "model_id", "license_plate");
+
+        for (int i = 0; i < data.size(); ++i) {
+            if (data.get(i).get("id").toString().length() > 1) {
+                //listD.add("Id: " + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
+            } else {
+                //listD.add("Id: 0" + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
+            }
+        }
+        String sEmail = data.get(0).get("email").toString();
+        String[] sLatLng = sEmail.split(",");
+        dLatitude = Double.valueOf(sLatLng[0]);
+        dLongitude = Double.valueOf(sLatLng[1]);
+    }
+
+    //read according to the condition customer = true in res.users
+    /*private void readTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("res.users", new Object[]{
                 new Object[]{new Object[]{"customer", "=", true}}}, "name", "email");
@@ -384,7 +430,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         String[] sLatLng = sEmail.split(",");
         dLatitude = Double.valueOf(sLatLng[0]);
         dLongitude = Double.valueOf(sLatLng[1]);
-    }
+    }*/
 
     /*private void readTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
