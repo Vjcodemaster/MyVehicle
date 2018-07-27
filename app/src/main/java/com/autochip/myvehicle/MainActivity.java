@@ -39,13 +39,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import app_utility.AsyncInterface;
 import app_utility.MyVehicleAsyncTask;
 import dialogs.DialogMultiple;
 
-public class MainActivity extends AppCompatActivity implements HomeInterfaceListener, OnImageUtilsListener {
+public class MainActivity extends AppCompatActivity implements HomeInterfaceListener, OnImageUtilsListener, AsyncInterface {
 
     public static HomeInterfaceListener homeInterfaceListener;
     public static OnImageUtilsListener mBitmapCompressListener;
+    public static AsyncInterface asyncInterface;
 
     public static final int PICTURE_REQUEST_CODE = 1414;
     private TextView mTextMessage;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     private TextView tvTitle, tvSubtitle;
     private View viewActionBar;
 
+    VehicleDataStorage vehicleDataStorage;
     private Uri outputFileUri;
     Intent data;
     Bitmap bitmapImageUtils;
@@ -100,13 +103,16 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         setContentView(R.layout.activity_main);
         homeInterfaceListener = this;
         mBitmapCompressListener = this;
+        asyncInterface = this;
+
+        vehicleDataStorage = new VehicleDataStorage();
 
         MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
         myVehicleAsyncTask.execute(String.valueOf(1), "");
 
         init();
 
-        ArrayList<String> alMakeModel = new ArrayList<>();
+        /*ArrayList<String> alMakeModel = new ArrayList<>();
         alMakeModel.add("Mahindra Xuv 500");
         alMakeModel.add("Audi A8");
         alMakeModel.add("BMW X6");
@@ -121,10 +127,10 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         alYearOfManufacture.add(2012);
         alYearOfManufacture.add(2017);
         alYearOfManufacture.add(2016);
-        alYearOfManufacture.add(2018);
+        alYearOfManufacture.add(2018);*/
 
-        myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alMakeModel, alRegNo, alYearOfManufacture);
-        recyclerView.setAdapter(myVehicleTrackingRVAdapter);
+        /*myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alMakeModel, alRegNo, alYearOfManufacture);
+        recyclerView.setAdapter(myVehicleTrackingRVAdapter);*/
 
         myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
         myVehicleAsyncTask.execute(String.valueOf(3), "");
@@ -210,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                         //item.setCheckable(true);
                         view = findViewById(R.id.navigation_register);
                         item.setChecked(true);
-                        newFragment = RegisterVehicleFragment.newInstance("", "");
+                        newFragment = RegisterVehicleFragment.newInstance("", "", null,null);
                         sBackStack = newFragment.getClass().getName();
                         tvSubtitle.setText(R.string.register);
                         break;
@@ -285,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 //startCircularReveal(findViewById(R.id.action_add));
                 Fragment newFragment;
                 FragmentTransaction transaction;
-                newFragment = RegisterVehicleFragment.newInstance("", "");
+                newFragment = RegisterVehicleFragment.newInstance("", "", null, null);
                 sBackStackParent = newFragment.getClass().getName();
                 transaction = getSupportFragmentManager().beginTransaction();
 
@@ -486,6 +492,26 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 bitmapImageUtils = bitmap;
                 //DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
                 break;
+
+        }
+    }
+
+    @Override
+    public void onAsyncTaskComplete(String sMessage, int nCase, ArrayList<Integer> alID, ArrayList<String> alModelID,
+                                    ArrayList<String> alModelYear, ArrayList<String> alName, ArrayList<String> alLicensePlate) {
+        switch (sMessage) {
+            case "READ_DATA_FROM_SERVER":
+                vehicleDataStorage.alID = alID;
+                vehicleDataStorage.alModelID = alModelID;
+                vehicleDataStorage.alModelYear = alModelYear;
+                vehicleDataStorage.alName = alName;
+                vehicleDataStorage.alLicensePlate = alLicensePlate;
+
+                myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alModelID, alLicensePlate, alModelYear);
+                recyclerView.setAdapter(myVehicleTrackingRVAdapter);
+
+
+                break;
         }
     }
 
@@ -543,5 +569,16 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmapImageUtils, null, null);
             stopProgressBar();
         }
+    }
+
+    class VehicleDataStorage{
+        ArrayList<Integer> alID = new ArrayList<>();
+        ArrayList<String> alModelID = new ArrayList<>();
+        ArrayList<String> alModelYear = new ArrayList<>();
+        ArrayList<String> alName = new ArrayList<>();
+        ArrayList<String> alLicensePlate = new ArrayList<>();
+
+        ArrayList<String> alMake = new ArrayList<>();
+        ArrayList<String> alModel = new ArrayList<>();
     }
 }

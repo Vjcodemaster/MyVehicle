@@ -21,10 +21,10 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
     RecyclerView recyclerView;
     private ArrayList<String> alMakeModel;
     private ArrayList<String> alRegNo;
-    private ArrayList<Integer> alYearOfManufacture;
+    private ArrayList<String> alYearOfManufacture;
 
     MyVehicleTrackingRVAdapter(Context context, RecyclerView recyclerView, ArrayList<String> alMakeModel, ArrayList<String> alRegNo,
-                               ArrayList<Integer> alYearOfManufacture) {
+                               ArrayList<String> alYearOfManufacture) {
         this.context = context;
         this.recyclerView = recyclerView;
         this.alMakeModel = alMakeModel;
@@ -44,7 +44,7 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
     public void onBindViewHolder(@NonNull final MyVehicleHolder holder, final int position) {
         holder.tvMakeModel.setText(alMakeModel.get(position));
         holder.tvRegNo.setText(alRegNo.get(position));
-        holder.tvYOM.setText(String.valueOf(alYearOfManufacture.get(position)));
+        holder.tvYOM.setText(alYearOfManufacture.get(position));
     }
 
     @Override

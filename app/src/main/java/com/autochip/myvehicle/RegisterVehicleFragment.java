@@ -16,6 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +31,11 @@ public class RegisterVehicleFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_LIST_MAKE = "ARG_LIST_MAKE";
+    private static final String ARG_LIST_MODEL = "ARG_LIST_MODEL";
+
+    private ArrayList<String> alMake = new ArrayList<>();
+    private ArrayList<String> alModel = new ArrayList<>();
 
     private String mParam1;
     private String mParam2;
@@ -36,7 +43,7 @@ public class RegisterVehicleFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     EditText etMake, etModel, etRegNo, etYOM;
-    Spinner spinnerVehicle;
+    Spinner spinnerVehicle, spinnerMake, spinnerModel;
 
     public RegisterVehicleFragment() {
         // Required empty public constructor
@@ -50,11 +57,14 @@ public class RegisterVehicleFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment RegisterVehicleFragment.
      */
-    public static RegisterVehicleFragment newInstance(String param1, String param2) {
+    public static RegisterVehicleFragment newInstance(String param1, String param2, ArrayList<String> alMake, ArrayList<String> alModel) {
         RegisterVehicleFragment fragment = new RegisterVehicleFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
+        args.putStringArrayList(ARG_LIST_MAKE, alMake);
+        args.putStringArrayList(ARG_LIST_MODEL, alModel);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,6 +75,8 @@ public class RegisterVehicleFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            alMake.add(getArguments().getString(ARG_LIST_MAKE));
+            alModel.add(getArguments().getString(ARG_LIST_MODEL));
         }
     }
 
@@ -87,10 +99,20 @@ public class RegisterVehicleFragment extends Fragment {
         etYOM = view.findViewById(R.id.et_yom);
 
         spinnerVehicle= view.findViewById(R.id.spinner_vehicle);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, getResources()
+        ArrayAdapter<String> adapterVehicle = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, getResources()
                 .getStringArray(R.array.vehicle_array));
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerVehicle.setAdapter(adapter);
+        adapterVehicle.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerVehicle.setAdapter(adapterVehicle);
+
+        spinnerMake = view.findViewById(R.id.spinner_make);
+        ArrayAdapter<String> adapterMake = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, alMake);
+        adapterMake.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerMake.setAdapter(adapterMake);
+
+        spinnerModel = view.findViewById(R.id.spinner_model);
+        ArrayAdapter<String> adapterModel = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, alModel);
+        adapterModel.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerModel.setAdapter(adapterModel);
 
         try {
             @SuppressLint("ResourceType") XmlResourceParser parser = getResources().getXml(R.drawable.eee);

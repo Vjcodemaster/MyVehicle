@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.autochip.myvehicle.CircularProgressBar;
+import com.autochip.myvehicle.MainActivity;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,9 +49,16 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private CircularProgressBar circularProgressBar;
     private double dLatitude, dLongitude;
     private Context context;
+    HashMap<String, Object> object = new HashMap<>();
 
     HashMap<String, Object> value = new HashMap<>();
     //private AsyncInterface asyncInterface;
+
+    ArrayList<Integer> alID = new ArrayList<>();
+    ArrayList<String> alModelID = new ArrayList<>();
+    ArrayList<String> alModelYear = new ArrayList<>();
+    ArrayList<String> alName = new ArrayList<>();
+    ArrayList<String> alLicensePlate = new ArrayList<>();
 
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
@@ -127,6 +136,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 Log.e("Updating done", "success");
                 break;
             case 3:
+                MainActivity.asyncInterface.onAsyncTaskComplete("READ_DATA_FROM_SERVER", type, alID, alModelID, alModelYear, alName, alLicensePlate);
                 //asyncInterface.onResultReceived("UPDATE_LOCATION", type, dLatitude, dLongitude, 0.0, 0.0);
                 break;
             case 4:
@@ -229,9 +239,9 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         try {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
 
-            HashMap<String, Object> object = new HashMap<>();
-            object.put("model_id", 26);
-            object.put("mvariant_id", 106);
+
+            object.put("model_month", 1);
+            object.put("model_year", 2018);
 
             //int partner_id= Many2one.getMany2One(object, "model_id").getId();
             /*@SuppressWarnings("unchecked")
@@ -275,17 +285,20 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 //put("session_ids", value);
             }});*/
 
+
             @SuppressWarnings("unchecked") final Integer idC = oc.create("fleet.vehicle", new HashMap() {{
                 put("model_id", 110);
-                put("license_plate", "KA 41 KL 5129");
-                put("odometer", 7.108);
+                put("license_plate", "KA 04 KA 1611");
+                put("odometer", 15);
+                put("model_year", 2020);
+                put("model_month", 11);
             }});
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void createOne2Many(String Model,final int ID){
+    private void createOne2Many(String Model, final int ID) {
         try {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
 
@@ -295,8 +308,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 put("mobile", "4103246464");
                 put("service_id", ID); //one to many
             }});
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -398,19 +410,20 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private void readTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle", new Object[]{
-                new Object[]{new Object[]{"create_uid", "=", 1}}}, "model_id", "license_plate");
+                new Object[]{new Object[]{"create_uid", "=", 1}}}, "id", "model_id", "model_year", "name", "license_plate");
+
 
         for (int i = 0; i < data.size(); ++i) {
-            if (data.get(i).get("id").toString().length() > 1) {
-                //listD.add("Id: " + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
-            } else {
-                //listD.add("Id: 0" + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
-            }
+            alID.add(Integer.valueOf(data.get(i).get("id").toString()));
+            alModelID.add(String.valueOf(data.get(i).get("model_id").toString()));
+            alModelYear.add(String.valueOf(data.get(i).get("model_year").toString()));
+            alName.add(String.valueOf(data.get(i).get("name").toString()));
+            alLicensePlate.add(String.valueOf(data.get(i).get("license_plate").toString()));
         }
-        String sEmail = data.get(0).get("email").toString();
+        /*String sEmail = data.get(0).get("email").toString();
         String[] sLatLng = sEmail.split(",");
         dLatitude = Double.valueOf(sLatLng[0]);
-        dLongitude = Double.valueOf(sLatLng[1]);
+        dLongitude = Double.valueOf(sLatLng[1]);*/
     }
 
     //read according to the condition customer = true in res.users
@@ -492,7 +505,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         return res;
     }
 
-    public void delete(int id){
+    public void delete(int id) {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         Boolean idC = oc.unlink("web.service.child", new Object[]{id});
     }
