@@ -25,6 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,9 +57,11 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
     ArrayList<Integer> alID = new ArrayList<>();
     ArrayList<String> alModelID = new ArrayList<>();
+    ArrayList<Integer> alModelIDNo = new ArrayList<>();
     ArrayList<String> alModelYear = new ArrayList<>();
     ArrayList<String> alName = new ArrayList<>();
     ArrayList<String> alLicensePlate = new ArrayList<>();
+    HashSet<Integer> hsModelIDSingleValues = new HashSet<>();
 
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
@@ -136,7 +139,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 Log.e("Updating done", "success");
                 break;
             case 3:
-                MainActivity.asyncInterface.onAsyncTaskComplete("READ_DATA_FROM_SERVER", type, alID, alModelID, alModelYear, alName, alLicensePlate);
+                MainActivity.asyncInterface.onAsyncTaskComplete("READ_DATA_FROM_SERVER", type, alID, alModelID, alModelIDNo, alModelYear, alName, alLicensePlate, hsModelIDSingleValues);
                 //asyncInterface.onResultReceived("UPDATE_LOCATION", type, dLatitude, dLongitude, 0.0, 0.0);
                 break;
             case 4:
@@ -416,10 +419,12 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         for (int i = 0; i < data.size(); ++i) {
             alID.add(Integer.valueOf(data.get(i).get("id").toString()));
             alModelID.add(String.valueOf(data.get(i).get("model_id").toString()));
+            //alModelIDNo.add(Integer.valueOf(data.get(i).get("model_id_no").toString()));
             alModelYear.add(String.valueOf(data.get(i).get("model_year").toString()));
             alName.add(String.valueOf(data.get(i).get("name").toString()));
             alLicensePlate.add(String.valueOf(data.get(i).get("license_plate").toString()));
         }
+        hsModelIDSingleValues.addAll(alModelIDNo);
         /*String sEmail = data.get(0).get("email").toString();
         String[] sLatLng = sEmail.split(",");
         dLatitude = Double.valueOf(sLatLng[0]);

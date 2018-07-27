@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import app_utility.AsyncInterface;
 import app_utility.MyVehicleAsyncTask;
@@ -216,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                         //item.setCheckable(true);
                         view = findViewById(R.id.navigation_register);
                         item.setChecked(true);
-                        newFragment = RegisterVehicleFragment.newInstance("", "", null,null);
+                        newFragment = RegisterVehicleFragment.newInstance("", "");
                         sBackStack = newFragment.getClass().getName();
                         tvSubtitle.setText(R.string.register);
                         break;
@@ -291,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 //startCircularReveal(findViewById(R.id.action_add));
                 Fragment newFragment;
                 FragmentTransaction transaction;
-                newFragment = RegisterVehicleFragment.newInstance("", "", null, null);
+                newFragment = RegisterVehicleFragment.newInstance("", "");
                 sBackStackParent = newFragment.getClass().getName();
                 transaction = getSupportFragmentManager().beginTransaction();
 
@@ -497,19 +498,20 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     }
 
     @Override
-    public void onAsyncTaskComplete(String sMessage, int nCase, ArrayList<Integer> alID, ArrayList<String> alModelID,
-                                    ArrayList<String> alModelYear, ArrayList<String> alName, ArrayList<String> alLicensePlate) {
+    public void onAsyncTaskComplete(String sMessage, int nCase, ArrayList<Integer> alID, ArrayList<String> alModelID, ArrayList<Integer> alModelIDNo,
+                                    ArrayList<String> alModelYear, ArrayList<String> alName, ArrayList<String> alLicensePlate, HashSet<Integer> hsModelIDSingleValues) {
         switch (sMessage) {
             case "READ_DATA_FROM_SERVER":
                 vehicleDataStorage.alID = alID;
                 vehicleDataStorage.alModelID = alModelID;
+                vehicleDataStorage.alModelIDNo = alModelIDNo;
                 vehicleDataStorage.alModelYear = alModelYear;
                 vehicleDataStorage.alName = alName;
                 vehicleDataStorage.alLicensePlate = alLicensePlate;
+                vehicleDataStorage.hsModelIDSingleValues = hsModelIDSingleValues;
 
                 myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alModelID, alLicensePlate, alModelYear);
                 recyclerView.setAdapter(myVehicleTrackingRVAdapter);
-
 
                 break;
         }
@@ -574,9 +576,11 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     class VehicleDataStorage{
         ArrayList<Integer> alID = new ArrayList<>();
         ArrayList<String> alModelID = new ArrayList<>();
+        ArrayList<Integer> alModelIDNo = new ArrayList<>();
         ArrayList<String> alModelYear = new ArrayList<>();
         ArrayList<String> alName = new ArrayList<>();
         ArrayList<String> alLicensePlate = new ArrayList<>();
+        HashSet<Integer> hsModelIDSingleValues = new HashSet<>();
 
         ArrayList<String> alMake = new ArrayList<>();
         ArrayList<String> alModel = new ArrayList<>();

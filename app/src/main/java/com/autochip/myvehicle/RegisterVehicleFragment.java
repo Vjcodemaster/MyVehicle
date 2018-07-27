@@ -57,13 +57,14 @@ public class RegisterVehicleFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment RegisterVehicleFragment.
      */
-    public static RegisterVehicleFragment newInstance(String param1, String param2, ArrayList<String> alMake, ArrayList<String> alModel) {
+    //, ArrayList<String> alMake, ArrayList<String> alModel //add these 2 parameters if required
+    public static RegisterVehicleFragment newInstance(String param1, String param2) {
         RegisterVehicleFragment fragment = new RegisterVehicleFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
-        args.putStringArrayList(ARG_LIST_MAKE, alMake);
-        args.putStringArrayList(ARG_LIST_MODEL, alModel);
+        //args.putStringArrayList(ARG_LIST_MAKE, alMake);
+        //args.putStringArrayList(ARG_LIST_MODEL, alModel);
 
         fragment.setArguments(args);
         return fragment;
@@ -75,8 +76,8 @@ public class RegisterVehicleFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-            alMake.add(getArguments().getString(ARG_LIST_MAKE));
-            alModel.add(getArguments().getString(ARG_LIST_MODEL));
+            //alMake.add(getArguments().getString(ARG_LIST_MAKE));
+            //alModel.add(getArguments().getString(ARG_LIST_MODEL));
         }
     }
 
