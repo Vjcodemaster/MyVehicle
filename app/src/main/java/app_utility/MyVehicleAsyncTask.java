@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.autochip.myvehicle.CircularProgressBar;
 import com.autochip.myvehicle.MainActivity;
+import com.autochip.myvehicle.RegisterVehicleFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +55,10 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     HashMap<String, Object> object = new HashMap<>();
 
     HashMap<String, Object> value = new HashMap<>();
+
+    private LinkedHashMap<String, ArrayList<String>> lHMFormatData;
+    //use this for future delete, edit tasks
+    private LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID;
     //private AsyncInterface asyncInterface;
 
     ArrayList<Integer> alID = new ArrayList<>();
@@ -110,6 +116,12 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             case 7:
                 delete(9);
                 break;
+            case 8:
+                readBrandTask();
+                break;
+            case 9:
+                readBrandModelTask();
+                break;
         }
         return res;
     }
@@ -159,6 +171,9 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }*/
+                break;
+            case 9:
+                RegisterVehicleFragment.mListener.onRegisterVehicleFragment("REGISTER_DATA", type,lHMFormatData, lHMBrandNameWithIDAndModelID);
                 break;
         }
 
@@ -316,22 +331,96 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void readTask(int idC) {
+    private void readBrandTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
-        List<HashMap<String, Object>> data = oc.search_read("web.service", new Object[]{
-                new Object[]{new Object[]{"name", "=", "test no 6"}}}, "name", "mobile", "session_ids");
-
+        List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle.model.brand", new Object[]{
+                new Object[]{new Object[]{"create_uid", "!=", 100}}}, "name", "id");
+        alID = new ArrayList<>();
+        alName = new ArrayList<>();
         for (int i = 0; i < data.size(); ++i) {
-            if (data.get(i).get("id").toString().length() > 1) {
-                //listD.add("Id: " + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
-            } else {
-                //listD.add("Id: 0" + data.get(i).get("id").toString() + " - " + data.get(i).get("name").toString());
-            }
+            alID.add(Integer.valueOf(data.get(i).get("id").toString()));
+            alName.add(String.valueOf(data.get(i).get("name").toString()));
         }
-        String sEmail = data.get(0).get("email").toString();
+
+        readBrandModelTask();
+        /*String sEmail = data.get(0).get("email").toString();
         String[] sLatLng = sEmail.split(",");
         dLatitude = Double.valueOf(sLatLng[0]);
-        dLongitude = Double.valueOf(sLatLng[1]);
+        dLongitude = Double.valueOf(sLatLng[1]);*/
+    }
+
+    private void readBrandModelTask() {
+        OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
+        List<HashMap<String, Object>> data = oc.search_read_brands("product.template", new Object[]{
+                new Object[]{new Object[]{"brand_id", "!=", false}}}, "name", "brand_id");
+        ArrayList<Integer> alBrandID = new ArrayList<>();
+        ArrayList<String> alBrandName = new ArrayList<>();
+        ArrayList<String> alModelName = new ArrayList<>();
+        ArrayList<Integer> alModelID = new ArrayList<>();
+        LinkedHashSet<Integer> lHSBrandIDSingleValues = new LinkedHashSet<>();
+        LinkedHashSet<String> lHSBrandNameSingleValues = new LinkedHashSet<>();
+        LinkedHashMap<String, Integer> lHMBrandNameWithID = new LinkedHashMap<>();
+        //use this for future delete, edit tasks
+        lHMBrandNameWithIDAndModelID = new LinkedHashMap<>();
+
+        //this contains BrandName, <ModelID, list of modelNames>
+        lHMFormatData = new LinkedHashMap<>();
+
+        int nCount = 0;
+        //extract brandID and brandName and then add all the data to alBrandID, alModelName, alModelID normally to perform mapping in next loop
+        for (int i = 0; i < data.size(); ++i) {
+            int modelID = Integer.valueOf(data.get(i).get("id").toString());
+            int brandIDNo = Integer.valueOf(data.get(i).get("brand_id_no").toString());
+            String brandName = data.get(i).get("brand_id").toString();
+            String modelName = data.get(i).get("name").toString();
+            lHSBrandNameSingleValues.add(brandName);
+
+            if (lHSBrandNameSingleValues.size() != nCount) {
+                LinkedHashMap<Integer, ArrayList<Integer>> lHMAllIDS = new LinkedHashMap<>();
+                lHMAllIDS.put(brandIDNo, null);
+
+                lHSBrandIDSingleValues.add(brandIDNo);
+                lHMBrandNameWithID.put(brandName, brandIDNo);
+                lHMBrandNameWithIDAndModelID.put(brandName, lHMAllIDS);
+                lHMFormatData.put(brandName, null);
+            }
+
+            alBrandID.add(brandIDNo);
+            alBrandName.add(brandName);
+            alModelName.add(modelName);
+            alModelID.add(modelID);
+            nCount = lHSBrandNameSingleValues.size();
+        }
+
+        //ArrayList<String> alBrandNameExtraction = new ArrayList<>(lHMFormatData.keySet());
+        //organise data by multiple queries and add list of data to particular brandName
+        for (int j = 0; j < alBrandID.size(); j++) {
+            if (lHSBrandIDSingleValues.contains(alBrandID.get(j))) {
+                LinkedHashMap<Integer, ArrayList<Integer>> lHMAllIDS;
+                ArrayList<Integer> alModelIDTmp;
+                //LinkedHashMap<Integer, ArrayList<String>> lHMListOfModelName = new LinkedHashMap<>();
+                String sBrandNameTmp = alBrandName.get(j);
+                String sModelNameTmp = alModelName.get(j);
+                ArrayList<String> alTmp;
+                if (lHMFormatData.get(sBrandNameTmp) == null) {
+                    alTmp = new ArrayList<>();
+                    lHMAllIDS = new LinkedHashMap<>();
+                    alModelIDTmp = new ArrayList<>();
+                }
+                else {
+                    alTmp = new ArrayList<>(lHMFormatData.get(sBrandNameTmp));
+                    //lHMAllIDS = new LinkedHashMap<>();
+                    lHMAllIDS = new LinkedHashMap<>(lHMBrandNameWithIDAndModelID.get(sBrandNameTmp));
+                    alModelIDTmp = new ArrayList<>(lHMAllIDS.get(lHMBrandNameWithID.get(sBrandNameTmp)));
+                }
+                int id = lHMBrandNameWithID.get(sBrandNameTmp);
+                alTmp.add(sModelNameTmp);
+                alModelIDTmp.add(alModelID.get(j));
+                lHMAllIDS.put(id,alModelIDTmp);
+                lHMBrandNameWithIDAndModelID.put(sBrandNameTmp, lHMAllIDS);
+                lHMFormatData.put(sBrandNameTmp, alTmp);
+            }
+        }
     }
 
     /*

@@ -17,6 +17,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+
+import app_utility.MyVehicleAsyncTask;
 
 
 /**
@@ -27,12 +30,19 @@ import java.util.ArrayList;
  * Use the {@link RegisterVehicleFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RegisterVehicleFragment extends Fragment {
+public class RegisterVehicleFragment extends Fragment implements OnFragmentInteractionListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_LIST_MAKE = "ARG_LIST_MAKE";
     private static final String ARG_LIST_MODEL = "ARG_LIST_MODEL";
+
+    LinkedHashMap<String, ArrayList<String>> lHMFormatData;
+    LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID;
+
+    ArrayAdapter<String> adapterVehicle;
+    ArrayAdapter<String> adapterMake;
+    ArrayAdapter<String> adapterModel;
 
     private ArrayList<String> alMake = new ArrayList<>();
     private ArrayList<String> alModel = new ArrayList<>();
@@ -40,7 +50,7 @@ public class RegisterVehicleFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    public static OnFragmentInteractionListener mListener;
 
     EditText etMake, etModel, etRegNo, etYOM;
     Spinner spinnerVehicle, spinnerMake, spinnerModel;
@@ -86,7 +96,11 @@ public class RegisterVehicleFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_register_vehicle, container, false);
+        mListener = this;
         init(view);
+        MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity());
+        myVehicleAsyncTask.execute(String.valueOf(9), "");
+
         //ColorStateList etViewColorStateList = new ColorStateList(editTextStates, editTextColors);
         //etMake.setTextColor(etViewColorStateList);
 
@@ -100,18 +114,18 @@ public class RegisterVehicleFragment extends Fragment {
         etYOM = view.findViewById(R.id.et_yom);
 
         spinnerVehicle= view.findViewById(R.id.spinner_vehicle);
-        ArrayAdapter<String> adapterVehicle = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, getResources()
+        adapterVehicle = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, getResources()
                 .getStringArray(R.array.vehicle_array));
         adapterVehicle.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerVehicle.setAdapter(adapterVehicle);
 
         spinnerMake = view.findViewById(R.id.spinner_make);
-        ArrayAdapter<String> adapterMake = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, alMake);
+        adapterMake = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, alMake);
         adapterMake.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMake.setAdapter(adapterMake);
 
         spinnerModel = view.findViewById(R.id.spinner_model);
-        ArrayAdapter<String> adapterModel = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, alModel);
+        adapterModel = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, alModel);
         adapterModel.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerModel.setAdapter(adapterModel);
 
@@ -149,4 +163,21 @@ public class RegisterVehicleFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onInteraction(String sMessage, int nCase, String sActivityName) {
+
+    }
+
+    @Override
+    public void onRegisterVehicleFragment(String sMessage, int nCase, LinkedHashMap<String, ArrayList<String>> lHMFormatData, LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID) {
+        switch (sMessage){
+            case "REGISTER_DATA":
+                alMake.addAll(lHMFormatData.keySet());
+                adapterMake.notifyDataSetChanged();
+                //ArrayList<String> alModel = new ArrayList<>(lHMFormatData.keySet());
+                this.lHMFormatData = lHMFormatData;
+                this.lHMBrandNameWithIDAndModelID = lHMBrandNameWithIDAndModelID;
+                break;
+        }
+    }
 }

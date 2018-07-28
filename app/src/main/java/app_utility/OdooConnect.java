@@ -117,6 +117,19 @@ public class OdooConnect {
      * @return The fields of matching objects and if have relations with other model returns the name of the relation.
      */
 
+    public List<HashMap<String, Object>> search_read_brands(String model, Object[] conditions, String... fields) {
+        if (fields.length == 0) {
+            Object[] field = {"id"};
+            return search_read_brands(model, 0, 0, conditions, field);
+        }
+        ArrayList<String> field = new ArrayList<String>();
+        for (String par : fields) {
+            field.add(par);
+        }
+        Object[] fieldsL = field.toArray();
+        return search_read_brands(model, 0, 0, conditions, fieldsL);
+    }
+
     public List<HashMap<String, Object>> search_read(String model, Object[] conditions, String... fields) {
         if (fields.length == 0) {
             Object[] field = {"id"};
@@ -213,8 +226,8 @@ public class OdooConnect {
     }
 
     //edited by vijay as per requirement
-    /*@SuppressWarnings("unchecked")
-    private List<HashMap<String, Object>> search_read(String model, final Integer offset,
+    @SuppressWarnings("unchecked")
+    private List<HashMap<String, Object>> search_read_brands(String model, final Integer offset,
                                                       final Integer limit, Object[] conditions,
                                                       final Object[] field) {
         List<HashMap<String, Object>> result = null;
@@ -285,7 +298,7 @@ public class OdooConnect {
             Log.d(CONNECTOR_NAME, e.toString());
         }
         return result;
-    }*/
+    }
 
     /**
      * You can pass new Object[0] to specify an empty list of conditions,

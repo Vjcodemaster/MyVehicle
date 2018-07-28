@@ -133,8 +133,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         /*myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alMakeModel, alRegNo, alYearOfManufacture);
         recyclerView.setAdapter(myVehicleTrackingRVAdapter);*/
 
-        myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
-        myVehicleAsyncTask.execute(String.valueOf(3), "");
+        /*myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
+        myVehicleAsyncTask.execute(String.valueOf(3), "");*/
     }
 
     void init() {
