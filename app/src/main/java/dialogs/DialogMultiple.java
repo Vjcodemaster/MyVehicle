@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.TextInputLayout;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,6 +45,7 @@ public class DialogMultiple implements OnImageUtilsListener{
     private OnImageUtilsListener onImageUtilsListener;
 
     public Dialog dialog;
+    private Button btnDone;
     private TextView tvStartDateValue, tvExpiryDateValue, tvRemainderDateValue, tvTitle;
     //EditText etCustomOne, etCustomTwo, etCustomThree;
     private TextInputLayout etCustomOne, etCustomTwo, etCustomThree;
@@ -84,6 +86,7 @@ public class DialogMultiple implements OnImageUtilsListener{
         tvStartDateValue = dialog.findViewById(R.id.tv_sd_value);
         tvExpiryDateValue = dialog.findViewById(R.id.tv_ed_value);
         tvRemainderDateValue = dialog.findViewById(R.id.tv_rd_value);
+        btnDone = dialog.findViewById(R.id.btn_done);
 
         List<String> hintList;
         switch (nCase){
@@ -204,6 +207,9 @@ public class DialogMultiple implements OnImageUtilsListener{
                         break;
                     case R.id.tv_rd_value:
                         textView = tvRemainderDateValue;
+                        break;
+                    case R.id.btn_done:
+                        dialog.dismiss();
                         break;
                 }
 

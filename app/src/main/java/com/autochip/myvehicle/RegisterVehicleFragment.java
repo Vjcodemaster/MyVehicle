@@ -6,6 +6,7 @@ import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -16,10 +17,15 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import java.sql.Blob;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
+import app_utility.DataBaseHelper;
+import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
+import app_utility.SharedPreferenceClass;
 
 
 /**
@@ -37,12 +43,20 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     private static final String ARG_LIST_MAKE = "ARG_LIST_MAKE";
     private static final String ARG_LIST_MODEL = "ARG_LIST_MODEL";
 
+    SharedPreferenceClass sharedPreferenceClass;
+
+    DatabaseHandler db;
+
+    ArrayList<DataBaseHelper> dbDataHelper;
+
     LinkedHashMap<String, ArrayList<String>> lHMFormatData;
     LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID;
 
     ArrayAdapter<String> adapterVehicle;
     ArrayAdapter<String> adapterMake;
     ArrayAdapter<String> adapterModel;
+
+    boolean isDBUpdated = false;
 
     private ArrayList<String> alMake = new ArrayList<>();
     private ArrayList<String> alModel = new ArrayList<>();
@@ -98,8 +112,18 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         View view = inflater.inflate(R.layout.fragment_register_vehicle, container, false);
         mListener = this;
         init(view);
-        MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity());
-        myVehicleAsyncTask.execute(String.valueOf(9), "");
+
+        if(!sharedPreferenceClass.getFetchedBrandsFromOdooFirstTime()) {
+            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity());
+            myVehicleAsyncTask.execute(String.valueOf(9), "");
+        } else {
+            alMake.addAll(db.getAllBrands());
+            adapterMake.notifyDataSetChanged();
+            /*dbDataHelper = new ArrayList<>(db.getAllBrands());
+            for(int i=0;i<dbDataHelper.size(); i++) {
+                alMake.add(dbDataHelper.get(i).get_brand_name());
+            }*/
+        }
 
         //ColorStateList etViewColorStateList = new ColorStateList(editTextStates, editTextColors);
         //etMake.setTextColor(etViewColorStateList);
@@ -107,17 +131,20 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         return view;
     }
 
-    private void init(View view){
+    private void init(View view) {
+        sharedPreferenceClass = new SharedPreferenceClass(getActivity());
+        db = new DatabaseHandler(getActivity());
         etMake = view.findViewById(R.id.et_make);
         etModel = view.findViewById(R.id.et_model);
         etRegNo = view.findViewById(R.id.et_reg_no);
         etYOM = view.findViewById(R.id.et_yom);
 
-        spinnerVehicle= view.findViewById(R.id.spinner_vehicle);
+        spinnerVehicle = view.findViewById(R.id.spinner_vehicle);
         adapterVehicle = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, getResources()
                 .getStringArray(R.array.vehicle_array));
         adapterVehicle.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerVehicle.setAdapter(adapterVehicle);
+        spinnerVehicle.setSelection(3); //selects 4 wheeler by default
 
         spinnerMake = view.findViewById(R.id.spinner_make);
         adapterMake = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, alMake);
@@ -144,6 +171,44 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int position, long id) {
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+
+        spinnerMake.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int position, long id) {
+                //if (isDBUpdated) {
+                    ArrayList<String> alModelNames = db.getIdForStringTabAll(spinnerMake.getSelectedItem().toString());
+
+                    //dbDataHelper = new ArrayList<>(db.getAllModels(spinnerMake.getSelectedItem().toString()));
+                    //ArrayList<DataBaseHelper> alDataBase = new ArrayList<>(dbDataHelper);
+                    alModel.clear();
+                    if (alModelNames != null) {
+                        alModel.addAll(alModelNames);
+                        adapterModel.notifyDataSetChanged();
+                    }
+                //}
+                /*alModel.clear();
+                alModel.addAll(lHMFormatData.get(spinnerMake.getSelectedItem().toString()));
+                adapterModel.notifyDataSetChanged();*/
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+
+        spinnerModel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int position, long id) {
+
             }
 
             @Override
@@ -151,6 +216,12 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             }
         });
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
 
     @Override
     public void onAttach(Context context) {
@@ -169,14 +240,53 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     }
 
     @Override
-    public void onRegisterVehicleFragment(String sMessage, int nCase, LinkedHashMap<String, ArrayList<String>> lHMFormatData, LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID) {
-        switch (sMessage){
+    public void onRegisterVehicleFragment(String sMessage, int nCase, final LinkedHashMap<String, ArrayList<String>> lHMFormatData, final LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID) {
+        switch (sMessage) {
             case "REGISTER_DATA":
                 alMake.addAll(lHMFormatData.keySet());
                 adapterMake.notifyDataSetChanged();
+
                 //ArrayList<String> alModel = new ArrayList<>(lHMFormatData.keySet());
-                this.lHMFormatData = lHMFormatData;
-                this.lHMBrandNameWithIDAndModelID = lHMBrandNameWithIDAndModelID;
+                //this.lHMFormatData = lHMFormatData;
+                //this.lHMBrandNameWithIDAndModelID = lHMBrandNameWithIDAndModelID;
+
+                /*AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        //can perform the below for loop task here if we want it in background thread
+                        //isDBUpdated = true;
+                    }
+                });*/
+
+                LinkedHashMap<Integer, ArrayList<Integer>> arrayListLinkedHashMap;
+                ArrayList<String> alModelName;
+                StringBuilder sbModelName, sbModelID;
+                String sModelName = null, sModelID = null;
+
+                for (int i = 0; i < alMake.size(); i++) {
+                    String sBrandKey = alMake.get(i);
+                    arrayListLinkedHashMap = new LinkedHashMap<>(lHMBrandNameWithIDAndModelID.get(alMake.get(i)));
+                    ArrayList<Integer> alBrandKey = new ArrayList<>(arrayListLinkedHashMap.keySet());
+                    alModelName = new ArrayList<>(lHMFormatData.get(sBrandKey));
+                    sbModelName = new StringBuilder();
+                    sbModelID = new StringBuilder();
+                    for (int j = 0; j < alModelName.size(); j++) {
+                        //LinkedHashMap<Integer, ArrayList<Integer>> lHMAllIDS = new LinkedHashMap<>(arrayListLinkedHashMap);
+                        sbModelName.append(alModelName.get(j));
+                        if (j < alModelName.size() - 1)
+                            sbModelName.append(",");
+                        sModelName = sbModelName.toString();
+
+                        ArrayList<Integer> alModelID = new ArrayList<>(arrayListLinkedHashMap.get(alBrandKey.get(0)));
+                        sbModelID.append(alModelID.get(j));
+                        if (j < alModelName.size() - 1)
+                            sbModelID.append(",");
+                        sModelID = sbModelID.toString();
+                        //db.updateMultipleData(new DataBaseHelper(alModelName.get(j), nID), sBrandKey);
+                    }
+                    db.addData(new DataBaseHelper(sBrandKey, String.valueOf(alBrandKey.get(0)), sModelName, sModelID));
+                }
+                sharedPreferenceClass.setFetchedBrandsFromOdooFirstTime(true);
                 break;
         }
     }
