@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -15,6 +14,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -32,7 +32,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     Menu menu;
     View popupView;
     String sBackStackParent;
-    private TextView tvTitle, tvSubtitle;
+    private TextView tvTitle, tvSubtitle, tvUpdate;
     private View viewActionBar;
 
     VehicleDataStorage vehicleDataStorage;
@@ -147,6 +146,9 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         tvSubtitle = viewActionBar.findViewById(R.id.tv_actionbar_navigation);
         tvSubtitle.setText(R.string.title_insurance);
+
+        tvUpdate = viewActionBar.findViewById(R.id.toolbar_tv_update);
+
 
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -304,29 +306,26 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 view = findViewById(R.id.action_add);
                 show(view, findViewById(R.id.container));
 
+                //30-07
+                view.setVisibility(View.GONE);
+                tvUpdate.setVisibility(View.VISIBLE);
+
                 navigation.setVisibility(View.VISIBLE);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /*@Override
+    @Override
     public void onBackPressed() {
         int size = getSupportFragmentManager().getFragments().size();
-        FragmentManager fm = getSupportFragmentManager();
-        *//*if (getSupportFragmentManager().getFragments().size() > 1) {
-
-            //for(int i=0; i<size; i++){
-            //Fragment fragment = fm.getFragments().get(size-1).getTag();
-            //}
-            fm.popBackStackImmediate();
-            fm.popBackStack(fm.getFragments().get(size - 1).getTag(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        } else if (getSupportFragmentManager().getFragments().size() == 1) {
-            fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        } else {
-            super.onBackPressed();
-        }*//*
-    }*/
+        if (size == 1) {
+            View view = findViewById(R.id.action_add);
+            tvUpdate.setVisibility(View.GONE);
+            view.setVisibility(View.VISIBLE);
+        }
+        super.onBackPressed();
+    }
 
     /*
      To reveal a previously invisible view using this effect:
@@ -573,7 +572,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         }
     }
 
-    class VehicleDataStorage{
+    class VehicleDataStorage {
         ArrayList<Integer> alID = new ArrayList<>();
         ArrayList<String> alModelID = new ArrayList<>();
         ArrayList<Integer> alModelIDNo = new ArrayList<>();

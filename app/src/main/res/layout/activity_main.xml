@@ -48,6 +48,16 @@
                 android:layout_height="match_parent"
                 android:scrollbars="vertical" />
 
+            <!--<Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorAccent"
+                android:layout_gravity="bottom|center"
+                android:textStyle="bold"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:background="?android:selectableItemBackground"
+                android:text="@string/update"/>-->
+
         </FrameLayout>
 
         <android.support.design.widget.BottomNavigationView
@@ -57,5 +67,8 @@
             android:layout_gravity="bottom"
             android:background="?android:attr/windowBackground"
             app:menu="@menu/navigation" />
+
+
     </FrameLayout>
+
 </LinearLayout>
