@@ -40,6 +40,10 @@ public class SharedPreferenceClass {
 
     private static final String IS_BRAND_FETCHED_FROM_ODOO = "IS_BRAND_FETCHED_FROM_ODOO";
 
+    private static final String INSURANCE_DATA = "INSURANCE_DATA";
+
+    private static final String EMISSION_DATA = "EMISSION_DATA";
+
     // Constructor
     public SharedPreferenceClass(Context context) {
         this._context = context;
@@ -59,6 +63,30 @@ public class SharedPreferenceClass {
 
     public boolean getFetchedBrandsFromOdooFirstTime() {
         return sharedPreferences.getBoolean(IS_BRAND_FETCHED_FROM_ODOO, false);
+    }
+
+    public void setInsuranceData(String sInsurance){
+        SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
+        SharedPreferences.Editor editor;
+        editor = sharedPreferences.edit();
+        editor.putString(INSURANCE_DATA, sInsurance);
+        editor.apply();
+    }
+
+    public String getInsuranceData() {
+        return sharedPreferences.getString(INSURANCE_DATA, "");
+    }
+
+    public void setEmissionData(String sEmission){
+        SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
+        SharedPreferences.Editor editor;
+        editor = sharedPreferences.edit();
+        editor.putString(EMISSION_DATA, sEmission);
+        editor.apply();
+    }
+
+    public String getEmissionData() {
+        return sharedPreferences.getString(EMISSION_DATA, "");
     }
 
     public void setUserLogStatus(boolean isLoggedIn, String name, String number){

@@ -2,7 +2,6 @@ package com.autochip.myvehicle;
 
 import android.animation.Animator;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -11,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -107,8 +104,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         vehicleDataStorage = new VehicleDataStorage();
 
-        MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
-        myVehicleAsyncTask.execute(String.valueOf(1), "");
+        /*MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
+        myVehicleAsyncTask.execute(String.valueOf(1), "");*/
 
         init();
 
@@ -149,6 +146,17 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         tvUpdate = viewActionBar.findViewById(R.id.toolbar_tv_update);
 
+        tvUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View addView = findViewById(R.id.action_add);
+                tvUpdate.setVisibility(View.GONE);
+                addView.setVisibility(View.VISIBLE);
+                FragmentManager fm = getSupportFragmentManager();
+                fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+        });
+
 
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -163,20 +171,20 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         getSupportActionBar().setDisplayShowCustomEnabled(true);
 
         //mTextMessage = findViewById(R.id.message);
-        navigation = findViewById(R.id.navigation);
+        /*navigation = findViewById(R.id.navigation);
         ColorStateList navigationViewColorStateList = new ColorStateList(states, colors);
         navigation.setItemIconTintList(navigationViewColorStateList);
         navigation.setItemTextColor(navigationViewColorStateList);
-        navigation.setVisibility(View.GONE);
+        navigation.setVisibility(View.GONE);*/
         //navigation.getMenu().getItem(0).setCheckable(false);
 
-        setUpBottomNavigationContent(navigation);
+        //setUpBottomNavigationContent(navigation);
 
         /*
         we will use the height of bottom navigation view to set as margin for insuranceFragment floating button.
         its height is sent via bundle
          */
-        ViewTreeObserver viewTreeObserver = navigation.getViewTreeObserver();
+        /*ViewTreeObserver viewTreeObserver = navigation.getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -187,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                     //viewWidth = view.getWidth();
                 }
             });
-        }
+        }*/
         //navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         recyclerView = findViewById(R.id.rv_vehicle_list);
@@ -196,10 +204,9 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         recyclerView.setLayoutManager(mLinearLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(MainActivity.this, DividerItemDecoration.VERTICAL));
         recyclerView.setHasFixedSize(true);
-
     }
 
-    private void setUpBottomNavigationContent(final BottomNavigationView navigationView) {
+    /*private void setUpBottomNavigationContent(final BottomNavigationView navigationView) {
 
         //String backStateName;
 
@@ -208,6 +215,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
             FragmentTransaction transaction;
             //Bundle bundle;
             String sBackStack = "";
+            Bundle bundle;
+
             //int nMenuVisibility;
             //boolean isFragmentVisible;
             View view;
@@ -217,6 +226,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 switch (item.getItemId()) {
                     case R.id.navigation_register:
                         //item.setCheckable(true);
+
+                        //commented frm here 31-07
                         view = findViewById(R.id.navigation_register);
                         item.setChecked(true);
                         newFragment = RegisterVehicleFragment.newInstance("", "");
@@ -258,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 }
                 //FragmentManager fm = getSupportFragmentManager();
                 if (newFragment != null && !newFragment.isVisible()) {
+                    newFragment.setArguments(bundle);
                     transaction = getSupportFragmentManager().beginTransaction();
 
                     //this is extra line added for smoother animation and reveal effects. not sure why replace is helping it.
@@ -269,13 +281,13 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                     transaction.commit();
                     show(view, findViewById(R.id.container));
                 }
-                /*if(fm.getFragments().size()>1){
+                *//*if(fm.getFragments().size()>1){
                     getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryAt(0).getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                }*/
+                }*//*
                 return false;
             }
         });
-    }
+    }*/
 
 
     @Override
@@ -294,10 +306,14 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 //startCircularReveal(findViewById(R.id.action_add));
                 Fragment newFragment;
                 FragmentTransaction transaction;
-                newFragment = RegisterVehicleFragment.newInstance("", "");
+                Bundle bundle = new Bundle();
+                bundle.putInt("index", 0);
+                newFragment = new RegisterFragment();
+                newFragment.setArguments(bundle);
+
+                //newFragment = RegisterVehicleFragment.newInstance("", "");
                 sBackStackParent = newFragment.getClass().getName();
                 transaction = getSupportFragmentManager().beginTransaction();
-
                 transaction.setCustomAnimations(R.anim.t2b, R.anim.b2t);
                 transaction.replace(R.id.container, newFragment, null);
                 transaction.addToBackStack(null);
@@ -309,8 +325,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 //30-07
                 view.setVisibility(View.GONE);
                 tvUpdate.setVisibility(View.VISIBLE);
-
-                navigation.setVisibility(View.VISIBLE);
+                tvSubtitle.setText(R.string.register);
+                //navigation.setVisibility(View.VISIBLE);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -417,8 +433,6 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         } else {
             stopProgressBar();
         }
-
-
     }
 
     private void saveFileAsBitmap(Uri selectedImageUri) {
@@ -481,6 +495,9 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 break;
             case "FILE_URI":
                 this.outputFileUri = outputFileUri;
+                break;
+            default:
+
                 break;
         }
     }

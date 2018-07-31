@@ -9,13 +9,16 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.sql.Blob;
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import java.util.LinkedHashMap;
 import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
+import app_utility.OnSwipeTouchListener;
 import app_utility.SharedPreferenceClass;
 
 
@@ -131,6 +135,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         return view;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void init(View view) {
         sharedPreferenceClass = new SharedPreferenceClass(getActivity());
         db = new DatabaseHandler(getActivity());
@@ -139,12 +144,23 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         etRegNo = view.findViewById(R.id.et_reg_no);
         etYOM = view.findViewById(R.id.et_yom);
 
+        //below code was implemented to listen for swipe. it was working fine
+        /*LinearLayout llParentSwipe = view.findViewById(R.id.ll_parent_register);
+
+        llParentSwipe.setOnTouchListener(new OnSwipeTouchListener(getActivity()){
+            @Override
+            public void onSwipeLeft() {
+                MainActivity.homeInterfaceListener.onHomeCalled("LEFT_SWIPE", 1, this.getClass().getName(), null);
+                //Toast.makeText(getActivity(), "left", Toast.LENGTH_SHORT).show();
+            }
+        });*/
+
         spinnerVehicle = view.findViewById(R.id.spinner_vehicle);
         adapterVehicle = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, getResources()
                 .getStringArray(R.array.vehicle_array));
         adapterVehicle.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerVehicle.setAdapter(adapterVehicle);
-        spinnerVehicle.setSelection(3); //selects 4 wheeler by default
+        spinnerVehicle.setSelection(2); //selects 4 wheeler by default
 
         spinnerMake = view.findViewById(R.id.spinner_make);
         adapterMake = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, alMake);
@@ -208,13 +224,52 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int position, long id) {
-
+                prepareForUpdate();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
+    }
+
+
+    private void prepareForUpdate(){
+        //int sBrandID = spinnerMake.getSelectedItemPosition();
+        String sBrandName = spinnerMake.getSelectedItem().toString();
+        int brandID = db.getBrandIDFromString(sBrandName);
+
+        int sModelPosition = spinnerMake.getSelectedItemPosition();
+        int ModelID = db.getModelIDFromSelectedModelName(sBrandName, sModelPosition);
+
+        String InsuranceData = sharedPreferenceClass.getInsuranceData();
+
+        /*if(!TextUtils.isEmpty(InsuranceData)) {
+            String insuranceNo = InsuranceData.split(",")[0];
+            String insuranceVendor = InsuranceData.split(",")[1];
+            String insuranceStartDate = InsuranceData.split(",")[2];
+            String insuranceExpiryDate = InsuranceData.split(",")[3];
+            String insuranceRemainderDate = InsuranceData.split(",")[4];
+        }*/
+
+        String EmissionData = sharedPreferenceClass.getEmissionData();
+        /*if(!TextUtils.isEmpty(InsuranceData)) {
+            String emissionNo = EmissionData.split(",")[0];
+            String emissionVendor = EmissionData.split(",")[1];
+            String emissionStartDate = EmissionData.split(",")[2];
+            String emissionExpiryDate = EmissionData.split(",")[3];
+            String emissionRemainderDate = EmissionData.split(",")[4];
+        }*/
+
+        String sModelName = spinnerModel.getSelectedItem().toString().trim();
+
+        String sRegNo = etRegNo.getText().toString();
+
+        int sManufactureYear = Integer.valueOf(etYOM.getText().toString().trim());
+
+        MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, sModelName, sRegNo, sManufactureYear);
+        myVehicleAsyncTask.execute(String.valueOf(5), "");
+
     }
 
     @Override

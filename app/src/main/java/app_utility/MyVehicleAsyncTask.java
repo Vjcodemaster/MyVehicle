@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -56,6 +57,9 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
     HashMap<String, Object> value = new HashMap<>();
 
+    String sBrandName,  InsuranceData, EmissionData, sModelName, sRegNo;
+    int brandID, ModelID, sManufactureYear;
+
     private LinkedHashMap<String, ArrayList<String>> lHMFormatData;
     //use this for future delete, edit tasks
     private LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID;
@@ -71,6 +75,19 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
+    }
+
+    public MyVehicleAsyncTask(Activity aActivity, String sBrandName, int brandID,int ModelID, String InsuranceData, String EmissionData,
+                              String sModelName, String sRegNo,int sManufactureYear) {
+        this.aActivity = aActivity;
+        this.sBrandName = sBrandName;
+        this.brandID = brandID;
+        this.ModelID = ModelID;
+        this.InsuranceData = InsuranceData;
+        this.EmissionData = EmissionData;
+        this.sModelName = sModelName;
+        this.sRegNo = sRegNo;
+        this.sManufactureYear = sManufactureYear;
     }
 
     /*public MyVehicleAsyncTask(Activity aActivity, AsyncInterface asyncInterface) {
@@ -256,10 +273,26 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
         try {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
-
+            String insuranceNo, insuranceVendor, insuranceStartDate, insuranceExpiryDate, insuranceRemainderDate;
+            String emissionNo, emissionVendor, emissionStartDate, emissionExpiryDate, emissionRemainderDate;
 
             object.put("model_month", 1);
             object.put("model_year", 2018);
+
+            if(!TextUtils.isEmpty(InsuranceData)) {
+                insuranceNo = InsuranceData.split(",")[0];
+                insuranceVendor = InsuranceData.split(",")[1];
+                insuranceStartDate = InsuranceData.split(",")[2];
+                insuranceExpiryDate = InsuranceData.split(",")[3];
+                insuranceRemainderDate = InsuranceData.split(",")[4];
+            }
+            if(!TextUtils.isEmpty(InsuranceData)) {
+                emissionNo = EmissionData.split(",")[0];
+                emissionVendor = EmissionData.split(",")[1];
+                emissionStartDate = EmissionData.split(",")[2];
+                emissionExpiryDate = EmissionData.split(",")[3];
+                emissionRemainderDate = EmissionData.split(",")[4];
+            }
 
             //int partner_id= Many2one.getMany2One(object, "model_id").getId();
             /*@SuppressWarnings("unchecked")

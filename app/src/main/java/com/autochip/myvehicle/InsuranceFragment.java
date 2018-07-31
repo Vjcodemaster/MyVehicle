@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,7 +49,7 @@ import static com.autochip.myvehicle.MainActivity.mBitmapCompressListener;
  * Use the {@link InsuranceFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class InsuranceFragment extends Fragment {
+public class InsuranceFragment extends Fragment implements OnFragmentInteractionListener{
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -60,7 +61,7 @@ public class InsuranceFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private int viewHeight;
+    private int viewHeight = 0;
     File sdImageMainDirectory;
 
     Dialog dialog;
@@ -70,8 +71,10 @@ public class InsuranceFragment extends Fragment {
 
     FloatingActionButton fab;
     TableLayout tlPolicy;
+    TableRow row;
+    LayoutInflater layoutInflater;
 
-    private OnFragmentInteractionListener mListener;
+    public static OnFragmentInteractionListener mListener;
     DialogMultiple dialogMultiple;
 
     private CircularProgressBar circularProgressBar;
@@ -102,17 +105,30 @@ public class InsuranceFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //mBitmapCompressListener = this;
+        mListener= this;
         circularProgressBar = new CircularProgressBar(getActivity(), false);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-            viewHeight = Integer.valueOf(mParam1);
+            //viewHeight = Integer.valueOf(mParam1);
         }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser) {
+            dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
+        }/* else {
+            checkAndHide();
+        }*/
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        layoutInflater = inflater;
         View view = inflater.inflate(R.layout.fragment_insurance, container, false);
         tlPolicy = view.findViewById(R.id.tl_policy);
         fab = view.findViewById(R.id.fab);
@@ -120,8 +136,8 @@ public class InsuranceFragment extends Fragment {
         params.bottomMargin = viewHeight + 6;
         fab.setLayoutParams(params);
 
-        //initAddDialog();
-        dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
+        //this statement is written in setUserVisible Hint because this dialog should be created only when fragment is visible to user
+        //dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,7 +157,7 @@ public class InsuranceFragment extends Fragment {
 
         for (int i = 0; i < 5; i++) {
             //LayoutInflater trInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            TableRow row = (TableRow) inflater.inflate(R.layout.table_row, null);
+            row = (TableRow) inflater.inflate(R.layout.table_row, null);
             row.setTag(i);
             tlPolicy.addView(row, i);
         }
@@ -379,6 +395,35 @@ public class InsuranceFragment extends Fragment {
     private void stopProgressBar() {
         if (circularProgressBar != null && circularProgressBar.isShowing())
             circularProgressBar.dismiss();
+    }
+
+    @Override
+    public void onInteraction(String sMessage, int nCase, String sActivityName) {
+        switch (sMessage){
+            case "UPDATE_TABLE_ROW":
+                String[] saData = sActivityName.split(",");
+                int count = tlPolicy.getChildCount();
+                row = (TableRow) layoutInflater.inflate(R.layout.table_row, null);
+                TextView tvSlNo = row.getChildAt(0).findViewById(R.id.tv_table_row_1);
+                TextView tvInsuranceNo = row.getChildAt(1).findViewById(R.id.tv_table_row_2);
+                TextView tvInsuranceProvider = row.getChildAt(2).findViewById(R.id.tv_table_row_3);
+                TextView tvStartDate = row.getChildAt(3).findViewById(R.id.tv_table_row_4);
+                TextView tvExpiryDate = row.getChildAt(4).findViewById(R.id.tv_table_row_5);
+                TextView tvRemainderDate = row.getChildAt(5).findViewById(R.id.tv_table_row_6);
+                tvSlNo.setText(String.valueOf(count));
+                tvInsuranceNo.setText(saData[0]);
+                tvInsuranceProvider.setText(saData[1]);
+                tvStartDate.setText(saData[2]);
+                tvExpiryDate.setText(saData[3]);
+                tvRemainderDate.setText(saData[4]);
+                tlPolicy.addView(row);
+                break;
+        }
+    }
+
+    @Override
+    public void onRegisterVehicleFragment(String sMessage, int nCase, LinkedHashMap<String, ArrayList<String>> lHMFormatData, LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID) {
+
     }
     /*private void uriImageToCompressedBitmap(Uri selectedImageUri) {
         InputStream imageStream = null;

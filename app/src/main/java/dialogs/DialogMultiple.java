@@ -8,11 +8,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +23,10 @@ import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.autochip.myvehicle.EmissionFragment;
+import com.autochip.myvehicle.InsuranceFragment;
 import com.autochip.myvehicle.MainActivity;
 import com.autochip.myvehicle.OnImageUtilsListener;
 import com.autochip.myvehicle.R;
@@ -30,17 +36,22 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import app_utility.SharedPreferenceClass;
 
 import static com.autochip.myvehicle.MainActivity.PICTURE_REQUEST_CODE;
 
 
-public class DialogMultiple implements OnImageUtilsListener{
+public class DialogMultiple implements OnImageUtilsListener {
     private Activity aActivity;
     private File sdImageMainDirectory;
 
     public static OnImageUtilsListener mListener;
+
+    DialogDataStorage dataStorage;
 
     private OnImageUtilsListener onImageUtilsListener;
 
@@ -54,10 +65,12 @@ public class DialogMultiple implements OnImageUtilsListener{
     private Uri outputFileUri;
     private ImageView ivPreview;
 
+    SharedPreferenceClass sharedPreferenceClass;
+
     TextView tvStartDate;
     TextView tvExpiryDate;
     TextView tvRemainderDate;
-    private int nCase;
+    int nCase;
 
 
     public DialogMultiple(Activity aActivity, int nCase, OnImageUtilsListener onImageUtilsListener) {
@@ -67,8 +80,9 @@ public class DialogMultiple implements OnImageUtilsListener{
         this.onImageUtilsListener = onImageUtilsListener;
     }
 
-    private void onCreate(int nCase) {
+    private void onCreate(final int nCase) {
         mListener = this;
+        sharedPreferenceClass = new SharedPreferenceClass(aActivity);
         dialog = new android.app.Dialog(aActivity, R.style.CustomDialogTheme90);
         dialog.setContentView(R.layout.dialog_add_allinone);
         dialog.setCancelable(true);
@@ -88,8 +102,16 @@ public class DialogMultiple implements OnImageUtilsListener{
         tvRemainderDateValue = dialog.findViewById(R.id.tv_rd_value);
         btnDone = dialog.findViewById(R.id.btn_done);
 
+        btnDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dataStorage = new DialogDataStorage(nCase);
+
+            }
+        });
+
         List<String> hintList;
-        switch (nCase){
+        switch (nCase) {
             case 1: //Insurance
                 hintList = Arrays.asList(aActivity.getResources().getStringArray(R.array.insurance_array));
                 etCustomThree.setVisibility(View.GONE);
@@ -208,9 +230,9 @@ public class DialogMultiple implements OnImageUtilsListener{
                     case R.id.tv_rd_value:
                         textView = tvRemainderDateValue;
                         break;
-                    case R.id.btn_done:
+                    /*case R.id.btn_done:
                         dialog.dismiss();
-                        break;
+                        break;*/
                 }
 
                 DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -248,10 +270,25 @@ public class DialogMultiple implements OnImageUtilsListener{
         });
     }
 
+    //checks for required fields and information that is filled by user
+    private boolean validateInfo(String info, int totalFields) {
+        String[] saVerify = info.split(",");
+        if(saVerify.length == totalFields) {
+            for (int i = 1; i < saVerify.length; i++) {
+                if (TextUtils.isEmpty(saVerify[i])) {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+        return true;
+    }
+
     private void updateLabel(TextView textView) {
         llDate.setGravity(Gravity.END);
         llDateValue.setVisibility(View.VISIBLE);
-        String myFormat = "MM/dd/yy"; //In which you need put here
+        String myFormat = "dd/MM/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         textView.setText(sdf.format(myCalendar.getTime()));
@@ -259,7 +296,7 @@ public class DialogMultiple implements OnImageUtilsListener{
 
     private void openImageIntent() {
         //onImageUtilsListener.onBitmapCompressed("SHOW_PROGRESS_BAR",1,null, null, null);
-        MainActivity.homeInterfaceListener.onHomeCalled("SHOW_PROGRESS_BAR",nCase,null, null);
+        MainActivity.homeInterfaceListener.onHomeCalled("SHOW_PROGRESS_BAR", nCase, null, null);
 
         // Determine Uri of camera image to save.
         final File root = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + "Android/data/" + File.separator + aActivity.getPackageName() + File.separator);
@@ -292,18 +329,91 @@ public class DialogMultiple implements OnImageUtilsListener{
 
         // Add the camera options.
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[]{}));
-        MainActivity.homeInterfaceListener.onHomeCalled("FILE_URI",nCase,null, outputFileUri);
+        MainActivity.homeInterfaceListener.onHomeCalled("FILE_URI", nCase, null, outputFileUri);
         aActivity.startActivityForResult(chooserIntent, PICTURE_REQUEST_CODE);
         //onImageUtilsListener.onBitmapCompressed("START_ACTIVITY_FOR_RESULT",1,null, chooserIntent, outputFileUri);
     }
 
     @Override
     public void onBitmapCompressed(String sMessage, int nCase, Bitmap bitmap, Intent intent, Uri outputFileUri) {
-        switch (sMessage){
+        switch (sMessage) {
             case "SET_BITMAP":
                 ivPreview.setImageBitmap(bitmap);
                 break;
         }
 
+    }
+
+    class DialogDataStorage {
+
+        private DialogDataStorage(int type) {
+            storeTask(type);
+        }
+
+        //insurance related
+        String sInsuranceDocNo;
+        String sVendorName;
+        String insuranceStartDate;
+        String insuranceEndDate;
+        String insuranceRemainderDate;
+        Bitmap bitmapInsurance;
+
+        //Emission related
+        String sEmissionDocNo;
+        String sAgencyName;
+        String emissionStartDate;
+        String emissionEndDate;
+        String emissionRemainderDate;
+        Bitmap bitmapEmission;
+
+        void storeTask(int nType) {
+            StringBuilder sb;
+            switch (nType) {
+                case 1:
+                    sb = new StringBuilder();
+                    sInsuranceDocNo = etCustomOne.getEditText().getText().toString();
+                    sb.append(sInsuranceDocNo).append(",");
+                    sVendorName = etCustomTwo.getEditText().getText().toString();
+                    sb.append(sVendorName).append(",");
+                    insuranceStartDate = tvStartDateValue.getText().toString();
+                    sb.append(insuranceStartDate).append(",");
+                    insuranceEndDate = tvExpiryDateValue.getText().toString();
+                    sb.append(insuranceEndDate).append(",");
+                    insuranceRemainderDate = tvRemainderDateValue.getText().toString();
+                    sb.append(insuranceRemainderDate);
+
+                    if (validateInfo(sb.toString().trim(), 5)) {
+                        sharedPreferenceClass.setInsuranceData(sb.toString());
+                        InsuranceFragment.mListener.onInteraction("UPDATE_TABLE_ROW", nType, sb.toString());
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(aActivity, "Please fill all the information", Toast.LENGTH_SHORT).show();
+                    }
+                    //bitmapInsurance =((BitmapDrawable)ivPreview.getDrawable()).getBitmap();
+                    break;
+                case 2:
+                    sb = new StringBuilder();
+                    sEmissionDocNo = etCustomOne.getEditText().getText().toString();
+                    sb.append(sEmissionDocNo).append(",");
+                    sAgencyName = etCustomTwo.getEditText().getText().toString();
+                    sb.append(sAgencyName).append(",");
+                    emissionStartDate = tvStartDateValue.getText().toString();
+                    sb.append(emissionStartDate).append(",");
+                    emissionEndDate = tvExpiryDateValue.getText().toString();
+                    sb.append(emissionEndDate).append(",");
+                    emissionRemainderDate = tvRemainderDateValue.getText().toString();
+                    sb.append(emissionRemainderDate);
+
+                    if (validateInfo(sb.toString().trim(), 5)) {
+                        sharedPreferenceClass.setEmissionData(sb.toString());
+                        EmissionFragment.mListener.onInteraction("UPDATE_TABLE_ROW", nType, sb.toString());
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(aActivity, "Please fill all the information", Toast.LENGTH_SHORT).show();
+                    }
+                    //bitmapEmission =((BitmapDrawable)ivPreview.getDrawable()).getBitmap();
+                    break;
+            }
+        }
     }
 }

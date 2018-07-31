@@ -25,6 +25,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //DataBaseHelper table name (2nd table for all tab)
     private static final String REGISTER_TABLE = "REGISTER_TABLE";
 
+    private static final String INSURANCE_TABLE = "INSURANCE_TABLE";
+
+    private static final String EMISSION_TABLE = "EMISSION_TABLE";
+
+    private static final String RC_FC_TABLE = "RC_FC_TABLE";
+
+    private static final String SERVICE_HISTORY_TABLE = "SERVICE_TABLE";
+
     //recyclerManager Table Columns names
     private static final String KEY_ID = "_id";
     private static final String KEY_TAGID = "tag_id";
@@ -75,6 +83,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_RSSI + " TEXT)";*/
 
         String CREATE_TABLE_BRANDS = "CREATE TABLE " + REGISTER_TABLE + "("
+                + KEY_BRAND_NAME + " TEXT PRIMARY KEY, "
+                + KEY_BRAND_ID + " TEXT, "
+                + KEY_MODEL_NAME + " TEXT, "
+                + KEY_MODEL_ID + " TEXT)";
+
+        String CREATE_TABLE_INSURANCE = "CREATE TABLE " + REGISTER_TABLE + "("
                 + KEY_BRAND_NAME + " TEXT PRIMARY KEY, "
                 + KEY_BRAND_ID + " TEXT, "
                 + KEY_MODEL_NAME + " TEXT, "
@@ -133,7 +147,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }*/
 
     /*
-    this returns the modelName or modelID using Brand Name has key in a arrayList format
+    this returns the modelName or modelID using Brand Name as key in a arrayList format
      */
     public ArrayList<String> getIdForStringTabAll(String str) {
         ArrayList<String> alData = new ArrayList<>();
@@ -154,6 +168,52 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.close();
         }
         return alData;
+    }
+
+    public int getModelIDFromSelectedModelName(String str, int position) {
+        //ArrayList<String> alData = new ArrayList<>();
+        String res;
+        int ID = 9595959;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(REGISTER_TABLE, new String[]{KEY_MODEL_ID,
+                }, KEY_BRAND_NAME + "=?",
+                new String[]{str}, null, null, null, null);
+        if ((cursor != null) && (cursor.getCount() > 0)) {
+            cursor.moveToFirst();
+            res = cursor.getString(cursor.getColumnIndex(KEY_MODEL_ID));
+            String[] saData = res.split(",");
+            ID = Integer.valueOf(saData[position]);
+            //alData.addAll(Arrays.asList(saData));
+        } else {
+            //alData = null;
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return ID;
+    }
+
+    public int getBrandIDFromString(String str) {
+        //ArrayList<String> alData = new ArrayList<>();
+        String res;
+        int ID = 9595959;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(REGISTER_TABLE, new String[]{KEY_BRAND_ID,
+                }, KEY_BRAND_NAME + "=?",
+                new String[]{str}, null, null, null, null);
+        if ((cursor != null) && (cursor.getCount() > 0)) {
+            cursor.moveToFirst();
+            res = cursor.getString(cursor.getColumnIndex(KEY_BRAND_ID));
+            //String[] saData = res.split(",");
+            ID = Integer.valueOf(res);
+            //alData.addAll(Arrays.asList(saData));
+        } else {
+            //alData = null;
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return ID;
     }
     /*public int getIdForStringRecentTab(String str) {
         int res;
