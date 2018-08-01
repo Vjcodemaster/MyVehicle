@@ -49,6 +49,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     @SuppressLint("StaticFieldLeak")
     private Activity aActivity;
     private String res = "";
+    private int createdId = -1;
     private Boolean isConnected = false;
     private String sMsgResult;
     int type;
@@ -67,6 +68,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID;
     //private AsyncInterface asyncInterface;
 
+    int deletedPosition;
+
     ArrayList<Integer> alID = new ArrayList<>();
     ArrayList<String> alModelID = new ArrayList<>();
     ArrayList<Integer> alModelIDNo = new ArrayList<>();
@@ -81,6 +84,10 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
+    }
+
+    public MyVehicleAsyncTask(Context context) {
+        this.context = context;
     }
 
     public MyVehicleAsyncTask(Activity aActivity, String sBrandName, int brandID, int ModelID, String InsuranceData, String EmissionData,
@@ -137,7 +144,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 updateOne2Many(9);
                 break;
             case 7:
-                delete(9);
+                delete(Integer.valueOf(params[1]));
+                deletedPosition = Integer.valueOf(params[2]); //this is the position of the data that should be deleted
                 break;
             case 8:
                 readBrandTask();
@@ -199,7 +207,13 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 }*/
                 break;
             case 5:
+                String saAddedData;
+                saAddedData = String.valueOf(createdId) + "," + sModelName + "," + sRegNo + "," + sManufactureYear;
+                MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("ADDED_NEW_DATA", type, type, saAddedData);
                 Toast.makeText(aActivity, "Vehicle Registered", Toast.LENGTH_LONG).show();
+                break;
+            case 7:
+                MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("REMOVE_POSITION", type, deletedPosition, "");
                 break;
             case 9:
                 RegisterVehicleFragment.mListener.onRegisterVehicleFragment("REGISTER_DATA", type, lHMFormatData, lHMBrandNameWithIDAndModelID);
@@ -360,12 +374,12 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             @SuppressWarnings("unchecked") final Integer idC = oc.create("fleet.vehicle", new HashMap() {{
                 put("model_id", ModelID);
                 put("license_plate", sRegNo);
-                put("odometer", 15);
+                //put("odometer", 15);
                 put("model_year", sManufactureYear);
                 put("model_month", 10);
                 //put("insurance_ids", insuranceID);
             }});
-
+            createdId = idC;
             String[] saModelNames = {MODEL_INSURANCE_HISTORY, MODEL_EMISSION_HISTORY};
 
             createOne2Many(saModelNames, "insurance.history", idC);
@@ -684,7 +698,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
     public void delete(int id) {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
-        Boolean idC = oc.unlink("web.service.child", new Object[]{id});
+        //Boolean idC = oc.unlink("web.service.child", new Object[]{id});
+        Boolean idC = oc.unlink("fleet.vehicle", new Object[]{id});
     }
 
     /*private List<HashMap<String, Object>> search_read(String model, final Integer offset,

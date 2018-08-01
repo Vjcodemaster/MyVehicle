@@ -29,6 +29,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -543,9 +544,33 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 vehicleDataStorage.alLicensePlate = alLicensePlate;
                 vehicleDataStorage.hsModelIDSingleValues = hsModelIDSingleValues;
 
-                myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alModelID, alLicensePlate, alModelYear);
+                myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alID, alModelID, alLicensePlate, alModelYear);
                 recyclerView.setAdapter(myVehicleTrackingRVAdapter);
 
+                break;
+        }
+    }
+
+    @Override
+    public void onAsyncTaskCompleteGeneral(String sMessage, int nCase, int position, String sData) {
+        switch (sMessage){
+            case "REMOVE_POSITION":
+                vehicleDataStorage.alID.remove(position);
+                vehicleDataStorage.alModelID.remove(position);
+                vehicleDataStorage.alLicensePlate.remove(position);
+                vehicleDataStorage.alModelYear.remove(position);
+
+                myVehicleTrackingRVAdapter.notifyItemRemoved(position);
+                Toast.makeText(MainActivity.this, "Removed selected vehicle permanently", Toast.LENGTH_LONG).show();
+                break;
+            case "ADDED_NEW_DATA":
+                String[] saAddedData = sData.split(",");
+                vehicleDataStorage.alID.add(Integer.valueOf(saAddedData[0]));
+                vehicleDataStorage.alModelID.add(saAddedData[1]);
+                vehicleDataStorage.alLicensePlate.add(saAddedData[2]);
+                vehicleDataStorage.alModelYear.add(saAddedData[3]);
+
+                myVehicleTrackingRVAdapter.notifyItemInserted(vehicleDataStorage.alID.size()-1);
                 break;
         }
     }

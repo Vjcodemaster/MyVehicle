@@ -18,6 +18,8 @@
 
     <string name="done">Done</string>
     <string name="update">Update</string>
+    <string name="edit">Edit</string>
+    <string name="remove">Remove</string>
 
     <string-array name="vehicle_array">
         <item>2 wheeler</item>

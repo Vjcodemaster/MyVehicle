@@ -254,7 +254,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
 
         String EmissionData = sharedPreferenceClass.getEmissionData();
 
-        //String sModelName = spinnerModel.getSelectedItem().toString().trim();
+        String sModelName = saVehicleInfo[4];
 
         String sRegNo = etRegNo.getText().toString().trim();
 
@@ -263,7 +263,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             saveOnDetachFlag = 1;
         } else {
             int sManufactureYear = Integer.valueOf(etYOM.getText().toString().trim());
-            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, "", sRegNo, sManufactureYear);
+            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, sModelName, sRegNo, sManufactureYear);
             myVehicleAsyncTask.execute(String.valueOf(5), "");
             MainActivity.homeInterfaceListener.onHomeCalled("CREATE_CONDITION_SATISFIED", 10, this.getClass().getName(), null);
             saveOnDetachFlag = 0;
@@ -318,13 +318,14 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     }*/
 
     private void saveStateBeforeDetach() {
-        String sBrandName = spinnerMake.getSelectedItem().toString();
+        String sBrandName = spinnerMake.getSelectedItem().toString().trim();
         int brandID = db.getBrandIDFromString(sBrandName);
 
         int sModelPosition = spinnerModel.getSelectedItemPosition();
         int ModelID = db.getModelIDFromSelectedModelName(sBrandName, sModelPosition);
+        String sModelName = spinnerModel.getSelectedItem().toString().trim();
 
-        sharedPreferenceClass.setVehicleInfo(sBrandName + "," + brandID + "," + sModelPosition + "," + ModelID);
+        sharedPreferenceClass.setVehicleInfo(sBrandName + "," + brandID + "," + sModelPosition + "," + ModelID + "," + sModelName);
     }
 
     @Override

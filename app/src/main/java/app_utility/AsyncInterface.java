@@ -11,4 +11,6 @@ public interface AsyncInterface {
                              ArrayList<String> alName,
                              ArrayList<String> alLicensePlate,
                              HashSet<Integer> hsModelIDSingleValues);
+
+    void onAsyncTaskCompleteGeneral(String sMessage, int nCase, int position, String sData);
 }
