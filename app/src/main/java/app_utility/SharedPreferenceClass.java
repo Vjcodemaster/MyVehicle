@@ -44,6 +44,8 @@ public class SharedPreferenceClass {
 
     private static final String EMISSION_DATA = "EMISSION_DATA";
 
+    private static final String VEHICLE_INFO = "VEHICLE_INFO";
+
     // Constructor
     public SharedPreferenceClass(Context context) {
         this._context = context;
@@ -83,6 +85,19 @@ public class SharedPreferenceClass {
         editor = sharedPreferences.edit();
         editor.putString(EMISSION_DATA, sEmission);
         editor.apply();
+    }
+
+    public void setVehicleInfo(String sVehicleInfo){
+        SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
+        SharedPreferences.Editor editor;
+        editor = sharedPreferences.edit();
+        editor.putString(VEHICLE_INFO, sVehicleInfo);
+
+        editor.apply();
+    }
+
+    public String getVehicleInfo(){
+        return sharedPreferences.getString(VEHICLE_INFO, "");
     }
 
     public String getEmissionData() {

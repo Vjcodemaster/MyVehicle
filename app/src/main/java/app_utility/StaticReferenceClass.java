@@ -13,6 +13,10 @@ public class StaticReferenceClass {
     public static final String PASSWORD = "a";//"autochip";//
     public static final String MODEL_NAME = "res.partner";
 
+    public static final String MODEL_INSURANCE_HISTORY = "insurance.history";
+
+    public static final String MODEL_EMISSION_HISTORY = "emission.history";
+
     public static final String sAPP_PREFERENCES = "TrackProPreferences";
 
 }

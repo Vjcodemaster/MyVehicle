@@ -288,7 +288,7 @@ public class DialogMultiple implements OnImageUtilsListener {
     private void updateLabel(TextView textView) {
         llDate.setGravity(Gravity.END);
         llDateValue.setVisibility(View.VISIBLE);
-        String myFormat = "dd/MM/yyyy"; //In which you need put here
+        String myFormat = "MM/dd/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         textView.setText(sdf.format(myCalendar.getTime()));

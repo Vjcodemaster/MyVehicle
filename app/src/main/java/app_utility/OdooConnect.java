@@ -157,7 +157,82 @@ public class OdooConnect {
         return search_read(model, offset, limit, conditions, fieldsL);
     }
 
+    //original one is below this method, this one is edited to get model id and model name
     @SuppressWarnings("unchecked")
+    private List<HashMap<String, Object>> search_read(String model, final Integer offset,
+                                                      final Integer limit, Object[] conditions,
+                                                      final Object[] field) {
+        List<HashMap<String, Object>> result = null;
+        try {
+            XMLRPCClient client = new XMLRPCClient(mUrl);
+
+            Object[] parameters = {mDatabase, mUserId, mPassword,
+                    model, "search_read", conditions, new HashMap() {{
+                put("fields", field);
+                put("limit", limit);
+                put("offset", offset);
+            }}};
+
+            Object[] record = (Object[]) client.call("execute_kw", parameters);
+            result = new ArrayList<>(record.length);
+
+            for (Object oField : record) {
+
+                HashMap<String, Object> listFields = (HashMap<String, Object>) oField;
+                Set<String> keys = listFields.keySet();
+
+                Object[] param = {mDatabase, mUserId, mPassword,
+                        model, "fields_get", new Object[]{keys}, new HashMap() {{
+                    put("attributes", new Object[]{"relation", "type"});
+                }}};
+                Map<String, Map<String, Object>> attrRelation =
+                        (Map<String, Map<String, Object>>) client.call("execute_kw", param);
+
+                for (String key : keys) {
+
+                    if (attrRelation.get(key).containsValue("many2one")) {
+                        List fRelation = asList((Object[]) listFields.get(key));
+                        Object f0 = fRelation.get(0); //this will get id of brands
+                        Object f = fRelation.get(1); // 1 => name of brands
+                        //String ff =   f+ "," +f0;
+                        listFields.put(key, f);
+                        if(f0!=null && !f0.equals("")) {
+                            String newKey = key + "_no";
+                            listFields.put(newKey, f0);
+                        }
+
+                    } else if (attrRelation.get(key).containsValue("many2many") ||
+                            attrRelation.get(key).containsValue("one2many")) {
+                        List fRelation = asList((Object[]) listFields.get(key));
+
+                        String modelR = attrRelation.get(key).get("relation").toString();
+                        final Object[] fieldR = {"name"};
+
+                        Object[] parame = {mDatabase, mUserId, mPassword,
+                                modelR, "read", new Object[]{fRelation}, new HashMap() {{
+                            put("fields", fieldR);
+                        }}};
+                        Object[] recordd = (Object[]) client.call("execute_kw", parame);
+
+
+                        //You can change the string format of this result like you prefer.
+                        String extra = "";
+                        for (Object r : recordd) {
+                            extra += r;
+                        }
+                        Object fResult = (Object) extra;
+                        listFields.put(key, fResult);
+                    }
+                }
+                result.add((HashMap<String, Object>) oField);
+            }
+        } catch (XMLRPCException e) {
+            Log.d(CONNECTOR_NAME, e.toString());
+        }
+        return result;
+    }
+
+    /*@SuppressWarnings("unchecked")
     private List<HashMap<String, Object>> search_read(String model, final Integer offset,
                                                       final Integer limit, Object[] conditions,
                                                       final Object[] field) {
@@ -223,7 +298,7 @@ public class OdooConnect {
             Log.d(CONNECTOR_NAME, e.toString());
         }
         return result;
-    }
+    }*/
 
     //edited by vijay as per requirement
     @SuppressWarnings("unchecked")

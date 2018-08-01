@@ -55,7 +55,7 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
     int currentPage;
     boolean saveToHistory;
 
-    private OnFragmentInteractionListener mListener;
+    public static OnFragmentInteractionListener mListener;
 
     public RegisterFragment() {
         // Required empty public constructor
@@ -351,7 +351,11 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
 
     @Override
     public void onInteraction(String sMessage, int nCase, String sActivityName) {
-
+        switch (sMessage) {
+            case "SELECT_TAB_1":
+                selectPage(0);
+                break;
+        }
     }
 
     @Override

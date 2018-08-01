@@ -37,6 +37,8 @@ import javax.net.ssl.HttpsURLConnection;
 
 import static android.content.ContentValues.TAG;
 import static app_utility.StaticReferenceClass.DB_NAME;
+import static app_utility.StaticReferenceClass.MODEL_EMISSION_HISTORY;
+import static app_utility.StaticReferenceClass.MODEL_INSURANCE_HISTORY;
 import static app_utility.StaticReferenceClass.PASSWORD;
 import static app_utility.StaticReferenceClass.PORT_NO;
 import static app_utility.StaticReferenceClass.SERVER_URL;
@@ -57,7 +59,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
     HashMap<String, Object> value = new HashMap<>();
 
-    String sBrandName,  InsuranceData, EmissionData, sModelName, sRegNo;
+    String sBrandName, InsuranceData, EmissionData, sModelName, sRegNo;
     int brandID, ModelID, sManufactureYear;
 
     private LinkedHashMap<String, ArrayList<String>> lHMFormatData;
@@ -81,8 +83,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         this.aActivity = aActivity;
     }
 
-    public MyVehicleAsyncTask(Activity aActivity, String sBrandName, int brandID,int ModelID, String InsuranceData, String EmissionData,
-                              String sModelName, String sRegNo,int sManufactureYear) {
+    public MyVehicleAsyncTask(Activity aActivity, String sBrandName, int brandID, int ModelID, String InsuranceData, String EmissionData,
+                              String sModelName, String sRegNo, int sManufactureYear) {
         this.aActivity = aActivity;
         this.sBrandName = sBrandName;
         this.brandID = brandID;
@@ -196,8 +198,11 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     e.printStackTrace();
                 }*/
                 break;
+            case 5:
+                Toast.makeText(aActivity, "Vehicle Registered", Toast.LENGTH_LONG).show();
+                break;
             case 9:
-                RegisterVehicleFragment.mListener.onRegisterVehicleFragment("REGISTER_DATA", type,lHMFormatData, lHMBrandNameWithIDAndModelID);
+                RegisterVehicleFragment.mListener.onRegisterVehicleFragment("REGISTER_DATA", type, lHMFormatData, lHMBrandNameWithIDAndModelID);
                 break;
         }
 
@@ -282,18 +287,17 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
 
 
-
             object.put("model_month", 1);
             object.put("model_year", 2018);
 
-            if(!TextUtils.isEmpty(InsuranceData)) {
+            if (!TextUtils.isEmpty(InsuranceData)) {
                 insuranceNo = InsuranceData.split(",")[0];
                 insuranceVendor = InsuranceData.split(",")[1];
                 insuranceStartDate = InsuranceData.split(",")[2];
                 insuranceExpiryDate = InsuranceData.split(",")[3];
                 insuranceRemainderDate = InsuranceData.split(",")[4];
             }
-            if(!TextUtils.isEmpty(EmissionData)) {
+            if (!TextUtils.isEmpty(EmissionData)) {
                 emissionNo = EmissionData.split(",")[0];
                 emissionVendor = EmissionData.split(",")[1];
                 emissionStartDate = EmissionData.split(",")[2];
@@ -362,14 +366,16 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 //put("insurance_ids", insuranceID);
             }});
 
-            createOne2Many("insurance.history", idC);
+            String[] saModelNames = {MODEL_INSURANCE_HISTORY, MODEL_EMISSION_HISTORY};
+
+            createOne2Many(saModelNames, "insurance.history", idC);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void createOne2Many(String Model, final int ID) {
+    private void createOne2Many(String[] saModelNames, String Model, final int ID) {
 
         try {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
@@ -380,16 +386,29 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 put("mobile", "4103246464");
                 put("service_id", ID); //one to many
             }});*/
+            if (saModelNames.length >= 1) {
+                @SuppressWarnings("unchecked")
+                Integer one2ManyInsurance = oc.create(saModelNames[0], new HashMap() {{
+                    put("insurance_doc_no", insuranceNo);
+                    put("vender_name", 194); //one to many  //vender id to fetch is 194
+                    put("insurance_start", insuranceStartDate);
+                    put("insurance_end", insuranceExpiryDate);
+                    put("set_reminder", insuranceRemainderDate);
+                    put("vehicle_id", ID);
+                }});
+            }
 
-            @SuppressWarnings("unchecked")
-            Integer one2Many = oc.create(Model, new HashMap() {{
-                put("insurance_doc_no", insuranceNo);
-                put("vender_name", 194); //one to many  //vender id to fetch is 194
-                put("insurance_start", insuranceStartDate);
-                put("insurance_end", insuranceExpiryDate);
-                put("set_reminder", insuranceRemainderDate);
-                put("vehicle_id", ID);
-            }});
+            if (saModelNames.length >= 2) {
+                @SuppressWarnings("unchecked")
+                Integer one2ManyEmission = oc.create(saModelNames[1], new HashMap() {{
+                    put("emission_doc_no", emissionNo);
+                    put("agency_name", emissionVendor); //one to many  //vender id to fetch is 194
+                    put("emission_start", emissionStartDate);
+                    put("emision_end", emissionExpiryDate);
+                    put("set_reminder", emissionRemainderDate);
+                    put("vehicle_id", ID);
+                }});
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -471,8 +490,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     alTmp = new ArrayList<>();
                     lHMAllIDS = new LinkedHashMap<>();
                     alModelIDTmp = new ArrayList<>();
-                }
-                else {
+                } else {
                     alTmp = new ArrayList<>(lHMFormatData.get(sBrandNameTmp));
                     //lHMAllIDS = new LinkedHashMap<>();
                     lHMAllIDS = new LinkedHashMap<>(lHMBrandNameWithIDAndModelID.get(sBrandNameTmp));
@@ -481,7 +499,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 int id = lHMBrandNameWithID.get(sBrandNameTmp);
                 alTmp.add(sModelNameTmp);
                 alModelIDTmp.add(alModelID.get(j));
-                lHMAllIDS.put(id,alModelIDTmp);
+                lHMAllIDS.put(id, alModelIDTmp);
                 lHMBrandNameWithIDAndModelID.put(sBrandNameTmp, lHMAllIDS);
                 lHMFormatData.put(sBrandNameTmp, alTmp);
             }
@@ -562,18 +580,18 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     }
 
     /*
-    finds all the data created by this user and returns required fields, which searches for create_uid = 1 condition
+    finds all the data created by this user and returns required fields, which searches for create_uid = 107 condition
      */
     private void readTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle", new Object[]{
-                new Object[]{new Object[]{"create_uid", "=", 1}}}, "id", "model_id", "model_year", "name", "license_plate");
+                new Object[]{new Object[]{"create_uid", "=", 107}}}, "id", "model_id", "model_year", "name", "license_plate");
 
 
         for (int i = 0; i < data.size(); ++i) {
             alID.add(Integer.valueOf(data.get(i).get("id").toString()));
             alModelID.add(String.valueOf(data.get(i).get("model_id").toString()));
-            //alModelIDNo.add(Integer.valueOf(data.get(i).get("model_id_no").toString()));
+            alModelIDNo.add(Integer.valueOf(data.get(i).get("model_id_no").toString()));
             alModelYear.add(String.valueOf(data.get(i).get("model_year").toString()));
             alName.add(String.valueOf(data.get(i).get("name").toString()));
             alLicensePlate.add(String.valueOf(data.get(i).get("license_plate").toString()));

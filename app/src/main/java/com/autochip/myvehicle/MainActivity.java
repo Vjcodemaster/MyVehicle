@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     int nDisplayOffSetD3;
     int viewHeight;
 
+    public static boolean hasToBePreparedToCreate = false;
     private CircularProgressBar circularProgressBar;
 
     private RecyclerView recyclerView;
@@ -149,13 +150,16 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         tvUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View addView = findViewById(R.id.action_add);
+                /*View addView = findViewById(R.id.action_add);
                 tvUpdate.setVisibility(View.GONE);
-                addView.setVisibility(View.VISIBLE);
+                addView.setVisibility(View.VISIBLE);*/
 
-                RegisterVehicleFragment.mListener.onInteraction("PREPARE_UPDATE", 10, this.getClass().getName());
-                FragmentManager fm = getSupportFragmentManager();
-                fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                RegisterFragment.mListener.onInteraction("SELECT_TAB_1", 10, this.getClass().getName());
+                RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_CREATE", 10, this.getClass().getName());
+
+                hasToBePreparedToCreate =true;
+                /*FragmentManager fm = getSupportFragmentManager();
+                fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);*/
             }
         });
 
@@ -497,6 +501,17 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 break;
             case "FILE_URI":
                 this.outputFileUri = outputFileUri;
+                break;
+            case "CREATE_CONDITION_SATISFIED":
+                /*this is called from RegisterVehicleFragment to let know that all the information user has entered is correct and can proceed
+                to following operations
+                 */
+                View addView = findViewById(R.id.action_add);
+                tvUpdate.setVisibility(View.GONE);
+                addView.setVisibility(View.VISIBLE);
+                FragmentManager fm = getSupportFragmentManager();
+                fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                MainActivity.hasToBePreparedToCreate = false;
                 break;
             default:
 
