@@ -563,7 +563,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 myVehicleTrackingRVAdapter.notifyItemRemoved(position);
                 Toast.makeText(MainActivity.this, "Removed selected vehicle permanently", Toast.LENGTH_LONG).show();
                 break;
-            case "ADDED_NEW_DATA":
+            case "ADDED_NEW_DATA": //adds new data added to server to recyclerview
                 String[] saAddedData = sData.split(",");
                 vehicleDataStorage.alID.add(Integer.valueOf(saAddedData[0]));
                 vehicleDataStorage.alModelID.add(saAddedData[1]);
