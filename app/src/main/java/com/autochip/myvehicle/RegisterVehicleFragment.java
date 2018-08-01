@@ -117,7 +117,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         mListener = this;
         init(view);
 
-        if(!sharedPreferenceClass.getFetchedBrandsFromOdooFirstTime()) {
+        if (!sharedPreferenceClass.getFetchedBrandsFromOdooFirstTime()) {
             MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity());
             myVehicleAsyncTask.execute(String.valueOf(9), "");
         } else {
@@ -200,15 +200,15 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int position, long id) {
                 //if (isDBUpdated) {
-                    ArrayList<String> alModelNames = db.getIdForStringTabAll(spinnerMake.getSelectedItem().toString());
+                ArrayList<String> alModelNames = db.getIdForStringTabAll(spinnerMake.getSelectedItem().toString());
 
-                    //dbDataHelper = new ArrayList<>(db.getAllModels(spinnerMake.getSelectedItem().toString()));
-                    //ArrayList<DataBaseHelper> alDataBase = new ArrayList<>(dbDataHelper);
-                    alModel.clear();
-                    if (alModelNames != null) {
-                        alModel.addAll(alModelNames);
-                        adapterModel.notifyDataSetChanged();
-                    }
+                //dbDataHelper = new ArrayList<>(db.getAllModels(spinnerMake.getSelectedItem().toString()));
+                //ArrayList<DataBaseHelper> alDataBase = new ArrayList<>(dbDataHelper);
+                alModel.clear();
+                if (alModelNames != null) {
+                    alModel.addAll(alModelNames);
+                    adapterModel.notifyDataSetChanged();
+                }
                 //}
                 /*alModel.clear();
                 alModel.addAll(lHMFormatData.get(spinnerMake.getSelectedItem().toString()));
@@ -224,7 +224,6 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int position, long id) {
-                prepareForUpdate();
             }
 
             @Override
@@ -234,12 +233,12 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     }
 
 
-    private void prepareForUpdate(){
+    private void prepareForUpdate() {
         //int sBrandID = spinnerMake.getSelectedItemPosition();
         String sBrandName = spinnerMake.getSelectedItem().toString();
         int brandID = db.getBrandIDFromString(sBrandName);
 
-        int sModelPosition = spinnerMake.getSelectedItemPosition();
+        int sModelPosition = spinnerModel.getSelectedItemPosition();
         int ModelID = db.getModelIDFromSelectedModelName(sBrandName, sModelPosition);
 
         String InsuranceData = sharedPreferenceClass.getInsuranceData();
@@ -291,7 +290,11 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
 
     @Override
     public void onInteraction(String sMessage, int nCase, String sActivityName) {
-
+        switch (sMessage) {
+            case "PREPARE_UPDATE":
+                prepareForUpdate();
+                break;
+        }
     }
 
     @Override

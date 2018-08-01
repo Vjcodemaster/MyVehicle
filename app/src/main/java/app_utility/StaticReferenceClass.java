@@ -9,7 +9,7 @@ public class StaticReferenceClass {
     public static final String MODEL_FLEET_VEHICLE = "fleet.vehicle";
 
     public static final String DB_NAME = "ARS_9040";//"test_db";//"auto";//
-    public static final String USER_ID = "admin";//"vijay.eh4@gmail.com";//
+    public static final String USER_ID = "vijay@gmail.com";//"vijay.eh4@gmail.com";//admin
     public static final String PASSWORD = "a";//"autochip";//
     public static final String MODEL_NAME = "res.partner";
 

@@ -129,8 +129,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         /*myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alMakeModel, alRegNo, alYearOfManufacture);
         recyclerView.setAdapter(myVehicleTrackingRVAdapter);*/
 
-        /*myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
-        myVehicleAsyncTask.execute(String.valueOf(3), "");*/
+        MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
+        myVehicleAsyncTask.execute(String.valueOf(3), "");
     }
 
     void init() {
@@ -152,6 +152,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 View addView = findViewById(R.id.action_add);
                 tvUpdate.setVisibility(View.GONE);
                 addView.setVisibility(View.VISIBLE);
+
+                RegisterVehicleFragment.mListener.onInteraction("PREPARE_UPDATE", 10, this.getClass().getName());
                 FragmentManager fm = getSupportFragmentManager();
                 fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }

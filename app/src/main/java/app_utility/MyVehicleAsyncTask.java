@@ -73,6 +73,10 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     ArrayList<String> alLicensePlate = new ArrayList<>();
     HashSet<Integer> hsModelIDSingleValues = new HashSet<>();
 
+    private String insuranceNo, insuranceVendor, insuranceStartDate, insuranceExpiryDate, insuranceRemainderDate;
+
+    private String emissionNo, emissionVendor, emissionStartDate, emissionExpiryDate, emissionRemainderDate;
+
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
     }
@@ -138,6 +142,9 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 break;
             case 9:
                 readBrandModelTask();
+                break;
+            case 10:
+                //createOne2Many();
                 break;
         }
         return res;
@@ -273,8 +280,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
         try {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
-            String insuranceNo, insuranceVendor, insuranceStartDate, insuranceExpiryDate, insuranceRemainderDate;
-            String emissionNo, emissionVendor, emissionStartDate, emissionExpiryDate, emissionRemainderDate;
+
+
 
             object.put("model_month", 1);
             object.put("model_year", 2018);
@@ -286,7 +293,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 insuranceExpiryDate = InsuranceData.split(",")[3];
                 insuranceRemainderDate = InsuranceData.split(",")[4];
             }
-            if(!TextUtils.isEmpty(InsuranceData)) {
+            if(!TextUtils.isEmpty(EmissionData)) {
                 emissionNo = EmissionData.split(",")[0];
                 emissionVendor = EmissionData.split(",")[1];
                 emissionStartDate = EmissionData.split(",")[2];
@@ -294,6 +301,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 emissionRemainderDate = EmissionData.split(",")[4];
             }
 
+            //final int insuranceID = createOne2Many("insurance.history", 194);
             //int partner_id= Many2one.getMany2One(object, "model_id").getId();
             /*@SuppressWarnings("unchecked")
             Integer idC = oc.create("res.partner", new HashMap() {{
@@ -336,32 +344,56 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 //put("session_ids", value);
             }});*/
 
-
-            @SuppressWarnings("unchecked") final Integer idC = oc.create("fleet.vehicle", new HashMap() {{
+            //working code 1-08-2018
+            /*@SuppressWarnings("unchecked") final Integer idC = oc.create("fleet.vehicle", new HashMap() {{
                 put("model_id", 110);
                 put("license_plate", "KA 04 KA 1611");
                 put("odometer", 15);
                 put("model_year", 2020);
                 put("model_month", 11);
+            }});*/
+
+            @SuppressWarnings("unchecked") final Integer idC = oc.create("fleet.vehicle", new HashMap() {{
+                put("model_id", ModelID);
+                put("license_plate", sRegNo);
+                put("odometer", 15);
+                put("model_year", sManufactureYear);
+                put("model_month", 10);
+                //put("insurance_ids", insuranceID);
             }});
+
+            createOne2Many("insurance.history", idC);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void createOne2Many(String Model, final int ID) {
+
         try {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
-
+/*
             @SuppressWarnings("unchecked")
             Integer one2Many = oc.create("web.service.child", new HashMap() {{
                 put("name", "Autochip");
                 put("mobile", "4103246464");
                 put("service_id", ID); //one to many
+            }});*/
+
+            @SuppressWarnings("unchecked")
+            Integer one2Many = oc.create(Model, new HashMap() {{
+                put("insurance_doc_no", insuranceNo);
+                put("vender_name", 194); //one to many  //vender id to fetch is 194
+                put("insurance_start", insuranceStartDate);
+                put("insurance_end", insuranceExpiryDate);
+                put("set_reminder", insuranceRemainderDate);
+                put("vehicle_id", ID);
             }});
         } catch (Exception e) {
             e.printStackTrace();
         }
+        //return one2Many;
     }
 
     private void readBrandTask() {
@@ -718,4 +750,28 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         circularProgressBar.setCancelable(false);
         circularProgressBar.show();
     }
+
+    /*private void createOne2Many(String Model, final int ID) {
+        try {
+            OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
+*//*
+            @SuppressWarnings("unchecked")
+            Integer one2Many = oc.create("web.service.child", new HashMap() {{
+                put("name", "Autochip");
+                put("mobile", "4103246464");
+                put("service_id", ID); //one to many
+            }});*//*
+
+            @SuppressWarnings("unchecked")
+            Integer one2Many = oc.create(Model, new HashMap() {{
+                put("insurance_doc_no", insuranceNo);
+                put("vender_name", ID); //one to many
+                put("insurance_start", insuranceStartDate);
+                put("insurance_end", insuranceExpiryDate);
+                put("set_reminder", insuranceRemainderDate);
+            }});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }*/
 }
