@@ -612,7 +612,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         for (int i = 0; i < data.size(); ++i) {
             alID.add(Integer.valueOf(data.get(i).get("id").toString()));
             alModelID.add(String.valueOf(data.get(i).get("model_id").toString()));
-            //alModelIDNo.add(Integer.valueOf(data.get(i).get("model_id_no").toString()));
+            alModelIDNo.add(Integer.valueOf(data.get(i).get("model_id_no").toString()));
             alModelYear.add(String.valueOf(data.get(i).get("model_year").toString()));
             alName.add(String.valueOf(data.get(i).get("name").toString()));
             alLicensePlate.add(String.valueOf(data.get(i).get("license_plate").toString()));

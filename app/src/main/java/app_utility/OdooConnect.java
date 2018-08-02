@@ -179,7 +179,9 @@ public class OdooConnect {
             for (Object oField : record) {
 
                 HashMap<String, Object> listFields = (HashMap<String, Object>) oField;
+                HashMap<String, Object> listFieldsNew = (HashMap<String, Object>) oField;
                 Set<String> keys = listFields.keySet();
+                Set<String> keyss = listFieldsNew.keySet();
 
                 Object[] param = {mDatabase, mUserId, mPassword,
                         model, "fields_get", new Object[]{keys}, new HashMap() {{
@@ -187,46 +189,47 @@ public class OdooConnect {
                 }}};
                 Map<String, Map<String, Object>> attrRelation =
                         (Map<String, Map<String, Object>>) client.call("execute_kw", param);
-                try{
-                for (String key : keys) {
+                try {
+                    for (String key : keyss) {
 
-                    if (attrRelation.get(key).containsValue("many2one")) {
-                        List fRelation = asList((Object[]) listFields.get(key));
-                        Object f0 = fRelation.get(0); //this will get id of brands
-                        Object f = fRelation.get(1); // 1 => name of brands
-                        //String ff =   f+ "," +f0;
-                        listFields.put(key, f);
-                        if (f0 != null && !f0.equals("")) {
-                            String newKey = key + "_no";
-                            listFields.put(newKey, f0);
+                        if (attrRelation.get(key).containsValue("many2one")) {
+                            List fRelation = asList((Object[]) listFields.get(key));
+                            Object f0 = fRelation.get(0); //this will get id of brands
+                            Object f = fRelation.get(1); // 1 => name of brands
+                            //String ff =   f+ "," +f0;
+                            listFields.put(key, f);
+                            if (f0 != null && !f0.equals("")) {
+                                String newKey = key + "_no";
+                                listFields.put(newKey, f0);
+                                break; //remove this is error appears
+                            }
+
+                        } else if (attrRelation.get(key).containsValue("many2many") ||
+                                attrRelation.get(key).containsValue("one2many")) {
+                            List fRelation = asList((Object[]) listFields.get(key));
+
+                            String modelR = attrRelation.get(key).get("relation").toString();
+                            final Object[] fieldR = {"name"};
+
+                            Object[] parame = {mDatabase, mUserId, mPassword,
+                                    modelR, "read", new Object[]{fRelation}, new HashMap() {{
+                                put("fields", fieldR);
+                            }}};
+                            Object[] recordd = (Object[]) client.call("execute_kw", parame);
+
+
+                            //You can change the string format of this result like you prefer.
+                            String extra = "";
+                            for (Object r : recordd) {
+                                extra += r;
+                            }
+                            Object fResult = (Object) extra;
+                            listFields.put(key, fResult);
                         }
-
-                    } else if (attrRelation.get(key).containsValue("many2many") ||
-                            attrRelation.get(key).containsValue("one2many")) {
-                        List fRelation = asList((Object[]) listFields.get(key));
-
-                        String modelR = attrRelation.get(key).get("relation").toString();
-                        final Object[] fieldR = {"name"};
-
-                        Object[] parame = {mDatabase, mUserId, mPassword,
-                                modelR, "read", new Object[]{fRelation}, new HashMap() {{
-                            put("fields", fieldR);
-                        }}};
-                        Object[] recordd = (Object[]) client.call("execute_kw", parame);
-
-
-                        //You can change the string format of this result like you prefer.
-                        String extra = "";
-                        for (Object r : recordd) {
-                            extra += r;
-                        }
-                        Object fResult = (Object) extra;
-                        listFields.put(key, fResult);
+                    /*if (keys.contains("model_id_no"))
+                        keys.remove("model_id_no");*/
                     }
-                    if (keys.contains("model_id_no"))
-                        keys.remove("model_id_no");
-                }
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 result.add((HashMap<String, Object>) oField);

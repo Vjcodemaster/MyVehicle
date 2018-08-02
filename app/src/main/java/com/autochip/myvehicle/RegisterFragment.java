@@ -1,12 +1,10 @@
 package com.autochip.myvehicle;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -45,11 +43,8 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
     View productsTab;
     View speakersTab;*/
 
-    View navigationDrawerView;
     NavigationView navigationView;
 
-    IntentFilter backStackIF;
-    BroadcastReceiver mBroadCastReceiver;
 
     Stack<Integer> pageHistory;
     int currentPage;
@@ -82,29 +77,10 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        backStackIF = new IntentFilter("android.intent.action.BACKSTACK");
-        mBroadCastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                index = intent.getExtras().getInt("tabIndex");
-
-                if (index >= 0) {
-                    selectPage(index);
-                }
-            }
-        };
-        getActivity().registerReceiver(mBroadCastReceiver, backStackIF);
     }
 
     @Override
     public void onDestroy() {
-        /*
-        unregistering receivers to avoid memory leak
-         */
-        if (mBroadCastReceiver != null) {
-            getActivity().unregisterReceiver(mBroadCastReceiver);
-            mBroadCastReceiver = null;
-        }
 
         super.onDestroy();
     }
@@ -112,16 +88,11 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onResume() {
         super.onResume();
-        /*
-        registering back receivers to start receiving broadcast
-         */
-        getActivity().registerReceiver(mBroadCastReceiver, backStackIF);
-        getActivity().registerReceiver(mBroadCastReceiver, backStackIF);
     }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_home_screen, container, false);

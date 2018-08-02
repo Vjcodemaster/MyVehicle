@@ -1,25 +1,14 @@
 package com.autochip.myvehicle;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -27,18 +16,11 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
 
 import dialogs.DialogMultiple;
-
-import static android.app.Activity.RESULT_OK;
-import static com.autochip.myvehicle.InsuranceFragment.PICTURE_REQUEST_CODE;
 
 
 /**

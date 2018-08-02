@@ -57,8 +57,8 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final String ARG_LIST_MAKE = "ARG_LIST_MAKE";
-    private static final String ARG_LIST_MODEL = "ARG_LIST_MODEL";
+    //private static final String ARG_LIST_MAKE = "ARG_LIST_MAKE";
+    //private static final String ARG_LIST_MODEL = "ARG_LIST_MODEL";
 
     SharedPreferenceClass sharedPreferenceClass;
 
@@ -316,7 +316,6 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         }
 
     }
-
 
     private void openImageIntent() {
         //onImageUtilsListener.onBitmapCompressed("SHOW_PROGRESS_BAR",1,null, null, null);
