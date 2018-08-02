@@ -41,12 +41,15 @@ import app_utility.AsyncInterface;
 import app_utility.MyVehicleAsyncTask;
 import dialogs.DialogMultiple;
 
+import static app_utility.StaticReferenceClass.REGISTER_IMAGE_REQUEST_CODE;
+
 public class MainActivity extends AppCompatActivity implements HomeInterfaceListener, OnImageUtilsListener, AsyncInterface {
 
     public static HomeInterfaceListener homeInterfaceListener;
     public static OnImageUtilsListener mBitmapCompressListener;
     public static AsyncInterface asyncInterface;
 
+    int fileUriRequestCodeFlag = -1;
     public static final int PICTURE_REQUEST_CODE = 1414;
     private TextView mTextMessage;
     Menu menu;
@@ -156,9 +159,9 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 addView.setVisibility(View.VISIBLE);*/
 
                 RegisterFragment.mListener.onInteraction("SELECT_TAB_1", 10, this.getClass().getName());
-                RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_CREATE", 10, this.getClass().getName());
+                //RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_CREATE", 10, this.getClass().getName());
 
-                hasToBePreparedToCreate =true;
+                hasToBePreparedToCreate = true;
                 /*FragmentManager fm = getSupportFragmentManager();
                 fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);*/
             }
@@ -502,6 +505,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 break;
             case "FILE_URI":
                 this.outputFileUri = outputFileUri;
+                fileUriRequestCodeFlag = nCase;
                 break;
             case "CREATE_CONDITION_SATISFIED":
                 /*this is called from RegisterVehicleFragment to let know that all the information user has entered is correct and can proceed
@@ -553,7 +557,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
     @Override
     public void onAsyncTaskCompleteGeneral(String sMessage, int nCase, int position, String sData) {
-        switch (sMessage){
+        switch (sMessage) {
             case "REMOVE_POSITION":
                 vehicleDataStorage.alID.remove(position);
                 vehicleDataStorage.alModelID.remove(position);
@@ -570,7 +574,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 vehicleDataStorage.alLicensePlate.add(saAddedData[2]);
                 vehicleDataStorage.alModelYear.add(saAddedData[3]);
 
-                myVehicleTrackingRVAdapter.notifyItemInserted(vehicleDataStorage.alID.size()-1);
+                myVehicleTrackingRVAdapter.notifyItemInserted(vehicleDataStorage.alID.size() - 1);
                 break;
         }
     }
@@ -625,8 +629,11 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         @Override
         protected void onPostExecute(String result) {
-            if (bitmapImageUtils != null)
+            if (bitmapImageUtils != null && fileUriRequestCodeFlag == REGISTER_IMAGE_REQUEST_CODE) { //this flag checks if the request is from dialog or register fragment
+                RegisterVehicleFragment.onImageUtilsListener.onBitmapCompressed("SET_BITMAP", fileUriRequestCodeFlag, bitmapImageUtils, null, null);
+            } else if (bitmapImageUtils != null) {
                 DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmapImageUtils, null, null);
+            }
             stopProgressBar();
         }
     }

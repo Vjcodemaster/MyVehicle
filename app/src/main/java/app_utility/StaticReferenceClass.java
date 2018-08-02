@@ -19,5 +19,7 @@ public class StaticReferenceClass {
 
     public static final String sAPP_PREFERENCES = "TrackProPreferences";
 
+    public static final int REGISTER_IMAGE_REQUEST_CODE = 9101;
+
 }
 

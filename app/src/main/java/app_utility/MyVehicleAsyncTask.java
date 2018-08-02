@@ -81,6 +81,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private String insuranceNo, insuranceVendor, insuranceStartDate, insuranceExpiryDate, insuranceRemainderDate;
 
     private String emissionNo, emissionVendor, emissionStartDate, emissionExpiryDate, emissionRemainderDate;
+    String base64Bitmap;
 
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
@@ -91,7 +92,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     }
 
     public MyVehicleAsyncTask(Activity aActivity, String sBrandName, int brandID, int ModelID, String InsuranceData, String EmissionData,
-                              String sModelName, String sRegNo, int sManufactureYear) {
+                              String sModelName, String sRegNo, int sManufactureYear, String base64Bitmap) {
         this.aActivity = aActivity;
         this.sBrandName = sBrandName;
         this.brandID = brandID;
@@ -101,6 +102,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         this.sModelName = sModelName;
         this.sRegNo = sRegNo;
         this.sManufactureYear = sManufactureYear;
+        this.base64Bitmap = base64Bitmap;
     }
 
     /*public MyVehicleAsyncTask(Activity aActivity, AsyncInterface asyncInterface) {
@@ -377,6 +379,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 //put("odometer", 15);
                 put("model_year", sManufactureYear);
                 put("model_month", 10);
+                put("image_medium", base64Bitmap);
                 //put("insurance_ids", insuranceID);
             }});
             createdId = idC;

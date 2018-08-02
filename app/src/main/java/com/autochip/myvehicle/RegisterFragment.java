@@ -354,6 +354,7 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
         switch (sMessage) {
             case "SELECT_TAB_1":
                 selectPage(0);
+                RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_CREATE", 10, this.getClass().getName());
                 break;
         }
     }

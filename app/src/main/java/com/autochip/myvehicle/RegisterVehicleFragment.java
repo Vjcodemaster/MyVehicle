@@ -1,30 +1,48 @@
 package com.autochip.myvehicle;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
 import app_utility.SharedPreferenceClass;
-import dialogs.DialogMultiple;
+
+import static app_utility.StaticReferenceClass.REGISTER_IMAGE_REQUEST_CODE;
+import static com.autochip.myvehicle.MainActivity.PICTURE_REQUEST_CODE;
 
 
 /**
@@ -35,7 +53,7 @@ import dialogs.DialogMultiple;
  * Use the {@link RegisterVehicleFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RegisterVehicleFragment extends Fragment implements OnFragmentInteractionListener {
+public class RegisterVehicleFragment extends Fragment implements OnFragmentInteractionListener, OnImageUtilsListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -66,10 +84,17 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
 
     public static OnFragmentInteractionListener mListener;
 
+    public static OnImageUtilsListener onImageUtilsListener;
+
     EditText etMake, etModel, etRegNo, etYOM;
+    TextView tvAddPhoto;
     Spinner spinnerVehicle, spinnerMake, spinnerModel;
 
     boolean isVisibleToUser = false;
+
+    private File sdImageMainDirectory;
+    private Uri outputFileUri;
+    private ImageView ivPreview;
 
     public RegisterVehicleFragment() {
         // Required empty public constructor
@@ -120,6 +145,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_register_vehicle, container, false);
         mListener = this;
+        onImageUtilsListener = this;
         init(view);
 
         if (!sharedPreferenceClass.getFetchedBrandsFromOdooFirstTime()) {
@@ -133,7 +159,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
                 alMake.add(dbDataHelper.get(i).get_brand_name());
             }*/
         }
-        if (isVisibleToUser && MainActivity.hasToBePreparedToCreate) {
+        if (MainActivity.hasToBePreparedToCreate) {
             prepareToCreate();
         }
         //ColorStateList etViewColorStateList = new ColorStateList(editTextStates, editTextColors);
@@ -150,6 +176,9 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         etModel = view.findViewById(R.id.et_model);
         etRegNo = view.findViewById(R.id.et_reg_no);
         etYOM = view.findViewById(R.id.et_yom);
+
+        tvAddPhoto = view.findViewById(R.id.tv_add_photo);
+        ivPreview = view.findViewById(R.id.iv_preview);
 
         //below code was implemented to listen for swipe. it was working fine
         /*LinearLayout llParentSwipe = view.findViewById(R.id.ll_parent_register);
@@ -237,6 +266,13 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
+
+        tvAddPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openImageIntent();
+            }
+        });
     }
 
     private void prepareToCreate() {
@@ -258,12 +294,19 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
 
         String sRegNo = etRegNo.getText().toString().trim();
 
-        if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(etYOM.getText().toString().trim())) {
-            Toast.makeText(getActivity(), "Please fill all information", Toast.LENGTH_SHORT).show();
+
+        if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(etYOM.getText().toString().trim()) || ((BitmapDrawable)ivPreview.getDrawable()).getBitmap()==null) {
+            Toast.makeText(getActivity(), "Please fill all information including image", Toast.LENGTH_SHORT).show();
             saveOnDetachFlag = 1;
         } else {
             int sManufactureYear = Integer.valueOf(etYOM.getText().toString().trim());
-            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, sModelName, sRegNo, sManufactureYear);
+            Bitmap bitmap;
+            bitmap = Bitmap.createScaledBitmap(((BitmapDrawable)ivPreview.getDrawable()).getBitmap(), 128, 128, true);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream .toByteArray();
+            String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, sModelName, sRegNo, sManufactureYear, encodedBitmap);
             myVehicleAsyncTask.execute(String.valueOf(5), "");
             MainActivity.homeInterfaceListener.onHomeCalled("CREATE_CONDITION_SATISFIED", 10, this.getClass().getName(), null);
             saveOnDetachFlag = 0;
@@ -273,6 +316,45 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     }
 
 
+    private void openImageIntent() {
+        //onImageUtilsListener.onBitmapCompressed("SHOW_PROGRESS_BAR",1,null, null, null);
+        MainActivity.homeInterfaceListener.onHomeCalled("SHOW_PROGRESS_BAR", 0, null, null);
+
+        // Determine Uri of camera image to save.
+        final File root = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + "Android/data/" + File.separator + getActivity().getPackageName() + File.separator);
+        root.mkdirs();
+        final String fname = System.currentTimeMillis() + "insurance";
+        sdImageMainDirectory = new File(root, fname);
+        outputFileUri = Uri.fromFile(sdImageMainDirectory);
+
+        // Camera.
+        final List<Intent> cameraIntents = new ArrayList<>();
+        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        final PackageManager packageManager = getActivity().getPackageManager();
+        final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
+        for (ResolveInfo res : listCam) {
+            final String packageName = res.activityInfo.packageName;
+            final Intent intent = new Intent(captureIntent);
+            intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+            intent.setPackage(packageName);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+            cameraIntents.add(intent);
+        }
+
+        // Filesystem.
+        final Intent galleryIntent = new Intent();
+        galleryIntent.setType("image/*");
+        galleryIntent.setAction(Intent.ACTION_PICK);
+
+        // Chooser of filesystem options.
+        final Intent chooserIntent = Intent.createChooser(galleryIntent, "Choose");
+
+        // Add the camera options.
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[]{}));
+        MainActivity.homeInterfaceListener.onHomeCalled("FILE_URI", REGISTER_IMAGE_REQUEST_CODE, null, outputFileUri);
+        getActivity().startActivityForResult(chooserIntent, PICTURE_REQUEST_CODE);
+        //onImageUtilsListener.onBitmapCompressed("START_ACTIVITY_FOR_RESULT",1,null, chooserIntent, outputFileUri);
+    }
     /*private void prepareToCreate() {
 
         //String sVehicleInfo = sharedPreferenceClass.getVehicleInfo();
@@ -406,6 +488,15 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
                     db.addData(new DataBaseHelper(sBrandKey, String.valueOf(alBrandKey.get(0)), sModelName, sModelID));
                 }
                 sharedPreferenceClass.setFetchedBrandsFromOdooFirstTime(true);
+                break;
+        }
+    }
+
+    @Override
+    public void onBitmapCompressed(String sMessage, int nCase, Bitmap bitmap, Intent intent, Uri outputFileUri) {
+        switch (sMessage) {
+            case "SET_BITMAP":
+                ivPreview.setImageBitmap(bitmap);
                 break;
         }
     }
