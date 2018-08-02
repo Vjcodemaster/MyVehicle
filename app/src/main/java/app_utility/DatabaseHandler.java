@@ -25,13 +25,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //DataBaseHelper table name (2nd table for all tab)
     private static final String REGISTER_TABLE = "REGISTER_TABLE";
 
-    private static final String INSURANCE_TABLE = "INSURANCE_TABLE";
-
-    private static final String EMISSION_TABLE = "EMISSION_TABLE";
-
-    private static final String RC_FC_TABLE = "RC_FC_TABLE";
-
-    private static final String SERVICE_HISTORY_TABLE = "SERVICE_TABLE";
+    private static final String USER_VEHICLE_TABLE = "USER_VEHICLE_TABLE";
 
     //recyclerManager Table Columns names
     private static final String KEY_ID = "_id";
@@ -52,6 +46,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_BRAND_ID = "BRAND_ID";
     private static final String KEY_MODEL_NAME = "MODEL_NAME";
     private static final String KEY_MODEL_ID = "MODEL_ID";
+
+    private static final String KEY_LICENSE_PLATE = "LICENSE_PLATE";
+    private static final String KEY_IMAGE_BASE64 = "IMAGE_BASE64";
+    private static final String KEY_MODEL_YEAR = "MODEL_YEAR";
+    private static final String KEY_VEHICLE_ID_ODOO = "VEHICLE_ID_ODOO";
     //private static final String KEY_MODEL_NAME = "model_name";
 
 
@@ -88,13 +87,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_MODEL_NAME + " TEXT, "
                 + KEY_MODEL_ID + " TEXT)";
 
-        String CREATE_TABLE_USER_LIST = "CREATE TABLE " + REGISTER_TABLE + "("
-                + KEY_BRAND_NAME + " TEXT PRIMARY KEY, "
+        String CREATE_TABLE_USER_LIST = "CREATE TABLE " + USER_VEHICLE_TABLE + "("
+                + KEY_VEHICLE_ID_ODOO + " INTEGER PRIMARY KEY, "
+                + KEY_BRAND_NAME + " TEXT, "
                 + KEY_BRAND_ID + " TEXT, "
                 + KEY_MODEL_NAME + " TEXT, "
-                + KEY_MODEL_ID + " TEXT)";
+                + KEY_MODEL_ID + " TEXT, "
+                + KEY_LICENSE_PLATE + " TEXT, "
+                + KEY_IMAGE_BASE64 + " TEXT, "
+                + KEY_MODEL_YEAR + " TEXT)";
+                //+ KEY_MODEL_ID + " TEXT)";
 
         db.execSQL(CREATE_TABLE_BRANDS);
+        db.execSQL(CREATE_TABLE_USER_LIST);
     }
 
     // Upgrading database
@@ -125,6 +130,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
+    // Adding new data to user vehicle list
+    public void addDataToUserVehicle(DataBaseHelper dataBaseHelper) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_VEHICLE_ID_ODOO, dataBaseHelper.get_vehicle_id());
+        values.put(KEY_BRAND_NAME, dataBaseHelper.get_brand_name());
+        values.put(KEY_BRAND_ID, dataBaseHelper.get_brand_id());
+        values.put(KEY_MODEL_NAME, dataBaseHelper.get_model_name());
+        values.put(KEY_MODEL_ID, dataBaseHelper.get_model_id());
+        values.put(KEY_LICENSE_PLATE, dataBaseHelper.get_license_plate());
+        values.put(KEY_IMAGE_BASE64, dataBaseHelper.get_image_base64());
+        values.put(KEY_MODEL_YEAR, dataBaseHelper.get_model_year());
+        // Inserting Row
+        //db.insert(TABLE_RECENT, null, values);
+        db.insert(USER_VEHICLE_TABLE, null, values);
+
+        db.close(); // Closing database connection
+    }
     /*
     this returns the modelName or modelID using Brand Name has key in a string
      */

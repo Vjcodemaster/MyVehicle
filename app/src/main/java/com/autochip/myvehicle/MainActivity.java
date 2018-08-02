@@ -1,16 +1,15 @@
 package com.autochip.myvehicle;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -38,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import app_utility.AsyncInterface;
+import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
 import dialogs.DialogMultiple;
 
@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
     int fileUriRequestCodeFlag = -1;
     public static final int PICTURE_REQUEST_CODE = 1414;
-    private TextView mTextMessage;
+    //private TextView mTextMessage;
     Menu menu;
-    View popupView;
+    //View popupView;
     String sBackStackParent;
     private TextView tvTitle, tvSubtitle, tvUpdate;
     private View viewActionBar;
@@ -63,17 +63,17 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     Intent data;
     Bitmap bitmapImageUtils;
 
-
+    DatabaseHandler db;
     File root;
 
     Toolbar toolbar;
 
-    int nUserDisplayWidth;
+    //int nUserDisplayWidth;
     int nUserDisplayHeight;
     int[] nOffSetLocation;
     int nDisplayDDXOffSet; //display drop down x off set
     int nDisplayOffSetD3;
-    int viewHeight;
+    //int viewHeight;
 
     public static boolean hasToBePreparedToCreate = false;
     private CircularProgressBar circularProgressBar;
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     public MyVehicleTrackingRVAdapter myVehicleTrackingRVAdapter;
 
     // FOR NAVIGATION VIEW ITEM TEXT COLOR
-    int[][] states = new int[][]{
+    /*int[][] states = new int[][]{
             new int[]{-android.R.attr.state_checked},  // unchecked
             new int[]{android.R.attr.state_checked},   // checked
             new int[]{}                                // default
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
             Color.parseColor("#03A9F4"),
             Color.parseColor("#757575"),
     };
-    BottomNavigationView navigation;
+    BottomNavigationView navigation;*/
 
 
     @Override
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         homeInterfaceListener = this;
         mBitmapCompressListener = this;
         asyncInterface = this;
-
+        db = new DatabaseHandler(MainActivity.this);
         vehicleDataStorage = new VehicleDataStorage();
 
         /*MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
@@ -583,6 +583,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     }
 
 
+    @SuppressLint("StaticFieldLeak")
     private class attractionNameAsyncTask extends AsyncTask<String, String, String> {
 
         @Override
@@ -638,6 +639,22 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmapImageUtils, null, null);
             }
             stopProgressBar();
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class addVehicleListAsyncTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
         }
     }
 
