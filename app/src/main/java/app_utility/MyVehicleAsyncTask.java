@@ -8,8 +8,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -76,6 +79,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     ArrayList<String> alModelYear = new ArrayList<>();
     ArrayList<String> alName = new ArrayList<>();
     ArrayList<String> alLicensePlate = new ArrayList<>();
+    ArrayList<Bitmap> alDisplayPicture = new ArrayList<>();
     HashSet<Integer> hsModelIDSingleValues = new HashSet<>();
 
     private String insuranceNo, insuranceVendor, insuranceStartDate, insuranceExpiryDate, insuranceRemainderDate;
@@ -187,7 +191,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 Log.e("Updating done", "success");
                 break;
             case 3:
-                MainActivity.asyncInterface.onAsyncTaskComplete("READ_DATA_FROM_SERVER", type, alID, alModelID, alModelIDNo, alModelYear, alName, alLicensePlate, hsModelIDSingleValues);
+                MainActivity.asyncInterface.onAsyncTaskComplete("READ_DATA_FROM_SERVER", type, alID, alModelID, alModelIDNo, alModelYear, alName, alLicensePlate, alDisplayPicture, hsModelIDSingleValues);
                 //asyncInterface.onResultReceived("UPDATE_LOCATION", type, dLatitude, dLongitude, 0.0, 0.0);
                 break;
             case 4:
@@ -602,16 +606,25 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private void readTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle", new Object[]{
-                new Object[]{new Object[]{"create_uid", "=", 107}}}, "id", "model_id", "model_year", "name", "license_plate");
+                new Object[]{new Object[]{"create_uid", "=", 107}}}, "id", "image_medium","model_id", "model_year", "name", "license_plate");
 
 
         for (int i = 0; i < data.size(); ++i) {
             alID.add(Integer.valueOf(data.get(i).get("id").toString()));
             alModelID.add(String.valueOf(data.get(i).get("model_id").toString()));
-            alModelIDNo.add(Integer.valueOf(data.get(i).get("model_id_no").toString()));
+            //alModelIDNo.add(Integer.valueOf(data.get(i).get("model_id_no").toString()));
             alModelYear.add(String.valueOf(data.get(i).get("model_year").toString()));
             alName.add(String.valueOf(data.get(i).get("name").toString()));
             alLicensePlate.add(String.valueOf(data.get(i).get("license_plate").toString()));
+            String encodedBitmap = data.get(i).get("image_medium").toString();
+
+            if(!encodedBitmap.equalsIgnoreCase("false")) {
+                byte[] decodedString = Base64.decode(encodedBitmap, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                alDisplayPicture.add(decodedByte);
+            } else {
+                alDisplayPicture.add(null);
+            }
         }
         hsModelIDSingleValues.addAll(alModelIDNo);
         /*String sEmail = data.get(0).get("email").toString();

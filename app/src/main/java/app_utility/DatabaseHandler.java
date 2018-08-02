@@ -88,7 +88,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_MODEL_NAME + " TEXT, "
                 + KEY_MODEL_ID + " TEXT)";
 
-        String CREATE_TABLE_INSURANCE = "CREATE TABLE " + REGISTER_TABLE + "("
+        String CREATE_TABLE_USER_LIST = "CREATE TABLE " + REGISTER_TABLE + "("
                 + KEY_BRAND_NAME + " TEXT PRIMARY KEY, "
                 + KEY_BRAND_ID + " TEXT, "
                 + KEY_MODEL_NAME + " TEXT, "

@@ -3,6 +3,7 @@ package com.autochip.myvehicle;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v7.widget.CardView;
@@ -33,15 +34,17 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
     private ArrayList<String> alRegNo;
     private ArrayList<String> alYearOfManufacture;
     private ArrayList<Integer> alID;
+    private ArrayList<Bitmap> alDisplayPicture;
 
     MyVehicleTrackingRVAdapter(Context context, RecyclerView recyclerView, ArrayList<Integer> alID, ArrayList<String> alMakeModel, ArrayList<String> alRegNo,
-                               ArrayList<String> alYearOfManufacture) {
+                               ArrayList<String> alYearOfManufacture, ArrayList<Bitmap> alDisplayPicture) {
         this.context = context;
         this.recyclerView = recyclerView;
         this.alID = alID;
         this.alMakeModel = alMakeModel;
         this.alRegNo = alRegNo;
         this.alYearOfManufacture = alYearOfManufacture;
+        this.alDisplayPicture = alDisplayPicture;
     }
 
 
@@ -58,6 +61,9 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
         holder.tvRegNo.setText(alRegNo.get(position));
         holder.tvYOM.setText(alYearOfManufacture.get(position));
 
+        if(alDisplayPicture.get(position)!=null){
+            holder.ivCircularDp.setImageBitmap(alDisplayPicture.get(position));
+        }
         holder.bind(holder);
     }
 
@@ -79,9 +85,11 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
         private LinearLayout llParentExpand;
         private ExpandableLayout expandableLayout;
         Button btnEdit, btnRemove;
+
+        ImageView ivCircularDp;
+
         TextView tvRVTime;
         TextView tvRVNumber;
-        ImageView mImageView;
         TextView tvRvName;
         TextView tvRvDesignation;
         CardView cvExpand;
@@ -99,6 +107,8 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
             //tvRVNumber = (TextView) itemView.findViewById(R.id.recent_rc_number);
             tvRegNo = itemView.findViewById(R.id.tv_reg_no_rv);
             tvYOM = itemView.findViewById(R.id.tv_yom_rv);
+
+            ivCircularDp = itemView.findViewById(R.id.rv_my_vehicle_list_avatar);
 
             llParentExpand = itemView.findViewById(R.id.ll_parent_expand);
             expandableLayout = itemView.findViewById(R.id.rv_admin_expandable_layout);

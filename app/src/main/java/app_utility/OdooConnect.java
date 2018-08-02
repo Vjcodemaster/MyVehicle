@@ -187,7 +187,7 @@ public class OdooConnect {
                 }}};
                 Map<String, Map<String, Object>> attrRelation =
                         (Map<String, Map<String, Object>>) client.call("execute_kw", param);
-
+                try{
                 for (String key : keys) {
 
                     if (attrRelation.get(key).containsValue("many2one")) {
@@ -196,7 +196,7 @@ public class OdooConnect {
                         Object f = fRelation.get(1); // 1 => name of brands
                         //String ff =   f+ "," +f0;
                         listFields.put(key, f);
-                        if(f0!=null && !f0.equals("")) {
+                        if (f0 != null && !f0.equals("")) {
                             String newKey = key + "_no";
                             listFields.put(newKey, f0);
                         }
@@ -223,6 +223,11 @@ public class OdooConnect {
                         Object fResult = (Object) extra;
                         listFields.put(key, fResult);
                     }
+                    if (keys.contains("model_id_no"))
+                        keys.remove("model_id_no");
+                }
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
                 result.add((HashMap<String, Object>) oField);
             }
@@ -303,8 +308,8 @@ public class OdooConnect {
     //edited by vijay as per requirement
     @SuppressWarnings("unchecked")
     private List<HashMap<String, Object>> search_read_brands(String model, final Integer offset,
-                                                      final Integer limit, Object[] conditions,
-                                                      final Object[] field) {
+                                                             final Integer limit, Object[] conditions,
+                                                             final Object[] field) {
         List<HashMap<String, Object>> result = null;
         try {
             XMLRPCClient client = new XMLRPCClient(mUrl);
@@ -339,7 +344,7 @@ public class OdooConnect {
                         Object f = fRelation.get(1); // 1 => name of brands
                         //String ff =   f+ "," +f0;
                         listFields.put(key, f);
-                        if(f0!=null && !f0.equals("")) {
+                        if (f0 != null && !f0.equals("")) {
                             String newKey = key + "_no";
                             listFields.put(newKey, f0);
                         }

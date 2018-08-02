@@ -300,12 +300,14 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             saveOnDetachFlag = 1;
         } else {
             int sManufactureYear = Integer.valueOf(etYOM.getText().toString().trim());
-            Bitmap bitmap;
-            bitmap = Bitmap.createScaledBitmap(((BitmapDrawable)ivPreview.getDrawable()).getBitmap(), 128, 128, true);
+
+            //convert image to base64 before sending it to server
+            Bitmap bitmap = Bitmap.createScaledBitmap(((BitmapDrawable)ivPreview.getDrawable()).getBitmap(), 128, 128, true);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream .toByteArray();
             String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
             MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, sModelName, sRegNo, sManufactureYear, encodedBitmap);
             myVehicleAsyncTask.execute(String.valueOf(5), "");
             MainActivity.homeInterfaceListener.onHomeCalled("CREATE_CONDITION_SATISFIED", 10, this.getClass().getName(), null);

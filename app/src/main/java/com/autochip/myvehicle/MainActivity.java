@@ -537,18 +537,21 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
     @Override
     public void onAsyncTaskComplete(String sMessage, int nCase, ArrayList<Integer> alID, ArrayList<String> alModelID, ArrayList<Integer> alModelIDNo,
-                                    ArrayList<String> alModelYear, ArrayList<String> alName, ArrayList<String> alLicensePlate, HashSet<Integer> hsModelIDSingleValues) {
+                                    ArrayList<String> alModelYear, ArrayList<String> alName, ArrayList<String> alLicensePlate,
+                                    ArrayList<Bitmap> alDisplayPicture, HashSet<Integer> hsModelIDSingleValues) {
         switch (sMessage) {
             case "READ_DATA_FROM_SERVER":
                 vehicleDataStorage.alID = alID;
-                vehicleDataStorage.alModelID = alModelID;
+                vehicleDataStorage.alModelName = alModelID;
                 vehicleDataStorage.alModelIDNo = alModelIDNo;
                 vehicleDataStorage.alModelYear = alModelYear;
                 vehicleDataStorage.alName = alName;
                 vehicleDataStorage.alLicensePlate = alLicensePlate;
+                vehicleDataStorage.alDisplayPicture = alDisplayPicture;
                 vehicleDataStorage.hsModelIDSingleValues = hsModelIDSingleValues;
 
-                myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alID, alModelID, alLicensePlate, alModelYear);
+                myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alID, alModelID,
+                        alLicensePlate, alModelYear, alDisplayPicture);
                 recyclerView.setAdapter(myVehicleTrackingRVAdapter);
 
                 break;
@@ -560,7 +563,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         switch (sMessage) {
             case "REMOVE_POSITION":
                 vehicleDataStorage.alID.remove(position);
-                vehicleDataStorage.alModelID.remove(position);
+                vehicleDataStorage.alModelName.remove(position);
                 vehicleDataStorage.alLicensePlate.remove(position);
                 vehicleDataStorage.alModelYear.remove(position);
 
@@ -570,7 +573,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
             case "ADDED_NEW_DATA": //adds new data added to server to recyclerview
                 String[] saAddedData = sData.split(",");
                 vehicleDataStorage.alID.add(Integer.valueOf(saAddedData[0]));
-                vehicleDataStorage.alModelID.add(saAddedData[1]);
+                vehicleDataStorage.alModelName.add(saAddedData[1]);
                 vehicleDataStorage.alLicensePlate.add(saAddedData[2]);
                 vehicleDataStorage.alModelYear.add(saAddedData[3]);
 
@@ -640,14 +643,16 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
     class VehicleDataStorage {
         ArrayList<Integer> alID = new ArrayList<>();
-        ArrayList<String> alModelID = new ArrayList<>();
+        ArrayList<String> alModelName = new ArrayList<>();
         ArrayList<Integer> alModelIDNo = new ArrayList<>();
         ArrayList<String> alModelYear = new ArrayList<>();
         ArrayList<String> alName = new ArrayList<>();
         ArrayList<String> alLicensePlate = new ArrayList<>();
+        ArrayList<Bitmap> alDisplayPicture = new ArrayList<>();
+
         HashSet<Integer> hsModelIDSingleValues = new HashSet<>();
 
-        ArrayList<String> alMake = new ArrayList<>();
-        ArrayList<String> alModel = new ArrayList<>();
+        //ArrayList<String> alMake = new ArrayList<>();
+        //ArrayList<String> alModel = new ArrayList<>();
     }
 }
