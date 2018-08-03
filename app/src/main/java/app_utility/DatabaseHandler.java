@@ -582,6 +582,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void deleteVehicleData(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        //db.delete(TABLE_RECENT, KEY_ID + " = ?", new String[] { String.valueOf(recent.getID()) });
+        db.delete(USER_VEHICLE_TABLE, KEY_VEHICLE_ID_ODOO + " = " + id, null);
+        db.close();
+    }
+
     // Getting recent Count
     public int getRecordsCount() {
         int count = 0;

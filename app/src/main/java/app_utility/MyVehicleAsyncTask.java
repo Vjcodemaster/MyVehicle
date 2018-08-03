@@ -72,6 +72,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     //private AsyncInterface asyncInterface;
 
     int deletedPosition;
+    int deletedID;
 
     ArrayList<Integer> alID = new ArrayList<>();
     ArrayList<String> alModelID = new ArrayList<>();
@@ -151,7 +152,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 updateOne2Many(9);
                 break;
             case 7:
-                delete(Integer.valueOf(params[1]));
+                deletedID = Integer.valueOf(params[1]);
+                delete(deletedID);
                 deletedPosition = Integer.valueOf(params[2]); //this is the position of the data that should be deleted
                 break;
             case 8:
@@ -200,12 +202,14 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 break;
             case 5:
                 String saAddedData;
-                saAddedData = String.valueOf(createdId) + "," + sModelName + "," + sRegNo + "," + sManufactureYear;
+                saAddedData = String.valueOf(createdId) + "," + sBrandName + "," + brandID + "," + sModelName + "," + ModelID + "," + sRegNo + ","
+                        + base64Bitmap + "," + sManufactureYear;
+                //saAddedData = String.valueOf(createdId) + "," + sModelName + "," + sRegNo + "," + sManufactureYear;
                 MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("ADDED_NEW_DATA", type, type, saAddedData);
                 Toast.makeText(aActivity, "Vehicle Registered", Toast.LENGTH_LONG).show();
                 break;
             case 7:
-                MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("REMOVE_POSITION", type, deletedPosition, "");
+                MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("REMOVE_POSITION", type, deletedPosition, String.valueOf(deletedID));
                 break;
             case 9:
                 //RegisterVehicleFragment.mListener.onRegisterVehicleFragment("REGISTER_DATA", type, lHMFormatData, lHMBrandNameWithIDAndModelID);
@@ -593,7 +597,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private void readTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle", new Object[]{
-                new Object[]{new Object[]{"create_uid", "=", 107}}}, "id", "image_medium","model_id", "model_year", "name", "license_plate");
+                new Object[]{new Object[]{"create_uid", "=", 107}}}, "id", "image_medium", "model_id", "model_year", "name", "license_plate");
 
 
         for (int i = 0; i < data.size(); ++i) {
@@ -605,7 +609,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             alLicensePlate.add(String.valueOf(data.get(i).get("license_plate").toString()));
             String encodedBitmap = data.get(i).get("image_medium").toString();
 
-            if(!encodedBitmap.equalsIgnoreCase("false")) {
+            if (!encodedBitmap.equalsIgnoreCase("false")) {
                 byte[] decodedString = Base64.decode(encodedBitmap, Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 alDisplayPicture.add(decodedByte);

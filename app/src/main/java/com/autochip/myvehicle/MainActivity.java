@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 //BitmapBase64 is a custom class to convert string to bitmap and vice versa
                 //Bitmap bitmap = BitmapBase64.convertToBitmap(alDBData.get(i).get_image_base64());
                 String base64 = alDBData.get(i).get_image_base64();
-                if(base64!=null) {
+                if (base64 != null) {
                     Bitmap bitmap = BitmapBase64.convertToBitmap(base64);
                     //byte[] decodedString = Base64.decode(alDBData.get(i).get_image_base64(), Base64.DEFAULT);
                     //Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -613,19 +613,40 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 vehicleDataStorage.alID.remove(position);
                 vehicleDataStorage.alModelName.remove(position);
                 vehicleDataStorage.alLicensePlate.remove(position);
+                //vehicleDataStorage.alEncodedDisplayPicture.remove(position);
                 vehicleDataStorage.alModelYear.remove(position);
 
                 myVehicleTrackingRVAdapter.notifyItemRemoved(position);
+
+                if (!sData.equalsIgnoreCase(""))
+                    db.deleteVehicleData(Integer.valueOf(sData));
                 Toast.makeText(MainActivity.this, "Removed selected vehicle permanently", Toast.LENGTH_LONG).show();
                 break;
-            case "ADDED_NEW_DATA": //adds new data added to server to recyclerview
+            case "ADDED_NEW_DATA": //adds new data added to server to recyclerView
                 String[] saAddedData = sData.split(",");
-                vehicleDataStorage.alID.add(Integer.valueOf(saAddedData[0]));
-                vehicleDataStorage.alModelName.add(saAddedData[1]);
-                vehicleDataStorage.alLicensePlate.add(saAddedData[2]);
-                vehicleDataStorage.alModelYear.add(saAddedData[3]);
+                int vehicleID, brandID, modelID;
+                String sBrandName, sModelName, sLicensePlate, sEncodedDP, sModelYear;
 
+                vehicleID = Integer.valueOf(saAddedData[0]);
+                sBrandName = saAddedData[1];
+                brandID = Integer.valueOf(saAddedData[2]);
+                sModelName = saAddedData[3];
+                modelID = Integer.valueOf(saAddedData[4]);
+                sLicensePlate = saAddedData[5];
+                sEncodedDP = saAddedData[6];
+                sModelYear = saAddedData[7];
+
+                vehicleDataStorage.alID.add(vehicleID);
+                vehicleDataStorage.alModelName.add(sModelName);
+                vehicleDataStorage.alLicensePlate.add(sLicensePlate);
+                vehicleDataStorage.alEncodedDisplayPicture.add(sEncodedDP);
+                vehicleDataStorage.alModelYear.add(sModelYear);
+
+                Bitmap bitmap = BitmapBase64.convertToBitmap(sEncodedDP);
+                vehicleDataStorage.alDisplayPicture.add(bitmap);
                 myVehicleTrackingRVAdapter.notifyItemInserted(vehicleDataStorage.alID.size() - 1);
+
+                db.addDataToUserVehicle(new DataBaseHelper(vehicleID, sBrandName, brandID, sModelName, modelID, sLicensePlate, sEncodedDP, sModelYear));
                 break;
         }
     }
@@ -737,7 +758,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         @Override
         protected String doInBackground(String... params) {
-            for(int i=0; i<vehicleDataStorage.alID.size();i++) {
+            for (int i = 0; i < vehicleDataStorage.alID.size(); i++) {
                 String[] saBrandNameSplit = vehicleDataStorage.alName.get(i).split("/");
                 String sBrandID = String.valueOf(db.getBrandIDFromString(saBrandNameSplit[0]));
                 db.addDataToUserVehicle(new DataBaseHelper(vehicleDataStorage.alID.get(i), saBrandNameSplit[0], Integer.valueOf(sBrandID), vehicleDataStorage.alModelName.get(i),
