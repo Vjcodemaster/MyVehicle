@@ -96,7 +96,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_LICENSE_PLATE + " TEXT, "
                 + KEY_IMAGE_BASE64 + " TEXT, "
                 + KEY_MODEL_YEAR + " TEXT)";
-                //+ KEY_MODEL_ID + " TEXT)";
+        //+ KEY_MODEL_ID + " TEXT)";
 
         db.execSQL(CREATE_TABLE_BRANDS);
         db.execSQL(CREATE_TABLE_USER_LIST);
@@ -137,9 +137,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_VEHICLE_ID_ODOO, dataBaseHelper.get_vehicle_id());
         values.put(KEY_BRAND_NAME, dataBaseHelper.get_brand_name());
-        values.put(KEY_BRAND_ID, dataBaseHelper.get_brand_id());
+        values.put(KEY_BRAND_ID, dataBaseHelper.get_brand_id_no());
         values.put(KEY_MODEL_NAME, dataBaseHelper.get_model_name());
-        values.put(KEY_MODEL_ID, dataBaseHelper.get_model_id());
+        values.put(KEY_MODEL_ID, dataBaseHelper.get_model_id_no());
         values.put(KEY_LICENSE_PLATE, dataBaseHelper.get_license_plate());
         values.put(KEY_IMAGE_BASE64, dataBaseHelper.get_image_base64());
         values.put(KEY_MODEL_YEAR, dataBaseHelper.get_model_year());
@@ -260,7 +260,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //gets Name of index to check whether to perform update task in recyclerview or not
     public String getNameFromAllTab(int ID) {
         Cursor cursor = null;
-        String sName = "";
+        String sName;
         SQLiteDatabase db = getReadableDatabase();
         cursor = db.query(REGISTER_TABLE, new String[]{KEY_NAME,
                 }, KEY_ID + "=?",
@@ -364,6 +364,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // return recent list
         return dataBaseHelperList;
     }*/
+    public List<DataBaseHelper> getRowDataFromVehicleTable(int vehicleID) {
+        List<DataBaseHelper> dataBaseHelperList = new ArrayList<>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + USER_VEHICLE_TABLE + " WHERE " + KEY_VEHICLE_ID_ODOO + " = " + vehicleID;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                DataBaseHelper dataBaseHelper = new DataBaseHelper();
+                dataBaseHelper.set_vehicle_id(cursor.getInt(0));
+                dataBaseHelper.set_brand_name(cursor.getString(1));
+                dataBaseHelper.set_brand_id_no(cursor.getInt(2));
+                dataBaseHelper.set_model_name(cursor.getString(3));
+                dataBaseHelper.set_model_id_no(cursor.getInt(4));
+                dataBaseHelper.set_license_plate(cursor.getString(5));
+                dataBaseHelper.set_image_base64(cursor.getString(6));
+                dataBaseHelper.set_model_year(cursor.getString(7));
+                // Adding data to list
+                dataBaseHelperList.add(dataBaseHelper);
+            } while (cursor.moveToNext());
+        }
+        // return recent list
+        return dataBaseHelperList;
+    }
 
     public List<DataBaseHelper> getAllUserVehicleData() {
         List<DataBaseHelper> dataBaseHelperList = new ArrayList<>();

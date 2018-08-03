@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     public static AsyncInterface asyncInterface;
 
     int fileUriRequestCodeFlag = -1;
+    public static int editModeVehicleID;
     public static final int PICTURE_REQUEST_CODE = 1414;
     //private TextView mTextMessage;
     Menu menu;
@@ -169,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 } else {
                     vehicleDataStorage.alDisplayPicture.add(null);
                 }
-
             }
 
             myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, vehicleDataStorage.alID, vehicleDataStorage.alModelName,
@@ -201,10 +201,17 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 tvUpdate.setVisibility(View.GONE);
                 addView.setVisibility(View.VISIBLE);*/
 
-                RegisterFragment.mListener.onInteraction("SELECT_TAB_1", 10, this.getClass().getName());
+                if(sharedPreferenceClass.getEditModeStatus()){
+                    RegisterFragment.mListener.onInteraction("SELECT_TAB_1", 102, this.getClass().getName());
+                    //hasToBePreparedToCreate = true;
+                } else {
+                    RegisterFragment.mListener.onInteraction("SELECT_TAB_1", 101, this.getClass().getName());
+                    //hasToBePreparedToCreate = true;
+                }
+                hasToBePreparedToCreate = true;
                 //RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_CREATE", 10, this.getClass().getName());
 
-                hasToBePreparedToCreate = true;
+
                 /*FragmentManager fm = getSupportFragmentManager();
                 fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);*/
             }
@@ -361,6 +368,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 FragmentTransaction transaction;
                 Bundle bundle = new Bundle();
                 bundle.putInt("index", 0);
+                //bundle.putInt("edit_mode", editMode);
+                //bundle.putInt("vehicle_id", editModeVehicleID);
                 newFragment = new RegisterFragment();
                 newFragment.setArguments(bundle);
 
@@ -392,6 +401,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
             View view = findViewById(R.id.action_add);
             tvUpdate.setVisibility(View.GONE);
             view.setVisibility(View.VISIBLE);
+            sharedPreferenceClass.setEditMode(false); //sets edit mode false so that normal create mode works fine
         }
         super.onBackPressed();
     }
@@ -559,10 +569,17 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 addView.setVisibility(View.VISIBLE);
                 FragmentManager fm = getSupportFragmentManager();
                 fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                MainActivity.hasToBePreparedToCreate = false;
+                hasToBePreparedToCreate = false;
                 break;
             case "EDIT_VEHICLE":
-
+                sharedPreferenceClass.setEditMode(true);
+                View view = findViewById(R.id.action_add);
+                editModeVehicleID = Integer.valueOf(sActivityName); //this is the id of data to fetch from sql lite database
+                view.performClick();
+                //editMode = 1; //this means true and we need to consider for editing not creating in RegisterFragment
+                break;
+            case "EDIT_CONDITION_SATISFIED":
+                sharedPreferenceClass.setEditMode(false);
                 break;
             default:
 

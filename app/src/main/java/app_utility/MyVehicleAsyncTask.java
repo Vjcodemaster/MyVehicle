@@ -70,6 +70,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     //use this for future delete, edit tasks
     private LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID;
     //private AsyncInterface asyncInterface;
+    private HashMap mHMEditedList = new HashMap<>();
 
     int deletedPosition;
     int deletedID;
@@ -87,7 +88,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private String insuranceNo, insuranceVendor, insuranceStartDate, insuranceExpiryDate, insuranceRemainderDate;
 
     private String emissionNo, emissionVendor, emissionStartDate, emissionExpiryDate, emissionRemainderDate;
-    String base64Bitmap;
+    private String base64Bitmap;
 
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
@@ -111,10 +112,10 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         this.base64Bitmap = base64Bitmap;
     }
 
-    /*public MyVehicleAsyncTask(Activity aActivity, AsyncInterface asyncInterface) {
+    public MyVehicleAsyncTask(Activity aActivity, HashMap mHMEditedList) {
         this.aActivity = aActivity;
-        this.asyncInterface = asyncInterface;
-    }*/
+        this.mHMEditedList = mHMEditedList;
+    }
 
     //update task
     public MyVehicleAsyncTask(Context context, double dLatitude, double dLongitude) {

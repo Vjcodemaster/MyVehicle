@@ -1,6 +1,7 @@
 package com.autochip.myvehicle;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,6 +36,8 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
     private TabLayout tabLayout;
 
     int index = 0;
+    int editMode = 0;
+    int editModeVehicleID = -1;
 
     //creating views to hold the view of textView of tablayout
     /*View registerTab;
@@ -49,7 +52,7 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
     Stack<Integer> pageHistory;
     int currentPage;
     boolean saveToHistory;
-
+    Bundle bundle;
     public static OnFragmentInteractionListener mListener;
 
     public RegisterFragment() {
@@ -76,7 +79,14 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (getArguments() != null) {
+            index = getArguments().getInt("index");
+           /* editMode = getArguments().getInt("edit_mode");
+            editModeVehicleID = getArguments().getInt("vehicle_id");
+            bundle = new Bundle();
+            bundle.putInt("edit_mode", editMode);
+            bundle.putInt("vehicle_id", editModeVehicleID);*/
+        }
     }
 
     @Override
@@ -104,9 +114,9 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
             viewShadow.setVisibility(View.VISIBLE);
         }
 
-        if (getArguments() != null) {
+        /*if (getArguments() != null) {
             index = getArguments().getInt("index");
-        }
+        }*/
 
         pageHistory = new Stack<>();
 
@@ -148,12 +158,12 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
             ((LinearLayout) root).setDividerDrawable(drawable);
         }
 
-        //Adding the tabs using addTab() method
-        tabLayout.addTab(tabLayout.newTab().setText("Sessions"));
-        tabLayout.addTab(tabLayout.newTab().setText("Booths"));
-        tabLayout.addTab(tabLayout.newTab().setText("Products"));
-        tabLayout.addTab(tabLayout.newTab().setText("Speakers"));
-        tabLayout.addTab(tabLayout.newTab().setText("Register"));
+        //Adding the tabs using addTab() method tabLayout.addTab(tabLayout.newTab().setText("Sessions"));
+        tabLayout.addTab(tabLayout.newTab());
+        tabLayout.addTab(tabLayout.newTab());
+        tabLayout.addTab(tabLayout.newTab());
+        tabLayout.addTab(tabLayout.newTab());
+        tabLayout.addTab(tabLayout.newTab());
 
         //sets the size of textview of tablayout same
         //tabLayout.setTabGravity(TabLayout.MODE_FIXED);
@@ -244,9 +254,9 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         //call index of the tab depending upon what user clicks on home screen.(index is sent via arguments)
-        if (index > 0) {
+        /*if (index > 0) {
             selectPage(index);
-        }
+        }*/
 
         return view;
     }
@@ -325,7 +335,10 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
         switch (sMessage) {
             case "SELECT_TAB_1":
                 selectPage(0);
-                RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_CREATE", 10, this.getClass().getName());
+                if (nCase == 101)
+                    RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_CREATE", 101, this.getClass().getName());
+                else
+                    RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_EDIT", 102, this.getClass().getName());
                 break;
         }
     }

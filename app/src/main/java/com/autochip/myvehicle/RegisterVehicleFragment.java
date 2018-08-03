@@ -33,9 +33,11 @@ import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import app_utility.BitmapBase64;
 import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
@@ -74,6 +76,9 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     ArrayAdapter<String> adapterMake;
     ArrayAdapter<String> adapterModel;
 
+    String sPreviousMake, sPreviousModel, sPreviousRegNo, sPreviousYOM;
+    Bitmap mPreviousBitmap =null;
+
     //boolean isDBUpdated = false;
 
     private ArrayList<String> alMake = new ArrayList<>();
@@ -95,6 +100,8 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     private File sdImageMainDirectory;
     private Uri outputFileUri;
     private ImageView ivPreview;
+
+    ArrayList<DataBaseHelper> alDBData;
 
     public RegisterVehicleFragment() {
         // Required empty public constructor
@@ -152,8 +159,32 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity());
             myVehicleAsyncTask.execute(String.valueOf(9), "");
         } else {
-            alMake.addAll(db.getAllBrands());
-            adapterMake.notifyDataSetChanged();
+            if (sharedPreferenceClass.getEditModeStatus()) {
+                alMake.addAll(db.getAllBrands());
+                adapterMake.notifyDataSetChanged();
+                int vehicleID = MainActivity.editModeVehicleID;
+                alDBData = new ArrayList<>(db.getRowDataFromVehicleTable(vehicleID));
+                sPreviousMake = alDBData.get(0).get_brand_name();
+                spinnerMake.setSelection(alMake.indexOf(alDBData.get(0).get_brand_name()));
+                //spinnerModel.setSelection(alModel.indexOf(alDBData.get(0).get_model_name()));
+
+                sPreviousRegNo = alDBData.get(0).get_license_plate();
+                etRegNo.setText(alDBData.get(0).get_license_plate());
+
+                sPreviousYOM = alDBData.get(0).get_model_year();
+                etYOM.setText(alDBData.get(0).get_model_year());
+
+                Bitmap bitmap = BitmapBase64.convertToBitmap(alDBData.get(0).get_image_base64());
+
+                if (bitmap != null) {
+                    ivPreview.setImageBitmap(bitmap);
+                    mPreviousBitmap = bitmap;
+                }
+
+            } else {
+                alMake.addAll(db.getAllBrands());
+                adapterMake.notifyDataSetChanged();
+            }
             /*dbDataHelper = new ArrayList<>(db.getAllBrands());
             for(int i=0;i<dbDataHelper.size(); i++) {
                 alMake.add(dbDataHelper.get(i).get_brand_name());
@@ -168,7 +199,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         return view;
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    //@SuppressLint("ClickableViewAccessibility")
     private void init(View view) {
         sharedPreferenceClass = new SharedPreferenceClass(getActivity());
         db = new DatabaseHandler(getActivity());
@@ -244,6 +275,10 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
                 if (alModelNames != null) {
                     alModel.addAll(alModelNames);
                     adapterModel.notifyDataSetChanged();
+                    if (sharedPreferenceClass.getEditModeStatus()) {
+                        spinnerModel.setSelection(alModel.indexOf(alDBData.get(0).get_model_name()));
+                        sPreviousModel = alDBData.get(0).get_model_name();
+                    }
                 }
                 //}
                 /*alModel.clear();
@@ -295,17 +330,17 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         String sRegNo = etRegNo.getText().toString().trim();
 
 
-        if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(etYOM.getText().toString().trim()) || ((BitmapDrawable)ivPreview.getDrawable()).getBitmap()==null) {
+        if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(etYOM.getText().toString().trim()) || ((BitmapDrawable) ivPreview.getDrawable()).getBitmap() == null) {
             Toast.makeText(getActivity(), "Please fill all information including image", Toast.LENGTH_SHORT).show();
             saveOnDetachFlag = 1;
         } else {
             int sManufactureYear = Integer.valueOf(etYOM.getText().toString().trim());
 
             //convert image to base64 before sending it to server
-            Bitmap bitmap = Bitmap.createScaledBitmap(((BitmapDrawable)ivPreview.getDrawable()).getBitmap(), 128, 128, true);
+            Bitmap bitmap = Bitmap.createScaledBitmap(((BitmapDrawable) ivPreview.getDrawable()).getBitmap(), 128, 128, true);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream .toByteArray();
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
             String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
             MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, sModelName, sRegNo, sManufactureYear, encodedBitmap);
@@ -313,6 +348,54 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             MainActivity.homeInterfaceListener.onHomeCalled("CREATE_CONDITION_SATISFIED", 10, this.getClass().getName(), null);
             saveOnDetachFlag = 0;
             isVisibleToUser = false;
+        }
+
+    }
+
+    private void compareData(){
+        String sNewMake = spinnerMake.getSelectedItem().toString();
+        String sNewModel = spinnerModel.getSelectedItem().toString();
+        String sNewYOM = etYOM.getText().toString().trim();
+        String sNewRegNo = etRegNo.getText().toString().trim();
+
+        Bitmap newBitmap = ((BitmapDrawable)ivPreview.getDrawable()).getBitmap();
+
+        sharedPreferenceClass = new SharedPreferenceClass(getActivity());
+        String[] saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
+
+        HashMap mHMEditedList = new HashMap<>();
+        newBitmap.sameAs(mPreviousBitmap);
+        if(!sNewMake.equals(sPreviousMake)){
+            mHMEditedList.put("make", sNewMake);
+        }
+
+        if(!sNewModel.equals(sPreviousModel)){
+            int ModelID = Integer.valueOf(saVehicleInfo[3]);
+            mHMEditedList.put("model_id", ModelID);
+        }
+
+        if(!sNewYOM.equals(sPreviousYOM)){
+            mHMEditedList.put("model_month", 11);
+            mHMEditedList.put("model_year", Integer.valueOf(sNewYOM));
+        }
+
+        if(!sNewRegNo.equals(sPreviousRegNo)){
+            mHMEditedList.put("license_plate", sNewRegNo);
+        }
+
+        if(!newBitmap.sameAs(mPreviousBitmap)){
+            Bitmap bitmap = Bitmap.createScaledBitmap(((BitmapDrawable) ivPreview.getDrawable()).getBitmap(), 128, 128, true);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            mHMEditedList.put("image_medium", encodedBitmap);
+        }
+        if (mHMEditedList.size() == 0) {
+            Toast.makeText(getActivity(), "Nothing is changed", Toast.LENGTH_LONG).show();
+        } else {
+            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), mHMEditedList);
+            myVehicleAsyncTask.execute(String.valueOf(2), "");
         }
 
     }
@@ -425,7 +508,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     @Override
     public void onDetach() {
         super.onDetach();
-        if(saveOnDetachFlag==1) {
+        if (saveOnDetachFlag == 1) {
             saveStateBeforeDetach();
         }
         mListener = null;
@@ -437,6 +520,10 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             case "PREPARE_TO_CREATE":
                 if (isVisibleToUser && MainActivity.hasToBePreparedToCreate)
                     prepareToCreate();
+                break;
+            case "PREPARE_TO_EDIT":
+                if (isVisibleToUser && MainActivity.hasToBePreparedToCreate)
+                    compareData();
                 break;
         }
     }

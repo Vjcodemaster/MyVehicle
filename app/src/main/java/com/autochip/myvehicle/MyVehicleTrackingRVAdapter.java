@@ -127,8 +127,7 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
             btnEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-
+                    MainActivity.homeInterfaceListener.onHomeCalled("EDIT_VEHICLE", position, String.valueOf(alID.get(position)), null);
                 }
             });
 
