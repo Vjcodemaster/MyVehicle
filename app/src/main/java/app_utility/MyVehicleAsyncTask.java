@@ -80,6 +80,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     ArrayList<String> alName = new ArrayList<>();
     ArrayList<String> alLicensePlate = new ArrayList<>();
     ArrayList<Bitmap> alDisplayPicture = new ArrayList<>();
+    ArrayList<String> alEncodedDisplayPicture = new ArrayList<>();
     HashSet<Integer> hsModelIDSingleValues = new HashSet<>();
 
     private String insuranceNo, insuranceVendor, insuranceStartDate, insuranceExpiryDate, insuranceRemainderDate;
@@ -169,10 +170,10 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        JSONArray jsonArray;
+        /*JSONArray jsonArray;
         JSONArray jsonArrayLegs;
         JSONObject jsonExtract;
-        JSONObject jsonResponse;
+        JSONObject jsonResponse;*/
         switch (type) {
             case 1:
                 if (isConnected) {
@@ -191,26 +192,11 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 Log.e("Updating done", "success");
                 break;
             case 3:
-                MainActivity.asyncInterface.onAsyncTaskComplete("READ_DATA_FROM_SERVER", type, alID, alModelID, alModelIDNo, alModelYear, alName, alLicensePlate, alDisplayPicture, hsModelIDSingleValues);
+                MainActivity.asyncInterface.onAsyncTaskComplete("READ_DATA_FROM_SERVER", type, alID, alModelID, alModelIDNo, alModelYear,
+                        alName, alLicensePlate, alDisplayPicture, alEncodedDisplayPicture, hsModelIDSingleValues);
                 //asyncInterface.onResultReceived("UPDATE_LOCATION", type, dLatitude, dLongitude, 0.0, 0.0);
                 break;
             case 4:
-
-
-               /* try {
-                    jsonResponse = new JSONObject(result);
-                    jsonArray = jsonResponse.getJSONArray("routes");
-                    jsonArrayLegs = jsonArray.getJSONObject(0).getJSONArray("legs");
-                    jsonExtract = jsonArrayLegs.getJSONObject(0).getJSONObject("start_location");
-                    String sLatStart = jsonExtract.getString("lat");
-                    String sLongStart = jsonExtract.getString("lng");
-                    jsonExtract = jsonArrayLegs.getJSONObject(0).getJSONObject("end_location");
-                    String sLatEnd = jsonExtract.getString("lat");
-                    String sLongEnd = jsonExtract.getString("lng");
-                    asyncInterface.onResultReceived("UPDATE_LOCATION_ROAD", type, Double.valueOf(sLatStart), Double.valueOf(sLongStart), Double.valueOf(sLatEnd), Double.valueOf(sLongEnd));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
                 break;
             case 5:
                 String saAddedData;
@@ -222,7 +208,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("REMOVE_POSITION", type, deletedPosition, "");
                 break;
             case 9:
-                RegisterVehicleFragment.mListener.onRegisterVehicleFragment("REGISTER_DATA", type, lHMFormatData, lHMBrandNameWithIDAndModelID);
+                //RegisterVehicleFragment.mListener.onRegisterVehicleFragment("REGISTER_DATA", type, lHMFormatData, lHMBrandNameWithIDAndModelID);
+                MainActivity.asyncInterface.onRegisterVehicleFragment("REGISTER_DATA", type, lHMFormatData, lHMBrandNameWithIDAndModelID);
                 break;
         }
 
@@ -622,8 +609,10 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 byte[] decodedString = Base64.decode(encodedBitmap, Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 alDisplayPicture.add(decodedByte);
+                alEncodedDisplayPicture.add(encodedBitmap);
             } else {
                 alDisplayPicture.add(null);
+                alEncodedDisplayPicture.add(null);
             }
         }
         hsModelIDSingleValues.addAll(alModelIDNo);

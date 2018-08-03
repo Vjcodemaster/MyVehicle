@@ -7,6 +7,9 @@ public class DataBaseHelper {
     //private variables
     private int _id;
 
+    private int brand_id;
+    private int model_id;
+
     private String _brand_name;
     private String _brand_id;
     private String _model_name;
@@ -31,12 +34,13 @@ public class DataBaseHelper {
         this._model_id = _model_id;
     }
 
-    public DataBaseHelper(String _brand_name, String _brand_id, String _model_name, String _model_id, String _license_plate,
+    public DataBaseHelper(int _id,String _brand_name, int _brand_id, String _model_name, int _model_id, String _license_plate,
                           String _image_base64, String _model_year){
+        this._id = _id;
         this._brand_name = _brand_name;
-        this._brand_id = _brand_id;
+        this.brand_id = _brand_id;
         this._model_name = _model_name;
-        this._model_id = _model_id;
+        this.model_id = _model_id;
         this._license_plate = _license_plate;
         this._image_base64 = _image_base64;
         this._model_year = _model_year;
@@ -108,10 +112,27 @@ public class DataBaseHelper {
     }
 
     public String get_model_year(){
-        return this._image_base64;
+        return this._model_year;
     }
 
     public void set_model_year(String model_year){
         this._model_year = model_year;
     }
+
+    public int get_brand_id_no(){
+        return this.brand_id;
+    }
+
+    public void set_brand_id_no(int brand_id){
+        this.brand_id = brand_id;
+    }
+
+    public int get_model_id_no(){
+        return this.model_id;
+    }
+
+    public void set_model_id_no(int model_id){
+        this.model_id = model_id;
+    }
+
 }

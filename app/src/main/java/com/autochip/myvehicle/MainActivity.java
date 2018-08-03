@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -19,6 +20,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,10 +37,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 import app_utility.AsyncInterface;
+import app_utility.BitmapBase64;
+import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
+import app_utility.SharedPreferenceClass;
 import dialogs.DialogMultiple;
 
 import static app_utility.StaticReferenceClass.REGISTER_IMAGE_REQUEST_CODE;
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     File root;
 
     Toolbar toolbar;
+    MyVehicleAsyncTask myVehicleAsyncTask;
 
     //int nUserDisplayWidth;
     int nUserDisplayHeight;
@@ -80,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
     private RecyclerView recyclerView;
     public MyVehicleTrackingRVAdapter myVehicleTrackingRVAdapter;
+
+    private SharedPreferenceClass sharedPreferenceClass;
 
     // FOR NAVIGATION VIEW ITEM TEXT COLOR
     /*int[][] states = new int[][]{
@@ -106,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         homeInterfaceListener = this;
         mBitmapCompressListener = this;
         asyncInterface = this;
+        sharedPreferenceClass = new SharedPreferenceClass(MainActivity.this);
         db = new DatabaseHandler(MainActivity.this);
         vehicleDataStorage = new VehicleDataStorage();
 
@@ -133,9 +143,42 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         /*myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alMakeModel, alRegNo, alYearOfManufacture);
         recyclerView.setAdapter(myVehicleTrackingRVAdapter);*/
+        if (!sharedPreferenceClass.getFetchedBrandsFromOdooFirstTime()) {
+            myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
+            myVehicleAsyncTask.execute(String.valueOf(9), "");
+        } else {
+            /*myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
+            myVehicleAsyncTask.execute(String.valueOf(3), "");*/
+            //get data from sqlite and show it in this else condition
+            ArrayList<DataBaseHelper> alDBData = new ArrayList<>(db.getAllUserVehicleData());
+            vehicleDataStorage = new VehicleDataStorage();
+            for (int i = 0; i < alDBData.size(); i++) {
+                vehicleDataStorage.alID.add(alDBData.get(i).get_vehicle_id());
+                vehicleDataStorage.alModelName.add(alDBData.get(i).get_model_name());
+                vehicleDataStorage.alLicensePlate.add(alDBData.get(i).get_license_plate());
+                vehicleDataStorage.alModelYear.add(alDBData.get(i).get_model_year());
 
-        MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
-        myVehicleAsyncTask.execute(String.valueOf(3), "");
+                //BitmapBase64 is a custom class to convert string to bitmap and vice versa
+                //Bitmap bitmap = BitmapBase64.convertToBitmap(alDBData.get(i).get_image_base64());
+                String base64 = alDBData.get(i).get_image_base64();
+                if(base64!=null) {
+                    Bitmap bitmap = BitmapBase64.convertToBitmap(base64);
+                    //byte[] decodedString = Base64.decode(alDBData.get(i).get_image_base64(), Base64.DEFAULT);
+                    //Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    vehicleDataStorage.alDisplayPicture.add(bitmap);
+                } else {
+                    vehicleDataStorage.alDisplayPicture.add(null);
+                }
+
+            }
+
+            myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, vehicleDataStorage.alID, vehicleDataStorage.alModelName,
+                    vehicleDataStorage.alLicensePlate, vehicleDataStorage.alModelYear, vehicleDataStorage.alDisplayPicture);
+            recyclerView.setAdapter(myVehicleTrackingRVAdapter);
+        }
+
+        /*myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
+        myVehicleAsyncTask.execute(String.valueOf(3), "");*/
     }
 
     void init() {
@@ -147,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         tvTitle.setText(R.string.app_name);
 
         tvSubtitle = viewActionBar.findViewById(R.id.tv_actionbar_navigation);
-        tvSubtitle.setText(R.string.title_insurance);
+        //tvSubtitle.setText(R.string.title_insurance);
 
         tvUpdate = viewActionBar.findViewById(R.id.toolbar_tv_update);
 
@@ -518,6 +561,9 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 MainActivity.hasToBePreparedToCreate = false;
                 break;
+            case "EDIT_VEHICLE":
+
+                break;
             default:
 
                 break;
@@ -538,7 +584,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     @Override
     public void onAsyncTaskComplete(String sMessage, int nCase, ArrayList<Integer> alID, ArrayList<String> alModelID, ArrayList<Integer> alModelIDNo,
                                     ArrayList<String> alModelYear, ArrayList<String> alName, ArrayList<String> alLicensePlate,
-                                    ArrayList<Bitmap> alDisplayPicture, HashSet<Integer> hsModelIDSingleValues) {
+                                    ArrayList<Bitmap> alDisplayPicture, ArrayList<String> alEncodedDisplayPicture, HashSet<Integer> hsModelIDSingleValues) {
         switch (sMessage) {
             case "READ_DATA_FROM_SERVER":
                 vehicleDataStorage.alID = alID;
@@ -548,12 +594,14 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 vehicleDataStorage.alName = alName;
                 vehicleDataStorage.alLicensePlate = alLicensePlate;
                 vehicleDataStorage.alDisplayPicture = alDisplayPicture;
+                vehicleDataStorage.alEncodedDisplayPicture = alEncodedDisplayPicture;
                 vehicleDataStorage.hsModelIDSingleValues = hsModelIDSingleValues;
 
                 myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alID, alModelID,
                         alLicensePlate, alModelYear, alDisplayPicture);
                 recyclerView.setAdapter(myVehicleTrackingRVAdapter);
 
+                new addVehicleListAsyncTask().execute();
                 break;
         }
     }
@@ -578,6 +626,48 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 vehicleDataStorage.alModelYear.add(saAddedData[3]);
 
                 myVehicleTrackingRVAdapter.notifyItemInserted(vehicleDataStorage.alID.size() - 1);
+                break;
+        }
+    }
+
+    @Override
+    public void onRegisterVehicleFragment(String sMessage, int nCase, LinkedHashMap<String, ArrayList<String>> lHMFormatData, LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID) {
+        switch (sMessage) {
+            case "REGISTER_DATA":
+
+                ArrayList<String> alMake = new ArrayList<>(lHMFormatData.keySet());
+
+                LinkedHashMap<Integer, ArrayList<Integer>> arrayListLinkedHashMap;
+                ArrayList<String> alModelName;
+                StringBuilder sbModelName, sbModelID;
+                String sModelName = null, sModelID = null;
+
+                for (int i = 0; i < alMake.size(); i++) {
+                    String sBrandKey = alMake.get(i);
+                    arrayListLinkedHashMap = new LinkedHashMap<>(lHMBrandNameWithIDAndModelID.get(alMake.get(i)));
+                    ArrayList<Integer> alBrandKey = new ArrayList<>(arrayListLinkedHashMap.keySet());
+                    alModelName = new ArrayList<>(lHMFormatData.get(sBrandKey));
+                    sbModelName = new StringBuilder();
+                    sbModelID = new StringBuilder();
+                    for (int j = 0; j < alModelName.size(); j++) {
+                        //LinkedHashMap<Integer, ArrayList<Integer>> lHMAllIDS = new LinkedHashMap<>(arrayListLinkedHashMap);
+                        sbModelName.append(alModelName.get(j));
+                        if (j < alModelName.size() - 1)
+                            sbModelName.append(",");
+                        sModelName = sbModelName.toString();
+
+                        ArrayList<Integer> alModelID = new ArrayList<>(arrayListLinkedHashMap.get(alBrandKey.get(0)));
+                        sbModelID.append(alModelID.get(j));
+                        if (j < alModelName.size() - 1)
+                            sbModelID.append(",");
+                        sModelID = sbModelID.toString();
+                        //db.updateMultipleData(new DataBaseHelper(alModelName.get(j), nID), sBrandKey);
+                    }
+                    db.addData(new DataBaseHelper(sBrandKey, String.valueOf(alBrandKey.get(0)), sModelName, sModelID));
+                }
+                sharedPreferenceClass.setFetchedBrandsFromOdooFirstTime(true);
+                myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
+                myVehicleAsyncTask.execute(String.valueOf(3), "");
                 break;
         }
     }
@@ -647,7 +737,13 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         @Override
         protected String doInBackground(String... params) {
-
+            for(int i=0; i<vehicleDataStorage.alID.size();i++) {
+                String[] saBrandNameSplit = vehicleDataStorage.alName.get(i).split("/");
+                String sBrandID = String.valueOf(db.getBrandIDFromString(saBrandNameSplit[0]));
+                db.addDataToUserVehicle(new DataBaseHelper(vehicleDataStorage.alID.get(i), saBrandNameSplit[0], Integer.valueOf(sBrandID), vehicleDataStorage.alModelName.get(i),
+                        vehicleDataStorage.alModelIDNo.get(i), vehicleDataStorage.alLicensePlate.get(i), vehicleDataStorage.alEncodedDisplayPicture.get(i),
+                        vehicleDataStorage.alModelYear.get(i)));
+            }
 
             return null;
         }
@@ -666,6 +762,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         ArrayList<String> alName = new ArrayList<>();
         ArrayList<String> alLicensePlate = new ArrayList<>();
         ArrayList<Bitmap> alDisplayPicture = new ArrayList<>();
+
+        ArrayList<String> alEncodedDisplayPicture = new ArrayList<>();
 
         HashSet<Integer> hsModelIDSingleValues = new HashSet<>();
 

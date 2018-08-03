@@ -90,9 +90,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_TABLE_USER_LIST = "CREATE TABLE " + USER_VEHICLE_TABLE + "("
                 + KEY_VEHICLE_ID_ODOO + " INTEGER PRIMARY KEY, "
                 + KEY_BRAND_NAME + " TEXT, "
-                + KEY_BRAND_ID + " TEXT, "
+                + KEY_BRAND_ID + " INTEGER, "
                 + KEY_MODEL_NAME + " TEXT, "
-                + KEY_MODEL_ID + " TEXT, "
+                + KEY_MODEL_ID + " INTEGER, "
                 + KEY_LICENSE_PLATE + " TEXT, "
                 + KEY_IMAGE_BASE64 + " TEXT, "
                 + KEY_MODEL_YEAR + " TEXT)";
@@ -364,6 +364,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // return recent list
         return dataBaseHelperList;
     }*/
+
+    public List<DataBaseHelper> getAllUserVehicleData() {
+        List<DataBaseHelper> dataBaseHelperList = new ArrayList<>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + USER_VEHICLE_TABLE;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                DataBaseHelper dataBaseHelper = new DataBaseHelper();
+                dataBaseHelper.set_vehicle_id(cursor.getInt(0));
+                dataBaseHelper.set_brand_name(cursor.getString(1));
+                dataBaseHelper.set_brand_id_no(cursor.getInt(2));
+                dataBaseHelper.set_model_name(cursor.getString(3));
+                dataBaseHelper.set_model_id_no(cursor.getInt(4));
+                dataBaseHelper.set_license_plate(cursor.getString(5));
+                dataBaseHelper.set_image_base64(cursor.getString(6));
+                dataBaseHelper.set_model_year(cursor.getString(7));
+                // Adding data to list
+                dataBaseHelperList.add(dataBaseHelper);
+            } while (cursor.moveToNext());
+        }
+        // return recent list
+        return dataBaseHelperList;
+    }
 
     // Getting data
     public List<DataBaseHelper> getAllTabData() {
