@@ -47,7 +47,6 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
         this.alDisplayPicture = alDisplayPicture;
     }
 
-
     @NonNull
     @Override
     public MyVehicleHolder onCreateViewHolder(@NonNull final ViewGroup parent, int viewType) {
@@ -77,7 +76,7 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
         return position;
     }
 
-    public class MyVehicleHolder extends RecyclerView.ViewHolder implements View.OnClickListener, ExpandableLayout.OnExpansionUpdateListener {
+    public class MyVehicleHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, ExpandableLayout.OnExpansionUpdateListener {
         TextView tvMakeModel;
         TextView tvRegNo;
         TextView tvYOM;
@@ -118,7 +117,8 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
             expandableLayout.setInterpolator(new FastOutLinearInInterpolator());
             expandableLayout.setOnExpansionUpdateListener(this);
 
-            llParentExpand.setOnClickListener(this);
+            //llParentExpand.setOnClickListener(this);
+            llParentExpand.setOnLongClickListener(this);
         }
 
         public void bind(final MyVehicleHolder holder) {
@@ -146,7 +146,7 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
             expandableLayout.setExpanded(isSelected, false);
         }
 
-        @Override
+        /*@Override
         public void onClick(View view) {
             MyVehicleHolder holder = (MyVehicleHolder) recyclerView.findViewHolderForAdapterPosition(getAdapterPosition());
             if (holder != null) {
@@ -162,12 +162,31 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
                 expandableLayout.expand();
                 selectedItem = position;
             }
-        }
+        }*/
 
         @Override
         public void onExpansionUpdate(float expansionFraction, int state) {
             if (state == ExpandableLayout.State.EXPANDING) {
                 recyclerView.smoothScrollToPosition(getAdapterPosition());
             }
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            MyVehicleHolder holder = (MyVehicleHolder) recyclerView.findViewHolderForAdapterPosition(getAdapterPosition());
+            if (holder != null) {
+                holder.llParentExpand.setSelected(false);
+                holder.expandableLayout.collapse();
+            }
+
+            int position = getAdapterPosition();
+            if (position == selectedItem) {
+                selectedItem = UNSELECTED;
+            } else {
+                llParentExpand.setSelected(true);
+                expandableLayout.expand();
+                selectedItem = position;
+            }
+            return false;
         }
     }}

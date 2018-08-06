@@ -10,12 +10,14 @@ class SectionsPagerAdapter extends FragmentStatePagerAdapter {
     //integer to count number of tabs
     private int tabCount;
     private FragmentManager fragmentManager;
+    private int viewHeight;
 
-    SectionsPagerAdapter(FragmentManager fragmentManager, int tabCount) {
+    SectionsPagerAdapter(FragmentManager fragmentManager, int tabCount, int viewHeight) {
         super(fragmentManager);
         this.fragmentManager = fragmentManager;
         //Initializing tab count
         this.tabCount = tabCount;
+        this.viewHeight = viewHeight;
     }
 
     @Override
@@ -32,10 +34,10 @@ class SectionsPagerAdapter extends FragmentStatePagerAdapter {
                 fragment = RegisterVehicleFragment.newInstance("", "");
                 break;
             case 1:
-                fragment = InsuranceFragment.newInstance("", "");
+                fragment = InsuranceFragment.newInstance(String.valueOf(viewHeight), "");
                 break;
             case 2:
-                fragment = EmissionFragment.newInstance("", "");
+                fragment = EmissionFragment.newInstance(String.valueOf(viewHeight), "");
                 break;
             case 3:
                 fragment = RCFCFragment.newInstance("", "");

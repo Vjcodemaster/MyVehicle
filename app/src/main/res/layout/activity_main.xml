@@ -48,6 +48,14 @@
                 android:layout_height="match_parent"
                 android:scrollbars="vertical" />
 
+            <!--<android.support.design.widget.BottomNavigationView
+                android:id="@+id/navigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:visibility="visible"
+                android:background="?android:attr/windowBackground"
+                app:menu="@menu/navigation" />-->
             <!--<Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -60,13 +68,14 @@
 
         </FrameLayout>
 
-        <!--<android.support.design.widget.BottomNavigationView
+        <android.support.design.widget.BottomNavigationView
             android:id="@+id/navigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            android:visibility="gone"
             android:background="?android:attr/windowBackground"
-            app:menu="@menu/navigation" />-->
+            app:menu="@menu/navigation" />
 
 
     </FrameLayout>

@@ -76,13 +76,13 @@ public class DialogMultiple implements OnImageUtilsListener {
     public DialogMultiple(Activity aActivity, int nCase, OnImageUtilsListener onImageUtilsListener) {
         this.aActivity = aActivity;
         this.nCase = nCase;
-        onCreate(nCase);
         this.onImageUtilsListener = onImageUtilsListener;
+        onCreate(nCase);
     }
 
     private void onCreate(final int nCase) {
         mListener = this;
-        sharedPreferenceClass = new SharedPreferenceClass(aActivity);
+
         dialog = new android.app.Dialog(aActivity, R.style.CustomDialogTheme90);
         dialog.setContentView(R.layout.dialog_add_allinone);
         dialog.setCancelable(true);
@@ -368,6 +368,7 @@ public class DialogMultiple implements OnImageUtilsListener {
 
         void storeTask(int nType) {
             StringBuilder sb;
+            sharedPreferenceClass = new SharedPreferenceClass(aActivity);
             switch (nType) {
                 case 1:
                     sb = new StringBuilder();

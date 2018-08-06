@@ -49,6 +49,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_IMAGE_BASE64 = "IMAGE_BASE64";
     private static final String KEY_MODEL_YEAR = "MODEL_YEAR";
     private static final String KEY_VEHICLE_ID_ODOO = "VEHICLE_ID_ODOO";
+
+    private static final String KEY_INSURANCE = "INSURANCE_HISTORY";
+    private static final String KEY_EMISSION = "EMISSION_HISTORY";
+
+    private static final String KEY_EMISSION_ID = "INSURANCE_ID";
+    private static final String KEY_INSURANCE_ID = "EMISSION_ID";
     //private static final String KEY_MODEL_NAME = "model_name";
 
 
@@ -79,13 +85,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_UUID + " TEXT, "
                 + KEY_RSSI + " TEXT)";*/
 
-        String CREATE_TABLE_BRANDS = "CREATE TABLE " + REGISTER_TABLE + "("
+        String TABLE_BRANDS = "CREATE TABLE " + REGISTER_TABLE + "("
                 + KEY_BRAND_NAME + " TEXT PRIMARY KEY, "
                 + KEY_BRAND_ID + " TEXT, "
                 + KEY_MODEL_NAME + " TEXT, "
                 + KEY_MODEL_ID + " TEXT)";
 
-        String CREATE_TABLE_USER_LIST = "CREATE TABLE " + USER_VEHICLE_TABLE + "("
+        String TABLE_USER_LIST = "CREATE TABLE " + USER_VEHICLE_TABLE + "("
                 + KEY_VEHICLE_ID_ODOO + " INTEGER PRIMARY KEY, "
                 + KEY_BRAND_NAME + " TEXT, "
                 + KEY_BRAND_ID + " INTEGER, "
@@ -94,10 +100,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_LICENSE_PLATE + " TEXT, "
                 + KEY_IMAGE_BASE64 + " TEXT, "
                 + KEY_MODEL_YEAR + " TEXT)";
+
+        String TABLE_VEHICLE_HISTORY= "CREATE TABLE " + USER_VEHICLE_TABLE + "("
+                + KEY_VEHICLE_ID_ODOO + " INTEGER PRIMARY KEY, "
+                + KEY_INSURANCE + " TEXT, "
+                + KEY_INSURANCE_ID + " INTEGER, "
+                + KEY_EMISSION + " TEXT, "
+                + KEY_EMISSION_ID + " INTEGER)";
         //+ KEY_MODEL_ID + " TEXT)";
 
-        db.execSQL(CREATE_TABLE_BRANDS);
-        db.execSQL(CREATE_TABLE_USER_LIST);
+        db.execSQL(TABLE_BRANDS);
+        db.execSQL(TABLE_USER_LIST);
     }
 
     // Upgrading database

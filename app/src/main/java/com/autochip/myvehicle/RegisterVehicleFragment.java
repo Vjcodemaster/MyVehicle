@@ -11,6 +11,7 @@ import android.content.res.XmlResourceParser;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -314,7 +315,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     }
 
     private void prepareToCreate() {
-        sharedPreferenceClass = new SharedPreferenceClass(getActivity());
+        //sharedPreferenceClass = new SharedPreferenceClass(getActivity());
         String[] saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
         //int sBrandID = spinnerMake.getSelectedItemPosition();
         String sBrandName = saVehicleInfo[0];
@@ -363,7 +364,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
 
         Bitmap newBitmap = ((BitmapDrawable) ivPreview.getDrawable()).getBitmap();
 
-        sharedPreferenceClass = new SharedPreferenceClass(getActivity());
+        //sharedPreferenceClass = new SharedPreferenceClass(getActivity());
         //String[] saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
 
         HashMap<String, Object> mHMEditedList = new HashMap<>();
@@ -491,14 +492,24 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     }*/
 
     private void saveStateBeforeDetach() {
-        String sBrandName = spinnerMake.getSelectedItem().toString().trim();
+        if (spinnerMake.getSelectedItem() != null && spinnerModel.getSelectedItem() != null) {
+            final String sBrandName = spinnerMake.getSelectedItem().toString().trim();
+            final String sModelName = spinnerModel.getSelectedItem().toString().trim();
+
+            int brandID = db.getBrandIDFromString(sBrandName);
+
+            int sModelPosition = spinnerModel.getSelectedItemPosition();
+            int ModelID = db.getModelIDFromSelectedModelName(sBrandName, sModelPosition);
+            sharedPreferenceClass.setVehicleInfo(sBrandName + "," + brandID + "," + sModelPosition + "," + ModelID + "," + sModelName);
+        }
+        /*String sBrandName = spinnerMake.getSelectedItem().toString().trim();
         int brandID = db.getBrandIDFromString(sBrandName);
 
         int sModelPosition = spinnerModel.getSelectedItemPosition();
         int ModelID = db.getModelIDFromSelectedModelName(sBrandName, sModelPosition);
-        String sModelName = spinnerModel.getSelectedItem().toString().trim();
+        String sModelName = spinnerModel.getSelectedItem().toString().trim();*/
 
-        sharedPreferenceClass.setVehicleInfo(sBrandName + "," + brandID + "," + sModelPosition + "," + ModelID + "," + sModelName);
+
     }
 
     @Override
@@ -514,11 +525,12 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
 
     @Override
     public void onDetach() {
-        super.onDetach();
+
         if (saveOnDetachFlag == 1) {
             saveStateBeforeDetach();
         }
         mListener = null;
+        super.onDetach();
     }
 
     @Override

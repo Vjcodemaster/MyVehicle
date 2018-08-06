@@ -110,7 +110,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-            //viewHeight = Integer.valueOf(mParam1);
+            viewHeight = Integer.valueOf(mParam1);
         }
     }
 

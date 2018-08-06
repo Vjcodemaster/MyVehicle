@@ -8,17 +8,17 @@
     tools:context=".RegisterVehicleFragment">
 
     <LinearLayout
+        android:id="@+id/ll_parent_register"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/ll_parent_register"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="15dp"
-            android:background="@drawable/bg_edittext_statelist"
-            android:layout_gravity="center">
+            android:background="@drawable/bg_edittext_statelist">
 
             <Spinner
                 android:id="@+id/spinner_vehicle"
@@ -33,9 +33,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:background="@drawable/bg_edittext_statelist"
-            android:layout_gravity="center">
+            android:background="@drawable/bg_edittext_statelist">
 
             <Spinner
                 android:id="@+id/spinner_make"
@@ -50,9 +50,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:background="@drawable/bg_edittext_statelist"
-            android:layout_gravity="center">
+            android:background="@drawable/bg_edittext_statelist">
 
             <Spinner
                 android:id="@+id/spinner_model"
@@ -149,23 +149,69 @@
 
         <TextView
             android:id="@+id/tv_add_photo"
-            android:hint="Add photo :"
-            android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
             android:drawableEnd="@android:drawable/ic_menu_camera"
             android:drawablePadding="2dp"
-            android:layout_gravity="center"
             android:gravity="center"
+            android:hint="Add photo :"
             android:textAppearance="@android:style/TextAppearance.Medium" />
 
         <ImageView
             android:id="@+id/iv_preview"
-            android:layout_marginTop="10dp"
             android:layout_width="60dp"
-            android:layout_gravity="center"
             android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
             android:contentDescription="@string/title_home" />
+
     </LinearLayout>
 
+    <!--<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/veryLightGrey" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal">
+
+            <Button
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="Insurance" />
+
+            <Button
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Emission" />
+
+            <Button
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RC/FC" />
+
+            <Button
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Service" />
+        </LinearLayout>
+    </LinearLayout>-->
 </FrameLayout>

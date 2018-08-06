@@ -35,9 +35,10 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
     private ViewPager mViewPager;
     private TabLayout tabLayout;
 
+    int viewHeight = 0;
     int index = 0;
-    int editMode = 0;
-    int editModeVehicleID = -1;
+    // int editMode = 0;
+    // int editModeVehicleID = -1;
 
     //creating views to hold the view of textView of tablayout
     /*View registerTab;
@@ -81,6 +82,7 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             index = getArguments().getInt("index");
+            viewHeight = getArguments().getInt("view_height");
            /* editMode = getArguments().getInt("edit_mode");
             editModeVehicleID = getArguments().getInt("vehicle_id");
             bundle = new Bundle();
@@ -250,7 +252,7 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
             }
         });
 
-        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager(), 5);
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager(), 5, viewHeight);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         //call index of the tab depending upon what user clicks on home screen.(index is sent via arguments)
@@ -339,6 +341,12 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
                     RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_CREATE", 101, this.getClass().getName());
                 else
                     RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_EDIT", 102, this.getClass().getName());
+                break;
+            case "SELECT_TAB_ONLY":
+                String regexStr = "^[0-9]*$";
+                if (sActivityName.matches(regexStr))
+                    viewHeight = Integer.valueOf(sActivityName);
+                selectPage(nCase);
                 break;
         }
     }

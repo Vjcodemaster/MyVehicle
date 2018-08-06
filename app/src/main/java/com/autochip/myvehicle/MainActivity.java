@@ -3,13 +3,17 @@ package com.autochip.myvehicle;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -24,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -39,6 +44,7 @@ import java.util.LinkedHashMap;
 
 import app_utility.AsyncInterface;
 import app_utility.BitmapBase64;
+import app_utility.BottomNavigationViewHelper;
 import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
@@ -54,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     public static AsyncInterface asyncInterface;
 
     int fileUriRequestCodeFlag = -1;
+    int previousItemID;
     public static int editModeVehicleID, adapterPosition;
     public static final int PICTURE_REQUEST_CODE = 1414;
     //private TextView mTextMessage;
@@ -79,7 +86,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     int[] nOffSetLocation;
     int nDisplayDDXOffSet; //display drop down x off set
     int nDisplayOffSetD3;
-    //int viewHeight;
+    int viewHeight;
+    FragmentTransaction transaction;
 
     public static boolean hasToBePreparedToCreate = false;
     private CircularProgressBar circularProgressBar;
@@ -90,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     private SharedPreferenceClass sharedPreferenceClass;
 
     // FOR NAVIGATION VIEW ITEM TEXT COLOR
-    /*int[][] states = new int[][]{
+    int[][] states = new int[][]{
             new int[]{-android.R.attr.state_checked},  // unchecked
             new int[]{android.R.attr.state_checked},   // checked
             new int[]{}                                // default
@@ -102,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
             Color.parseColor("#03A9F4"),
             Color.parseColor("#757575"),
     };
-    BottomNavigationView navigation;*/
+    BottomNavigationView navigation;
 
 
     @Override
@@ -207,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                     RegisterFragment.mListener.onInteraction("SELECT_TAB_1", 101, this.getClass().getName());
                     //hasToBePreparedToCreate = true;
                 }
+                navigation.setVisibility(View.VISIBLE);
 
                 //RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_CREATE", 10, this.getClass().getName());
 
@@ -230,14 +239,14 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         getSupportActionBar().setDisplayShowCustomEnabled(true);
 
         //mTextMessage = findViewById(R.id.message);
-        /*navigation = findViewById(R.id.navigation);
+        navigation = findViewById(R.id.navigation);
         ColorStateList navigationViewColorStateList = new ColorStateList(states, colors);
         navigation.setItemIconTintList(navigationViewColorStateList);
         navigation.setItemTextColor(navigationViewColorStateList);
-        navigation.setVisibility(View.GONE);*/
+        //navigation.setVisibility(View.GONE);
         //navigation.getMenu().getItem(0).setCheckable(false);
-
-        //setUpBottomNavigationContent(navigation);
+        BottomNavigationViewHelper.removeShiftMode(navigation);
+        setUpBottomNavigationContent(navigation);
 
         /*
         we will use the height of bottom navigation view to set as margin for insuranceFragment floating button.
@@ -336,18 +345,80 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
                     transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_up);
                     transaction.replace(R.id.container, newFragment, null);
-                    transaction.addToBackStack(sBackStack);
+                    transaction.addToBackStack(null);
                     transaction.commit();
                     show(view, findViewById(R.id.container));
                 }
-                *//*if(fm.getFragments().size()>1){
+                FragmentManager fm = getSupportFragmentManager();
+                if(fm.getFragments().size()>1){
                     getSupportFragmentManager().popBackStack(getSupportFragmentManager().getBackStackEntryAt(0).getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                }*//*
+                }
                 return false;
             }
         });
     }*/
 
+
+    private void setUpBottomNavigationContent(final BottomNavigationView navigationView) {
+
+        //String backStateName;
+
+        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            Fragment newFragment = null;
+            FragmentTransaction transaction;
+            //Bundle bundle;
+            String sBackStack = "";
+            Bundle bundle;
+
+            //int nMenuVisibility;
+            //boolean isFragmentVisible;
+            View view;
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemID = item.getItemId();
+                if (previousItemID != itemID) {
+                    switch (itemID) {
+                        case R.id.navigation_register:
+                            //item.setCheckable(true);
+                            //commented frm here 31-07
+                            view = findViewById(R.id.navigation_register);
+                            item.setChecked(true);
+                            RegisterFragment.mListener.onInteraction("SELECT_TAB_ONLY", 0, this.getClass().getName());
+                            break;
+                        case R.id.navigation_insurance:
+                            //item.setCheckable(true);
+                            view = findViewById(R.id.navigation_insurance);
+                            item.setChecked(true);
+                            RegisterFragment.mListener.onInteraction("SELECT_TAB_ONLY", 1, String.valueOf(viewHeight));
+                            break;
+                        case R.id.navigation_Emission:
+                            //item.setCheckable(true);
+                            view = findViewById(R.id.navigation_Emission);
+                            item.setChecked(true);
+                            RegisterFragment.mListener.onInteraction("SELECT_TAB_ONLY", 2, String.valueOf(viewHeight));
+                            break;
+                        case R.id.navigation_rc_fc:
+                            //item.setCheckable(true);
+                            view = findViewById(R.id.navigation_rc_fc);
+                            item.setChecked(true);
+                            RegisterFragment.mListener.onInteraction("SELECT_TAB_ONLY", 3, this.getClass().getName());
+                            break;
+                        case R.id.navigation_service_history:
+                            //item.setCheckable(true);
+                            view = findViewById(R.id.navigation_service_history);
+                            item.setChecked(true);
+                            RegisterFragment.mListener.onInteraction("SELECT_TAB_ONLY", 4, this.getClass().getName());
+                            break;
+                    }
+
+                    show(view, findViewById(R.id.container));
+                    previousItemID = itemID;
+                }
+                return false;
+            }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -360,14 +431,29 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         View view;
+
         switch (item.getItemId()) {
             case R.id.action_add:
+                navigation.setVisibility(View.VISIBLE);
+                ViewTreeObserver viewTreeObserver = navigation.getViewTreeObserver();
+                if (viewTreeObserver.isAlive()) {
+                    viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            viewHeight = navigation.getHeight();
+                            if (viewHeight != 0) {
+                                //RegisterFragment.mListener.onInteraction("SELECT_TAB_ONLY", 0, String.valueOf(viewHeight));
+                                navigation.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            }
+                            //viewWidth = view.getWidth();
+                        }
+                    });
+                }
                 //startCircularReveal(findViewById(R.id.action_add));
                 Fragment newFragment;
-                FragmentTransaction transaction;
                 Bundle bundle = new Bundle();
                 bundle.putInt("index", 0);
-                //bundle.putInt("edit_mode", editMode);
+                bundle.putInt("view_height", viewHeight);
                 //bundle.putInt("vehicle_id", editModeVehicleID);
                 newFragment = new RegisterFragment();
                 newFragment.setArguments(bundle);
@@ -379,6 +465,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 transaction.replace(R.id.container, newFragment, null);
                 transaction.addToBackStack(null);
                 transaction.commit();
+                //transaction.commit();
+
 
                 view = findViewById(R.id.action_add);
                 show(view, findViewById(R.id.container));
@@ -387,7 +475,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 view.setVisibility(View.GONE);
                 tvUpdate.setVisibility(View.VISIBLE);
                 tvSubtitle.setText(R.string.register);
-                //navigation.setVisibility(View.VISIBLE);
+
+
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -397,10 +486,11 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     public void onBackPressed() {
         int size = getSupportFragmentManager().getFragments().size();
         if (size == 1) {
+            sharedPreferenceClass.setEditMode(false); //sets edit mode false so that normal create mode works fine
             View view = findViewById(R.id.action_add);
             tvUpdate.setVisibility(View.GONE);
             view.setVisibility(View.VISIBLE);
-            sharedPreferenceClass.setEditMode(false); //sets edit mode false so that normal create mode works fine
+            navigation.setVisibility(View.GONE); //added 06-08
         }
         super.onBackPressed();
     }
@@ -588,6 +678,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 addView.setVisibility(View.VISIBLE);
                 fm = getSupportFragmentManager();
                 fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                navigation.setVisibility(View.GONE); // 06-08
 
                 ArrayList<DataBaseHelper> alDBData = new ArrayList<>(db.getAllUserVehicleData());
                 vehicleDataStorage = new VehicleDataStorage();
