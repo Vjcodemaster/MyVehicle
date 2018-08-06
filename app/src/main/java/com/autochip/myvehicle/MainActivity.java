@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,7 +19,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     public static AsyncInterface asyncInterface;
 
     int fileUriRequestCodeFlag = -1;
-    public static int editModeVehicleID;
+    public static int editModeVehicleID, adapterPosition;
     public static final int PICTURE_REQUEST_CODE = 1414;
     //private TextView mTextMessage;
     Menu menu;
@@ -183,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
     void init() {
         circularProgressBar = new CircularProgressBar(MainActivity.this, false);
+        sharedPreferenceClass.setEditMode(false); //sets edit mode to false on every start to avoid problems with adding / updating
         toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         viewActionBar = View.inflate(MainActivity.this, R.layout.toolbar_textview, null);
@@ -200,15 +199,15 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 /*View addView = findViewById(R.id.action_add);
                 tvUpdate.setVisibility(View.GONE);
                 addView.setVisibility(View.VISIBLE);*/
-
-                if(sharedPreferenceClass.getEditModeStatus()){
+                hasToBePreparedToCreate = true;
+                if (sharedPreferenceClass.getEditModeStatus()) {
                     RegisterFragment.mListener.onInteraction("SELECT_TAB_1", 102, this.getClass().getName());
                     //hasToBePreparedToCreate = true;
                 } else {
                     RegisterFragment.mListener.onInteraction("SELECT_TAB_1", 101, this.getClass().getName());
                     //hasToBePreparedToCreate = true;
                 }
-                hasToBePreparedToCreate = true;
+
                 //RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_CREATE", 10, this.getClass().getName());
 
 
@@ -552,6 +551,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
     @Override
     public void onHomeCalled(String sMessage, int nCase, String sActivityName, Uri outputFileUri) {
+        FragmentManager fm;
+        View addView;
         switch (sMessage) {
             case "SHOW_PROGRESS_BAR":
                 showProgressBar();
@@ -564,22 +565,54 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 /*this is called from RegisterVehicleFragment to let know that all the information user has entered is correct and can proceed
                 to following operations
                  */
-                View addView = findViewById(R.id.action_add);
+                addView = findViewById(R.id.action_add);
                 tvUpdate.setVisibility(View.GONE);
                 addView.setVisibility(View.VISIBLE);
-                FragmentManager fm = getSupportFragmentManager();
+                fm = getSupportFragmentManager();
                 fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 hasToBePreparedToCreate = false;
                 break;
             case "EDIT_VEHICLE":
                 sharedPreferenceClass.setEditMode(true);
                 View view = findViewById(R.id.action_add);
+                adapterPosition = nCase;
                 editModeVehicleID = Integer.valueOf(sActivityName); //this is the id of data to fetch from sql lite database
                 view.performClick();
                 //editMode = 1; //this means true and we need to consider for editing not creating in RegisterFragment
                 break;
             case "EDIT_CONDITION_SATISFIED":
                 sharedPreferenceClass.setEditMode(false);
+                hasToBePreparedToCreate = false;
+                addView = findViewById(R.id.action_add);
+                tvUpdate.setVisibility(View.GONE);
+                addView.setVisibility(View.VISIBLE);
+                fm = getSupportFragmentManager();
+                fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                ArrayList<DataBaseHelper> alDBData = new ArrayList<>(db.getAllUserVehicleData());
+                vehicleDataStorage = new VehicleDataStorage();
+                for (int i = 0; i < alDBData.size(); i++) {
+                    vehicleDataStorage.alID.add(alDBData.get(i).get_vehicle_id());
+                    vehicleDataStorage.alModelName.add(alDBData.get(i).get_model_name());
+                    vehicleDataStorage.alLicensePlate.add(alDBData.get(i).get_license_plate());
+                    vehicleDataStorage.alModelYear.add(alDBData.get(i).get_model_year());
+
+                    //BitmapBase64 is a custom class to convert string to bitmap and vice versa
+                    //Bitmap bitmap = BitmapBase64.convertToBitmap(alDBData.get(i).get_image_base64());
+                    String base64 = alDBData.get(i).get_image_base64();
+                    if (base64 != null) {
+                        Bitmap bitmap = BitmapBase64.convertToBitmap(base64);
+                        //byte[] decodedString = Base64.decode(alDBData.get(i).get_image_base64(), Base64.DEFAULT);
+                        //Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        vehicleDataStorage.alDisplayPicture.add(bitmap);
+                    } else {
+                        vehicleDataStorage.alDisplayPicture.add(null);
+                    }
+                }
+
+                myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, vehicleDataStorage.alID, vehicleDataStorage.alModelName,
+                        vehicleDataStorage.alLicensePlate, vehicleDataStorage.alModelYear, vehicleDataStorage.alDisplayPicture);
+                recyclerView.setAdapter(myVehicleTrackingRVAdapter);
                 break;
             default:
 

@@ -46,11 +46,10 @@ public class DataBaseHelper {
         this._model_year = _model_year;
     }
 
-    public DataBaseHelper(String _model_name, String _model_id){
-        //this._brand_name = _brand_name;
-        //this._brand_id = _brand_id;
-        this._model_name = _model_name;
-        this._model_id = _model_id;
+    public DataBaseHelper(String _license_plate, String _image_base64, String _model_year){
+        this._license_plate = _license_plate;
+        this._image_base64 = _image_base64;
+        this._model_year = _model_year;
     }
 
     // getting brandname

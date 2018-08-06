@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static android.app.DownloadManager.COLUMN_ID;
-
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -541,7 +539,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }*/
 
     // Updating single data in all tab
-    public int updateMultipleData(DataBaseHelper dataBaseHelper, String KEY_ID) {
+    /*public int updateMultipleData(DataBaseHelper dataBaseHelper, String KEY_ID) {
         SQLiteDatabase db = this.getWritableDatabase();
         //String column = "last_seen";
         ContentValues values = new ContentValues();
@@ -555,9 +553,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // updating row
         //return db.update(TABLE_RECENT, values, column + "last_seen", new String[] {String.valueOf(KEY_ID)});
         return db.update(REGISTER_TABLE, values, "BRAND_NAME" + " = " + KEY_ID, null);
-        /*ContentValues data=new ContentValues();
+        *//*ContentValues data=new ContentValues();
         data.put("Field1","bob");
-        DB.update(Tablename, data, "_id=" + id, null);*/
+        DB.update(Tablename, data, "_id=" + id, null);*//*
+    }*/
+
+    public void updateRowDataByVehicleID(DataBaseHelper dataBaseHelper, int VEHICLE_ID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        String sLicensePlate = dataBaseHelper.get_license_plate();
+        String sBase64Image = dataBaseHelper.get_image_base64();
+        String sModelYear = dataBaseHelper.get_model_year();
+        if (sLicensePlate != null && !sLicensePlate.equals(""))
+            values.put(KEY_LICENSE_PLATE, dataBaseHelper.get_license_plate());
+        if (sBase64Image != null && !sBase64Image.equals(""))
+            values.put(KEY_IMAGE_BASE64, dataBaseHelper.get_image_base64());
+        if (sModelYear != null && !sModelYear.equals(""))
+            values.put(KEY_MODEL_YEAR, dataBaseHelper.get_model_year());
+
+        // updating row
+        //return db.update(TABLE_RECENT, values, column + "last_seen", new String[] {String.valueOf(KEY_ID)});
+        if (values.size() >= 1)
+            db.update(USER_VEHICLE_TABLE, values, KEY_VEHICLE_ID_ODOO + " = " + VEHICLE_ID, null);
     }
 
     // Updating single data

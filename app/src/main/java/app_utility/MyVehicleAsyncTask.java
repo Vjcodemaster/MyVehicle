@@ -72,6 +72,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     //private AsyncInterface asyncInterface;
     private HashMap mHMEditedList = new HashMap<>();
 
+    int vehicleID;
     int deletedPosition;
     int deletedID;
 
@@ -89,6 +90,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
     private String emissionNo, emissionVendor, emissionStartDate, emissionExpiryDate, emissionRemainderDate;
     private String base64Bitmap;
+    private DatabaseHandler db;
 
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
@@ -112,9 +114,11 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         this.base64Bitmap = base64Bitmap;
     }
 
-    public MyVehicleAsyncTask(Activity aActivity, HashMap mHMEditedList) {
+    public MyVehicleAsyncTask(Activity aActivity, HashMap mHMEditedList, int vehicleID, DatabaseHandler db) {
         this.aActivity = aActivity;
         this.mHMEditedList = mHMEditedList;
+        this.vehicleID = vehicleID;
+        this.db = db;
     }
 
     //update task
@@ -192,6 +196,17 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 }
                 break;
             case 2:
+                String sLicensePlate = "";
+                String sModelYear = "";
+                String base64Image = "";
+                if (mHMEditedList.containsKey("license_plate"))
+                    sLicensePlate = mHMEditedList.get("license_plate").toString();
+                if (mHMEditedList.containsKey("model_year"))
+                    sModelYear = mHMEditedList.get("model_year").toString();
+                if (mHMEditedList.containsKey("image_medium"))
+                    base64Image = mHMEditedList.get("image_medium").toString();
+                db.updateRowDataByVehicleID(new DataBaseHelper(sLicensePlate, base64Image, sModelYear), vehicleID);
+                MainActivity.homeInterfaceListener.onHomeCalled("EDIT_CONDITION_SATISFIED", type, "", null);
                 Log.e("Updating done", "success");
                 break;
             case 3:
@@ -563,9 +578,9 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             //final String n = "Vijay";
             final String p = "";
             final String e = String.valueOf(dLatitude) + "," + String.valueOf(dLongitude);
-            int id;
+            //int id;
 
-            id = 104;
+            //id = 104;
             // Create record
             @SuppressWarnings("unchecked")
             /*Integer idC = oc.create("fleet.vehicle", new HashMap() {{
@@ -575,14 +590,16 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             }});*/
 
 
-                    Boolean idC = oc.write("fleet.vehicle", new Object[]{id}, new HashMap() {{
+                    /*Boolean idC = oc.write("fleet.vehicle", new Object[]{id}, new HashMap() {{
                 //put("name", n);
                 //put("phone", p);
                 //put("email", e);
                 put("initial_reg_no", "KA 50 YU 5110");
                 //put("name", "product.template");
                 //put("model_id","Audi A3");
-            }});
+            }});*/
+
+                    Boolean idC = oc.write("fleet.vehicle", new Object[]{vehicleID}, mHMEditedList);
 
             msgResult += "Id of customer updated: " + idC.toString();
             Log.e("Update result", msgResult);

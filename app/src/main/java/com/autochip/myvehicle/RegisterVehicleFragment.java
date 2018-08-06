@@ -45,6 +45,7 @@ import app_utility.SharedPreferenceClass;
 
 import static app_utility.StaticReferenceClass.REGISTER_IMAGE_REQUEST_CODE;
 import static com.autochip.myvehicle.MainActivity.PICTURE_REQUEST_CODE;
+import static com.autochip.myvehicle.MainActivity.editModeVehicleID;
 
 
 /**
@@ -77,7 +78,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     ArrayAdapter<String> adapterModel;
 
     String sPreviousMake, sPreviousModel, sPreviousRegNo, sPreviousYOM;
-    Bitmap mPreviousBitmap =null;
+    Bitmap mPreviousBitmap = null;
 
     //boolean isDBUpdated = false;
 
@@ -174,11 +175,13 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
                 sPreviousYOM = alDBData.get(0).get_model_year();
                 etYOM.setText(alDBData.get(0).get_model_year());
 
-                Bitmap bitmap = BitmapBase64.convertToBitmap(alDBData.get(0).get_image_base64());
+                if (alDBData.get(0).get_image_base64() != null) {
+                    Bitmap bitmap = BitmapBase64.convertToBitmap(alDBData.get(0).get_image_base64());
 
-                if (bitmap != null) {
+                    //if (bitmap != null) {
                     ivPreview.setImageBitmap(bitmap);
                     mPreviousBitmap = bitmap;
+                    //}
                 }
 
             } else {
@@ -352,38 +355,42 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
 
     }
 
-    private void compareData(){
+    private void compareData() {
         String sNewMake = spinnerMake.getSelectedItem().toString();
         String sNewModel = spinnerModel.getSelectedItem().toString();
         String sNewYOM = etYOM.getText().toString().trim();
         String sNewRegNo = etRegNo.getText().toString().trim();
 
-        Bitmap newBitmap = ((BitmapDrawable)ivPreview.getDrawable()).getBitmap();
+        Bitmap newBitmap = ((BitmapDrawable) ivPreview.getDrawable()).getBitmap();
 
         sharedPreferenceClass = new SharedPreferenceClass(getActivity());
-        String[] saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
+        //String[] saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
 
-        HashMap mHMEditedList = new HashMap<>();
+        HashMap<String, Object> mHMEditedList = new HashMap<>();
         newBitmap.sameAs(mPreviousBitmap);
-        if(!sNewMake.equals(sPreviousMake)){
+        if (!sNewMake.equals(sPreviousMake)) {
             mHMEditedList.put("make", sNewMake);
         }
 
-        if(!sNewModel.equals(sPreviousModel)){
-            int ModelID = Integer.valueOf(saVehicleInfo[3]);
+        String sBrandName = spinnerMake.getSelectedItem().toString().trim();
+        int sModelPosition = spinnerModel.getSelectedItemPosition();
+        int ModelID = db.getModelIDFromSelectedModelName(sBrandName, sModelPosition);
+
+        if (!sNewModel.equals(sPreviousModel)) {
+            //int ModelID = Integer.valueOf(saVehicleInfo[3]);
             mHMEditedList.put("model_id", ModelID);
         }
 
-        if(!sNewYOM.equals(sPreviousYOM)){
+        if (!sNewYOM.equals(sPreviousYOM)) {
             mHMEditedList.put("model_month", 11);
             mHMEditedList.put("model_year", Integer.valueOf(sNewYOM));
         }
 
-        if(!sNewRegNo.equals(sPreviousRegNo)){
+        if (!sNewRegNo.equals(sPreviousRegNo)) {
             mHMEditedList.put("license_plate", sNewRegNo);
         }
 
-        if(!newBitmap.sameAs(mPreviousBitmap)){
+        if (!newBitmap.sameAs(mPreviousBitmap)) {
             Bitmap bitmap = Bitmap.createScaledBitmap(((BitmapDrawable) ivPreview.getDrawable()).getBitmap(), 128, 128, true);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
@@ -392,9 +399,9 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             mHMEditedList.put("image_medium", encodedBitmap);
         }
         if (mHMEditedList.size() == 0) {
-            Toast.makeText(getActivity(), "Nothing is changed", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Nothing has changed", Toast.LENGTH_LONG).show();
         } else {
-            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), mHMEditedList);
+            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), mHMEditedList, editModeVehicleID, db);
             myVehicleAsyncTask.execute(String.valueOf(2), "");
         }
 
