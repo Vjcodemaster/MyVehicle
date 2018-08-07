@@ -2,8 +2,10 @@ package com.autochip.myvehicle;
 
 import android.animation.Animator;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -27,6 +29,7 @@ import android.view.ViewAnimationUtils;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +42,7 @@ import java.util.LinkedHashMap;
 
 import app_utility.AsyncInterface;
 import app_utility.BitmapBase64;
+import app_utility.CircleImageView;
 import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
@@ -90,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
     private SharedPreferenceClass sharedPreferenceClass;
 
+    Dialog dialogViewInfo;
     // FOR NAVIGATION VIEW ITEM TEXT COLOR
     /*int[][] states = new int[][]{
             new int[]{-android.R.attr.state_checked},  // unchecked
@@ -656,10 +661,62 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                         vehicleDataStorage.alLicensePlate, vehicleDataStorage.alModelYear, vehicleDataStorage.alDisplayPicture);
                 recyclerView.setAdapter(myVehicleTrackingRVAdapter);
                 break;
+                case "VIEW_VEHICLE_INFO":
+                    adapterPosition = nCase;
+                    editModeVehicleID = Integer.valueOf(sActivityName); //this is the id of data to fetch from sql lite database
+                    initVehicleInfoDialog();
+                    dialogViewInfo.show();
+                    break;
             default:
 
                 break;
         }
+    }
+
+    public void initVehicleInfoDialog() {
+        dialogViewInfo = new Dialog(MainActivity.this, R.style.CustomDialogTheme90);
+        dialogViewInfo.setContentView(R.layout.dialog_insurance);
+        dialogViewInfo.setCancelable(true);
+
+        CircleImageView civDP = dialogViewInfo.findViewById(R.id.civ_dp);
+        ImageButton ibEdit = dialogViewInfo.findViewById(R.id.ib_edit);
+        ImageButton ibClose = dialogViewInfo.findViewById(R.id.ib_close);
+        TextView tvBrandName = dialogViewInfo.findViewById(R.id.tv_brand_name);
+        TextView tvModelName = dialogViewInfo.findViewById(R.id.tv_model_name);
+        TextView tvRegNo = dialogViewInfo.findViewById(R.id.tv_license_plate);
+        TextView tvYOM = dialogViewInfo.findViewById(R.id.tv_yom);
+
+
+        int vehicleID = editModeVehicleID;
+        ArrayList<DataBaseHelper> alDBData;
+        alDBData = new ArrayList<>(db.getRowDataFromVehicleTable(vehicleID));
+        tvBrandName.setText(alDBData.get(0).get_brand_name());
+        tvModelName.setText(alDBData.get(0).get_model_name());
+
+        tvRegNo.setText(alDBData.get(0).get_license_plate());
+
+        tvYOM.setText(alDBData.get(0).get_model_year());
+
+        if (alDBData.get(0).get_image_base64() != null) {
+            Bitmap bitmap = BitmapBase64.convertToBitmap(alDBData.get(0).get_image_base64());
+            civDP.setImageBitmap(bitmap);
+            //mPreviousBitmap = bitmap;
+        }
+
+        ibEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.homeInterfaceListener.onHomeCalled("EDIT_VEHICLE", adapterPosition, String.valueOf(editModeVehicleID), null);
+                dialogViewInfo.dismiss();
+            }
+        });
+
+        ibClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogViewInfo.dismiss();
+            }
+        });
     }
 
     @Override

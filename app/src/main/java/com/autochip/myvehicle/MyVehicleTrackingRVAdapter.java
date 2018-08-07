@@ -129,7 +129,8 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
             llParentExpand.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                        Toast.makeText(context, "clicked view :" + position, Toast.LENGTH_SHORT).show();
+                    MainActivity.homeInterfaceListener.onHomeCalled("VIEW_VEHICLE_INFO", position, String.valueOf(alID.get(position)), null);
+                        //Toast.makeText(context, "clicked view :" + position, Toast.LENGTH_SHORT).show();
                 }
             });
             btnEdit.setOnClickListener(new View.OnClickListener() {
