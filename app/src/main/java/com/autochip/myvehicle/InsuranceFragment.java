@@ -119,7 +119,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
+            //dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
         }/* else {
             checkAndHide();
         }*/
@@ -138,11 +138,12 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
 
         //this statement is written in setUserVisible Hint because this dialog should be created only when fragment is visible to user
         //dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
-
+        dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //dialog.show();
+                dialogMultiple.onCreate(1);
                 dialogMultiple.dialog.show();
             }
         });

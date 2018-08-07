@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
@@ -60,7 +61,7 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
         holder.tvRegNo.setText(alRegNo.get(position));
         holder.tvYOM.setText(alYearOfManufacture.get(position));
 
-        if(alDisplayPicture.get(position)!=null){
+        if (alDisplayPicture.get(position) != null) {
             holder.ivCircularDp.setImageBitmap(alDisplayPicture.get(position));
         }
         holder.bind(holder);
@@ -121,9 +122,16 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
             llParentExpand.setOnLongClickListener(this);
         }
 
-        public void bind(final MyVehicleHolder holder) {
+        void bind(final MyVehicleHolder holder) {
             position = getAdapterPosition();
             isSelected = position == selectedItem;
+
+            llParentExpand.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                        Toast.makeText(context, "clicked view :" + position, Toast.LENGTH_SHORT).show();
+                }
+            });
             btnEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -187,6 +195,9 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
                 expandableLayout.expand();
                 selectedItem = position;
             }
-            return false;
+            //return true means that the event is consumed. It is handled. No other click events will be notified.
+            //return false means the event is not consumed. Any other click events will continue to receive notifications.
+            return true;
         }
-    }}
+    }
+}

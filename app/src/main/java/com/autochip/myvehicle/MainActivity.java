@@ -3,17 +3,13 @@ package com.autochip.myvehicle;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -28,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -44,7 +39,6 @@ import java.util.LinkedHashMap;
 
 import app_utility.AsyncInterface;
 import app_utility.BitmapBase64;
-import app_utility.BottomNavigationViewHelper;
 import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
@@ -60,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     public static AsyncInterface asyncInterface;
 
     int fileUriRequestCodeFlag = -1;
-    int previousItemID;
+    //int previousItemID;
     public static int editModeVehicleID, adapterPosition;
     public static final int PICTURE_REQUEST_CODE = 1414;
     //private TextView mTextMessage;
@@ -68,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     //View popupView;
     String sBackStackParent;
     private TextView tvTitle, tvSubtitle, tvUpdate;
-    private View viewActionBar;
 
     VehicleDataStorage vehicleDataStorage;
     private Uri outputFileUri;
@@ -98,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     private SharedPreferenceClass sharedPreferenceClass;
 
     // FOR NAVIGATION VIEW ITEM TEXT COLOR
-    int[][] states = new int[][]{
+    /*int[][] states = new int[][]{
             new int[]{-android.R.attr.state_checked},  // unchecked
             new int[]{android.R.attr.state_checked},   // checked
             new int[]{}                                // default
@@ -110,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
             Color.parseColor("#03A9F4"),
             Color.parseColor("#757575"),
     };
-    BottomNavigationView navigation;
+    BottomNavigationView navigation;*/
 
 
     @Override
@@ -126,27 +119,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         db = new DatabaseHandler(MainActivity.this);
         vehicleDataStorage = new VehicleDataStorage();
 
-        /*MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
-        myVehicleAsyncTask.execute(String.valueOf(1), "");*/
-
         init();
-
-        /*ArrayList<String> alMakeModel = new ArrayList<>();
-        alMakeModel.add("Mahindra Xuv 500");
-        alMakeModel.add("Audi A8");
-        alMakeModel.add("BMW X6");
-        alMakeModel.add("Tesla X");
-        ArrayList<String> alRegNo = new ArrayList<>();
-        alRegNo.add("KA 04 H 5515");
-        alRegNo.add("KA 02 LL 9999");
-        alRegNo.add("KA 51 BI 3546");
-        alRegNo.add("KA 04 UU 340");
-
-        ArrayList<Integer> alYearOfManufacture = new ArrayList<>();
-        alYearOfManufacture.add(2012);
-        alYearOfManufacture.add(2017);
-        alYearOfManufacture.add(2016);
-        alYearOfManufacture.add(2018);*/
 
         /*myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alMakeModel, alRegNo, alYearOfManufacture);
         recyclerView.setAdapter(myVehicleTrackingRVAdapter);*/
@@ -192,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         sharedPreferenceClass.setEditMode(false); //sets edit mode to false on every start to avoid problems with adding / updating
         toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
-        viewActionBar = View.inflate(MainActivity.this, R.layout.toolbar_textview, null);
+        View viewActionBar = View.inflate(MainActivity.this, R.layout.toolbar_textview, null);
         tvTitle = viewActionBar.findViewById(R.id.tv_actionbar_app_name);
         tvTitle.setText(R.string.app_name);
 
@@ -215,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                     RegisterFragment.mListener.onInteraction("SELECT_TAB_1", 101, this.getClass().getName());
                     //hasToBePreparedToCreate = true;
                 }
-                navigation.setVisibility(View.VISIBLE);
+                //navigation.setVisibility(View.VISIBLE);
 
                 //RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_CREATE", 10, this.getClass().getName());
 
@@ -239,14 +212,14 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         getSupportActionBar().setDisplayShowCustomEnabled(true);
 
         //mTextMessage = findViewById(R.id.message);
-        navigation = findViewById(R.id.navigation);
+        /*navigation = findViewById(R.id.navigation);
         ColorStateList navigationViewColorStateList = new ColorStateList(states, colors);
         navigation.setItemIconTintList(navigationViewColorStateList);
         navigation.setItemTextColor(navigationViewColorStateList);
         //navigation.setVisibility(View.GONE);
         //navigation.getMenu().getItem(0).setCheckable(false);
         BottomNavigationViewHelper.removeShiftMode(navigation);
-        setUpBottomNavigationContent(navigation);
+        setUpBottomNavigationContent(navigation);*/
 
         /*
         we will use the height of bottom navigation view to set as margin for insuranceFragment floating button.
@@ -359,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     }*/
 
 
-    private void setUpBottomNavigationContent(final BottomNavigationView navigationView) {
+    /*private void setUpBottomNavigationContent(final BottomNavigationView navigationView) {
 
         //String backStateName;
 
@@ -418,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 return false;
             }
         });
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -434,39 +407,19 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         switch (item.getItemId()) {
             case R.id.action_add:
-                navigation.setVisibility(View.VISIBLE);
-                ViewTreeObserver viewTreeObserver = navigation.getViewTreeObserver();
-                if (viewTreeObserver.isAlive()) {
-                    viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            viewHeight = navigation.getHeight();
-                            if (viewHeight != 0) {
-                                //RegisterFragment.mListener.onInteraction("SELECT_TAB_ONLY", 0, String.valueOf(viewHeight));
-                                navigation.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            }
-                            //viewWidth = view.getWidth();
-                        }
-                    });
-                }
-                //startCircularReveal(findViewById(R.id.action_add));
+                //navigation.setVisibility(View.VISIBLE);
                 Fragment newFragment;
                 Bundle bundle = new Bundle();
                 bundle.putInt("index", 0);
-                bundle.putInt("view_height", viewHeight);
-                //bundle.putInt("vehicle_id", editModeVehicleID);
                 newFragment = new RegisterFragment();
                 newFragment.setArguments(bundle);
 
-                //newFragment = RegisterVehicleFragment.newInstance("", "");
                 sBackStackParent = newFragment.getClass().getName();
                 transaction = getSupportFragmentManager().beginTransaction();
                 transaction.setCustomAnimations(R.anim.t2b, R.anim.b2t);
                 transaction.replace(R.id.container, newFragment, null);
                 transaction.addToBackStack(null);
                 transaction.commit();
-                //transaction.commit();
-
 
                 view = findViewById(R.id.action_add);
                 show(view, findViewById(R.id.container));
@@ -475,8 +428,6 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 view.setVisibility(View.GONE);
                 tvUpdate.setVisibility(View.VISIBLE);
                 tvSubtitle.setText(R.string.register);
-
-
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -490,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
             View view = findViewById(R.id.action_add);
             tvUpdate.setVisibility(View.GONE);
             view.setVisibility(View.VISIBLE);
-            navigation.setVisibility(View.GONE); //added 06-08
+            //navigation.setVisibility(View.GONE); //added 06-08
         }
         super.onBackPressed();
     }
@@ -678,7 +629,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 addView.setVisibility(View.VISIBLE);
                 fm = getSupportFragmentManager();
                 fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                navigation.setVisibility(View.GONE); // 06-08
+                //navigation.setVisibility(View.GONE); // 06-08
 
                 ArrayList<DataBaseHelper> alDBData = new ArrayList<>(db.getAllUserVehicleData());
                 vehicleDataStorage = new VehicleDataStorage();

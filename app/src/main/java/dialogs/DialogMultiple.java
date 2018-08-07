@@ -77,10 +77,11 @@ public class DialogMultiple implements OnImageUtilsListener {
         this.aActivity = aActivity;
         this.nCase = nCase;
         this.onImageUtilsListener = onImageUtilsListener;
-        onCreate(nCase);
+        //if(aActivity!=null)
+        //onCreate(nCase);
     }
 
-    private void onCreate(final int nCase) {
+    public void onCreate(final int nCase) {
         mListener = this;
 
         dialog = new android.app.Dialog(aActivity, R.style.CustomDialogTheme90);

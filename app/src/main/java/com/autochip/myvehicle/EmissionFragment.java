@@ -100,9 +100,9 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        if (isVisibleToUser) {
+        /*if (isVisibleToUser) {
             dialogMultiple = new DialogMultiple(getActivity(), 2, MainActivity.mBitmapCompressListener);
-        }/* else {
+        }*//* else {
             checkAndHide();
         }*/
     }
@@ -133,10 +133,11 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
 
         //this statement is written in setUserVisible Hint because this dialog should be created only when fragment is visible to user
         //dialogMultiple = new DialogMultiple(getActivity(), 2, MainActivity.mBitmapCompressListener);
-
+        dialogMultiple = new DialogMultiple(getActivity(), 2, MainActivity.mBitmapCompressListener);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                dialogMultiple.onCreate(2);
                 dialogMultiple.dialog.show();
             }
         });

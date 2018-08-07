@@ -1,25 +1,31 @@
 package com.autochip.myvehicle;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Stack;
+
+import app_utility.BottomNavigationViewHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +43,9 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
 
     int viewHeight = 0;
     int index = 0;
+    int previousItemID;
+    MenuItem mItemLinker;
+    Menu menu;
     // int editMode = 0;
     // int editModeVehicleID = -1;
 
@@ -47,15 +56,26 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
     View productsTab;
     View speakersTab;*/
 
-    NavigationView navigationView;
+    //NavigationView navigationView;
 
 
     Stack<Integer> pageHistory;
     int currentPage;
     boolean saveToHistory;
-    Bundle bundle;
     public static OnFragmentInteractionListener mListener;
+    BottomNavigationView navigation;
+    int[][] states = new int[][]{
+            new int[]{-android.R.attr.state_checked},  // unchecked
+            new int[]{android.R.attr.state_checked},   // checked
+            new int[]{}                                // default
+    };
 
+    // Fill in color corresponding to state defined in state
+    int[] colors = new int[]{
+            Color.parseColor("#757575"),
+            Color.parseColor("#03A9F4"),
+            Color.parseColor("#757575"),
+    };
     public RegisterFragment() {
         // Required empty public constructor
     }
@@ -82,12 +102,10 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             index = getArguments().getInt("index");
-            viewHeight = getArguments().getInt("view_height");
+            //viewHeight = getArguments().getInt("view_height");
            /* editMode = getArguments().getInt("edit_mode");
             editModeVehicleID = getArguments().getInt("vehicle_id");
-            bundle = new Bundle();
-            bundle.putInt("edit_mode", editMode);
-            bundle.putInt("vehicle_id", editModeVehicleID);*/
+*/
         }
     }
 
@@ -109,13 +127,42 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
 
         final View view = inflater.inflate(R.layout.fragment_home_screen, container, false);
         // Inflate the layout for this fragment
+        //setHasOptionsMenu(true);
 
+        //menu.findItem(R.id.nav_logout).setTitle(null);
         //creates shadow effect under appbar layout below lollipop
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             View viewShadow = view.findViewById(R.id.view_shadow);
             viewShadow.setVisibility(View.VISIBLE);
         }
 
+        navigation = view.findViewById(R.id.navigation);
+        ColorStateList navigationViewColorStateList = new ColorStateList(states, colors);
+        navigation.setItemIconTintList(navigationViewColorStateList);
+        navigation.setItemTextColor(navigationViewColorStateList);
+        //navigation.setVisibility(View.GONE);
+        //navigation.getMenu().getItem(0).setCheckable(false);
+        BottomNavigationViewHelper.removeShiftMode(navigation);
+        setUpBottomNavigationContent(navigation);
+        menu = navigation.getMenu();
+        int resourceId = getResources().getIdentifier("design_bottom_navigation_height", "dimen", getActivity().getPackageName());
+
+        if (resourceId > 0) {
+            viewHeight = getResources().getDimensionPixelSize(resourceId);
+        }
+
+        /*ViewTreeObserver viewTreeObserver = navigation.getViewTreeObserver();
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    viewHeight = navigation.getHeight();
+                    if (viewHeight != 0)
+                        navigation.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    //viewWidth = view.getWidth();
+                }
+            });
+        }*/
         /*if (getArguments() != null) {
             index = getArguments().getInt("index");
         }*/
@@ -166,7 +213,7 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
         tabLayout.addTab(tabLayout.newTab());
         tabLayout.addTab(tabLayout.newTab());
         tabLayout.addTab(tabLayout.newTab());
-
+        //MenuItem bedMenuItem = menu.findItem(R.id.bedSwitch);
         //sets the size of textview of tablayout same
         //tabLayout.setTabGravity(TabLayout.MODE_FIXED);
 
@@ -181,6 +228,7 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
             @Override
 
             public void onTabSelected(TabLayout.Tab tab) {
+                MenuItem menuItem;
 
                 //HomeScreen homeScreen = (HomeScreen) getActivity();
                 //if (homeScreen != null && !homeScreen.isNavHomeChecked) {
@@ -198,9 +246,11 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
                         navigationDrawerView = container.getRootView();
                         navigationView = (NavigationView) navigationDrawerView.findViewById(R.id.nav_view);
                     }*/
-                if (navigationView != null) {
+                //if (navigationView != null) {
                     switch (selectedTabPosition) {
                         case 0:
+                            menuItem = menu.findItem(R.id.navigation_register);
+                            menuItem.setChecked(true);
                             /*firstTab.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.home_tab_selected, null));
                             secondTab.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.home_tab_unselected, null));
                             thirdTab.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.home_tab_unselected, null));
@@ -208,6 +258,8 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
                             fifthTab.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.home_tab_unselected, null));*/
                             break;
                         case 1:
+                            menuItem = menu.findItem(R.id.navigation_insurance);
+                            menuItem.setChecked(true);
                                 /*if (!navigationView.isSelected()) {
                                     navigationView.setCheckedItem(R.id.nav_booths);
                                 }*/
@@ -218,6 +270,8 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
                             fifthTab.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.home_tab_unselected, null));*/
                             break;
                         case 2:
+                            menuItem = menu.findItem(R.id.navigation_Emission);
+                            menuItem.setChecked(true);
                                 /*if (!navigationView.isSelected()) {
                                     navigationView.setCheckedItem(R.id.nav_products);
                                 }*/
@@ -228,6 +282,8 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
                             fifthTab.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.home_tab_unselected, null));*/
                             break;
                         case 3:
+                            menuItem = menu.findItem(R.id.navigation_rc_fc);
+                            menuItem.setChecked(true);
                                 /*if (!navigationView.isSelected()) {
                                     navigationView.setCheckedItem(R.id.nav_speakers);
                                 }*/
@@ -239,6 +295,8 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
                             break;
 
                         case 4:
+                            menuItem = menu.findItem(R.id.navigation_service_history);
+                            menuItem.setChecked(true);
                             /*firstTab.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.home_tab_unselected, null));
                             secondTab.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.home_tab_unselected, null));
                             thirdTab.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.home_tab_unselected, null));
@@ -246,7 +304,7 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
                             fifthTab.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.home_tab_selected, null));*/
                             break;
                     }
-                }
+                //}
                 super.onTabSelected(tab);
                 //}
             }
@@ -261,6 +319,69 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
         }*/
 
         return view;
+    }
+
+    /*@Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        getActivity().getMenuInflater().inflate(R.menu.navigation, menu);
+        this.menu = menu;
+    }
+*/
+
+    private void setUpBottomNavigationContent(final BottomNavigationView navigationView) {
+
+        //String backStateName;
+
+        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            View view;
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemID = item.getItemId();
+                mItemLinker = item;
+                if (previousItemID != itemID) {
+                    switch (itemID) {
+                        case R.id.navigation_register:
+                            //item.setCheckable(true);
+                            //commented frm here 31-07
+                            view = getView().findViewById(R.id.navigation_register);
+                            item.setChecked(true);
+                            //RegisterFragment.mListener.onInteraction("SELECT_TAB_ONLY", 0, this.getClass().getName());
+                            selectPage(0);
+                            break;
+                        case R.id.navigation_insurance:
+                            //item.setCheckable(true);
+                            view = getView().findViewById(R.id.navigation_insurance);
+                            item.setChecked(true);
+                            //RegisterFragment.mListener.onInteraction("SELECT_TAB_ONLY", 1, String.valueOf(viewHeight));
+                            selectPage(1);
+                            break;
+                        case R.id.navigation_Emission:
+                            //item.setCheckable(true);
+                            view = getView().findViewById(R.id.navigation_Emission);
+                            item.setChecked(true);
+                            selectPage(2);
+                            break;
+                        case R.id.navigation_rc_fc:
+                            //item.setCheckable(true);
+                            view = getView().findViewById(R.id.navigation_rc_fc);
+                            item.setChecked(true);
+                            selectPage(3);
+                            break;
+                        case R.id.navigation_service_history:
+                            //item.setCheckable(true);
+                            view = getView().findViewById(R.id.navigation_service_history);
+                            item.setChecked(true);
+                            selectPage(4);
+                            break;
+                    }
+
+                    //show(view, findViewById(R.id.container));
+                    previousItemID = itemID;
+                }
+                return false;
+            }
+        });
     }
 
 
@@ -342,12 +463,12 @@ public class RegisterFragment extends Fragment implements OnFragmentInteractionL
                 else
                     RegisterVehicleFragment.mListener.onInteraction("PREPARE_TO_EDIT", 102, this.getClass().getName());
                 break;
-            case "SELECT_TAB_ONLY":
+            /*case "SELECT_TAB_ONLY":
                 String regexStr = "^[0-9]*$";
                 if (sActivityName.matches(regexStr))
                     viewHeight = Integer.valueOf(sActivityName);
                 selectPage(nCase);
-                break;
+                break;*/
         }
     }
 
