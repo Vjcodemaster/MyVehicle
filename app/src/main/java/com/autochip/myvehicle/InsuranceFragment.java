@@ -35,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
+import app_utility.SharedPreferenceClass;
 import dialogs.DialogMultiple;
 
 import static android.app.Activity.RESULT_OK;
@@ -78,6 +79,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
     DialogMultiple dialogMultiple;
 
     private CircularProgressBar circularProgressBar;
+    private SharedPreferenceClass sharedPreferenceClass;
     //public static OnImageUtilsListener mBitmapCompressListener;
 
     public InsuranceFragment() {
@@ -131,10 +133,16 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         layoutInflater = inflater;
         View view = inflater.inflate(R.layout.fragment_insurance, container, false);
         tlPolicy = view.findViewById(R.id.tl_policy);
+        sharedPreferenceClass = new SharedPreferenceClass(getActivity());
+
         fab = view.findViewById(R.id.fab);
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
-        params.bottomMargin = viewHeight + 6;
-        fab.setLayoutParams(params);
+        if(!sharedPreferenceClass.getEditModeStatus()) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+            params.bottomMargin = viewHeight + 6;
+            fab.setLayoutParams(params);
+        } else {
+            fab.setVisibility(View.GONE);
+        }
 
         //this statement is written in setUserVisible Hint because this dialog should be created only when fragment is visible to user
         //dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
@@ -142,7 +150,6 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //dialog.show();
                 dialogMultiple.onCreate(1);
                 dialogMultiple.dialog.show();
             }

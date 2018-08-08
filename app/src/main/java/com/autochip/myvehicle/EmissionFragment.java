@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 
+import app_utility.SharedPreferenceClass;
 import dialogs.DialogMultiple;
 
 
@@ -58,6 +59,7 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
     public static OnFragmentInteractionListener mListener;
 
     DialogMultiple dialogMultiple;
+    SharedPreferenceClass sharedPreferenceClass;
 
     //public static OnImageUtilsListener mBitmapCompressListener;
 
@@ -124,12 +126,17 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_emission, container, false);
-
+        sharedPreferenceClass = new SharedPreferenceClass(getActivity());
         tlPolicy = view.findViewById(R.id.tl_policy);
+
         fab = view.findViewById(R.id.fab);
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
-        params.bottomMargin = viewHeight + 6;
-        fab.setLayoutParams(params);
+        if(!sharedPreferenceClass.getEditModeStatus()) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+            params.bottomMargin = viewHeight + 6;
+            fab.setLayoutParams(params);
+        } else {
+            fab.setVisibility(View.GONE);
+        }
 
         //this statement is written in setUserVisible Hint because this dialog should be created only when fragment is visible to user
         //dialogMultiple = new DialogMultiple(getActivity(), 2, MainActivity.mBitmapCompressListener);

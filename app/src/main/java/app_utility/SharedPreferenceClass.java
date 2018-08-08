@@ -99,7 +99,7 @@ public class SharedPreferenceClass {
     }
 
     public String getVehicleInfo(){
-        return sharedPreferences.getString(VEHICLE_INFO, "");
+        return sharedPreferences.getString(VEHICLE_INFO, null);
     }
 
     public String getEmissionData() {

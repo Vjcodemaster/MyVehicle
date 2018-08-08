@@ -194,9 +194,9 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
                 alMake.add(dbDataHelper.get(i).get_brand_name());
             }*/
         }
-        if (MainActivity.hasToBePreparedToCreate) {
+        /*if (MainActivity.hasToBePreparedToCreate) {
             prepareToCreate();
-        }
+        }*/
         //ColorStateList etViewColorStateList = new ColorStateList(editTextStates, editTextColors);
         //etMake.setTextColor(etViewColorStateList);
 
@@ -315,6 +315,66 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     }
 
     private void prepareToCreate() {
+        String[] saVehicleInfo;
+        String sBrandName;
+        int brandID;
+        int sModelPosition;
+        int ModelID;
+        String InsuranceData;
+        String EmissionData;
+        String sModelName;
+        //sharedPreferenceClass = new SharedPreferenceClass(getActivity());
+        if(sharedPreferenceClass.getVehicleInfo()!=null) {
+            saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
+            //int sBrandID = spinnerMake.getSelectedItemPosition();
+            sBrandName = saVehicleInfo[0];
+            brandID = Integer.valueOf(saVehicleInfo[1]);
+
+            sModelPosition = Integer.valueOf(saVehicleInfo[2]);
+
+            ModelID = Integer.valueOf(saVehicleInfo[3]);
+            sModelName = saVehicleInfo[4];
+        } else {
+            //saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
+            //int sBrandID = spinnerMake.getSelectedItemPosition();
+            sBrandName = spinnerMake.getSelectedItem().toString();
+            brandID = db.getBrandIDFromString(sBrandName);
+
+            sModelPosition = spinnerModel.getSelectedItemPosition();
+
+            ModelID = db.getModelIDFromSelectedModelName(sBrandName, sModelPosition);
+            sModelName = spinnerModel.getSelectedItem().toString();
+        }
+
+        InsuranceData = sharedPreferenceClass.getInsuranceData();
+
+        EmissionData = sharedPreferenceClass.getEmissionData();
+        String sRegNo = etRegNo.getText().toString().trim();
+
+
+        if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(etYOM.getText().toString().trim()) || ((BitmapDrawable) ivPreview.getDrawable()).getBitmap() == null) {
+            Toast.makeText(getActivity(), "Please fill all information including image", Toast.LENGTH_SHORT).show();
+            saveOnDetachFlag = 1;
+        } else {
+            int sManufactureYear = Integer.valueOf(etYOM.getText().toString().trim());
+
+            //convert image to base64 before sending it to server
+            Bitmap bitmap = Bitmap.createScaledBitmap(((BitmapDrawable) ivPreview.getDrawable()).getBitmap(), 128, 128, true);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, sModelName, sRegNo, sManufactureYear, encodedBitmap);
+            myVehicleAsyncTask.execute(String.valueOf(5), "");
+            MainActivity.homeInterfaceListener.onHomeCalled("CREATE_CONDITION_SATISFIED", 10, this.getClass().getName(), null);
+            saveOnDetachFlag = 0;
+            isVisibleToUser = false;
+        }
+
+    }
+
+    /*private void prepareToCreate() {
         //sharedPreferenceClass = new SharedPreferenceClass(getActivity());
         String[] saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
         //int sBrandID = spinnerMake.getSelectedItemPosition();
@@ -354,7 +414,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             isVisibleToUser = false;
         }
 
-    }
+    }*/
 
     private void compareData() {
         String sNewMake = spinnerMake.getSelectedItem().toString();

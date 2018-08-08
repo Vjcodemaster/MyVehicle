@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -214,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 ActionBar.LayoutParams.MATCH_PARENT,
                 Gravity.START);
         getSupportActionBar().setCustomView(viewActionBar, params);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);//this will get default back button from supportActionBar
         getSupportActionBar().setDisplayShowCustomEnabled(true);
 
         //mTextMessage = findViewById(R.id.message);
@@ -433,7 +433,12 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 view.setVisibility(View.GONE);
                 tvUpdate.setVisibility(View.VISIBLE);
                 tvSubtitle.setText(R.string.register);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 break;
+            case android.R.id.home:
+                onBackPressed();
+                //getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -443,9 +448,11 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         int size = getSupportFragmentManager().getFragments().size();
         if (size == 1) {
             sharedPreferenceClass.setEditMode(false); //sets edit mode false so that normal create mode works fine
+            sharedPreferenceClass.setVehicleInfo(null);
             View view = findViewById(R.id.action_add);
             tvUpdate.setVisibility(View.GONE);
             view.setVisibility(View.VISIBLE);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             //navigation.setVisibility(View.GONE); //added 06-08
         }
         super.onBackPressed();
@@ -624,6 +631,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 adapterPosition = nCase;
                 editModeVehicleID = Integer.valueOf(sActivityName); //this is the id of data to fetch from sql lite database
                 view.performClick();
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 //editMode = 1; //this means true and we need to consider for editing not creating in RegisterFragment
                 break;
             case "EDIT_CONDITION_SATISFIED":
@@ -675,7 +683,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
     public void initVehicleInfoDialog() {
         dialogViewInfo = new Dialog(MainActivity.this, R.style.CustomDialogTheme90);
-        dialogViewInfo.setContentView(R.layout.dialog_insurance);
+        dialogViewInfo.setContentView(R.layout.dialog_vehicle_info);
         dialogViewInfo.setCancelable(true);
 
         CircleImageView civDP = dialogViewInfo.findViewById(R.id.civ_dp);
@@ -794,6 +802,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 Bitmap bitmap = BitmapBase64.convertToBitmap(sEncodedDP);
                 vehicleDataStorage.alDisplayPicture.add(bitmap);
                 myVehicleTrackingRVAdapter.notifyItemInserted(vehicleDataStorage.alID.size() - 1);
+                sharedPreferenceClass.setVehicleInfo(null); //sets value of setVehicle to null so that next time we can add new data without any problems
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
                 db.addDataToUserVehicle(new DataBaseHelper(vehicleID, sBrandName, brandID, sModelName, modelID, sLicensePlate, sEncodedDP, sModelYear));
                 break;
@@ -932,12 +942,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         ArrayList<String> alName = new ArrayList<>();
         ArrayList<String> alLicensePlate = new ArrayList<>();
         ArrayList<Bitmap> alDisplayPicture = new ArrayList<>();
-
         ArrayList<String> alEncodedDisplayPicture = new ArrayList<>();
 
         HashSet<Integer> hsModelIDSingleValues = new HashSet<>();
-
-        //ArrayList<String> alMake = new ArrayList<>();
-        //ArrayList<String> alModel = new ArrayList<>();
     }
 }

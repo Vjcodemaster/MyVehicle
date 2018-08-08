@@ -63,7 +63,7 @@ public class DialogMultiple implements OnImageUtilsListener {
     private LinearLayout llDate, llDateValue;
     private final Calendar myCalendar = Calendar.getInstance();
     private Uri outputFileUri;
-    private ImageView ivPreview;
+    private ImageView ivPreview, ibClose;
 
     SharedPreferenceClass sharedPreferenceClass;
 
@@ -88,6 +88,7 @@ public class DialogMultiple implements OnImageUtilsListener {
         dialog.setContentView(R.layout.dialog_add_allinone);
         dialog.setCancelable(true);
 
+        ibClose = dialog.findViewById(R.id.ib_close);
         ivPreview = dialog.findViewById(R.id.iv_preview);
 
         etCustomOne = dialog.findViewById(R.id.et_custom_one);
@@ -108,6 +109,13 @@ public class DialogMultiple implements OnImageUtilsListener {
             public void onClick(View view) {
                 dataStorage = new DialogDataStorage(nCase);
 
+            }
+        });
+
+        ibClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
             }
         });
 

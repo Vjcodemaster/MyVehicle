@@ -220,6 +220,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 String saAddedData;
                 saAddedData = String.valueOf(createdId) + "," + sBrandName + "," + brandID + "," + sModelName + "," + ModelID + "," + sRegNo + ","
                         + base64Bitmap + "," + sManufactureYear;
+                //MainActivity.homeInterfaceListener.onHomeCalled("CREATE_CONDITION_SATISFIED", 10, this.getClass().getName(), null);
                 //saAddedData = String.valueOf(createdId) + "," + sModelName + "," + sRegNo + "," + sManufactureYear;
                 MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("ADDED_NEW_DATA", type, type, saAddedData);
                 Toast.makeText(aActivity, "Vehicle Registered", Toast.LENGTH_LONG).show();

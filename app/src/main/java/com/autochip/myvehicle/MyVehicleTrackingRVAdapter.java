@@ -1,7 +1,6 @@
 package com.autochip.myvehicle;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
@@ -15,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import net.cachapa.expandablelayout.ExpandableLayout;
 
@@ -29,6 +27,7 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
 
     private int selectedItem = UNSELECTED;
 
+    View previousView;
     private Context context;
     RecyclerView recyclerView;
     private ArrayList<String> alMakeModel;
@@ -64,12 +63,12 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
         if (alDisplayPicture.get(position) != null) {
             holder.ivCircularDp.setImageBitmap(alDisplayPicture.get(position));
         }
-        holder.bind(holder);
+        holder.bind(holder, position);
     }
 
     @Override
     public int getItemCount() {
-        return alMakeModel.size(); //alBeaconInfo.size()
+        return alID.size(); //alBeaconInfo.size()
     }
 
     @Override
@@ -122,15 +121,14 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
             llParentExpand.setOnLongClickListener(this);
         }
 
-        void bind(final MyVehicleHolder holder) {
-            position = getAdapterPosition();
+        void bind(final MyVehicleHolder holder, final int position) {
+            //this.position = position;
             isSelected = position == selectedItem;
-
             llParentExpand.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     MainActivity.homeInterfaceListener.onHomeCalled("VIEW_VEHICLE_INFO", position, String.valueOf(alID.get(position)), null);
-                        //Toast.makeText(context, "clicked view :" + position, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "clicked view :" + position, Toast.LENGTH_SHORT).show();
                 }
             });
             btnEdit.setOnClickListener(new View.OnClickListener() {
@@ -144,10 +142,9 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
                 @Override
                 public void onClick(View view) {
                     MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(context);
-                    myVehicleAsyncTask.execute(String.valueOf(7), String.valueOf(alID.get(position)), String.valueOf(position));
-
-                    //mAdapterListener.onAdapterChange("REMOVE_POSITION", position);
-                    //delete item from list
+                    int vehicleID = alID.get(holder.getAdapterPosition());
+                    int currentPosition = holder.getAdapterPosition();
+                    myVehicleAsyncTask.execute(String.valueOf(7), String.valueOf(vehicleID), String.valueOf(currentPosition));
                 }
             });
 
@@ -184,6 +181,8 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
         public boolean onLongClick(View view) {
             MyVehicleHolder holder = (MyVehicleHolder) recyclerView.findViewHolderForAdapterPosition(getAdapterPosition());
             if (holder != null) {
+                if (selectedItem != -1 && selectedItem != position)
+                    recyclerView.getAdapter().notifyItemChanged(selectedItem); //bit of hack to collapse previous expanded item
                 holder.llParentExpand.setSelected(false);
                 holder.expandableLayout.collapse();
             }
