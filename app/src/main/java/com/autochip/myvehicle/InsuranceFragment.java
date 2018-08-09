@@ -1,43 +1,26 @@
 package com.autochip.myvehicle;
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
 
 import app_utility.SharedPreferenceClass;
 import dialogs.DialogMultiple;
@@ -61,19 +44,19 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
 
     public static final int PICTURE_REQUEST_CODE = 1414;
     private Uri outputFileUri;
-    private ImageView ivPreview;
+    //private ImageView ivPreview;
 
     private String mParam1;
     private String mParam2;
 
     private boolean isInEditMode = false;
     private int viewHeight = 0;
-    File sdImageMainDirectory;
+    //File sdImageMainDirectory;
 
-    Dialog dialog;
+    //Dialog dialog;
     //TextView tvStartDateValue, tvExpiryDateValue, tvRemainderDateValue;
-    LinearLayout llDate, llDateValue;
-    final Calendar myCalendar = Calendar.getInstance();
+    //LinearLayout llDate, llDateValue;
+    //final Calendar myCalendar = Calendar.getInstance();
 
     FloatingActionButton fab;
     TableLayout tlPolicy;
@@ -177,6 +160,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
             tlPolicy.addView(row, i);
         }*/
         TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
+        trHeading.setTag(-1);
         rows = new TableRow[5];
         baButtonDelete = new Button[5];
         for (int i = 0; i < rows.length; i++) {
@@ -185,29 +169,29 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
             baButtonDelete[i] = row.findViewById(R.id.btn_table_row_delete);
             rows[i] = row;
             rows[i].setTag(i);
-
             final int finalI = i;
-            rows[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (isInEditMode) {
+            if (isInEditMode) {
+                rows[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
                         int nRowIndex = Integer.valueOf(rows[finalI].getTag().toString()); //index of row
                         dialogMultiple.onCreate(1);
                         prepareDialogToEdit(nRowIndex);
                         dialogMultiple.dialog.show();
-
-                    } else {
-                        baButtonDelete[finalI].setVisibility(View.GONE);
                     }
-                }
-            });
+                });
 
-            baButtonDelete[finalI].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(getActivity(), "clicked" + finalI, Toast.LENGTH_SHORT).show();
-                }
-            });
+                baButtonDelete[finalI].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        row = rows[finalI];
+                        rows[finalI].removeAllViews();
+                        tlPolicy.removeView(row);
+                    }
+                });
+            } else {
+                baButtonDelete[finalI].setVisibility(View.GONE);
+            }
             tlPolicy.addView(rows[i], i);
         }
         tlPolicy.addView(trHeading, 0);

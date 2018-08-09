@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -60,6 +61,12 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
 
     DialogMultiple dialogMultiple;
     SharedPreferenceClass sharedPreferenceClass;
+
+    private boolean isInEditMode = false;
+
+    TableRow[] rows;
+    Button[] baButtonDelete;
+    //TableRow row;
 
     //public static OnImageUtilsListener mBitmapCompressListener;
 
@@ -130,7 +137,8 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
         tlPolicy = view.findViewById(R.id.tl_policy);
 
         fab = view.findViewById(R.id.fab);
-        if(!sharedPreferenceClass.getEditModeStatus()) {
+        isInEditMode = sharedPreferenceClass.getEditModeStatus();
+        if (!isInEditMode) { //!sharedPreferenceClass.getEditModeStatus()
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
             params.bottomMargin = viewHeight + 6;
             fab.setLayoutParams(params);
@@ -156,15 +164,70 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
         TextView tv = (TextView) row.childAt(0);| tv.setText("Text"); or row.findViewById()
          */
         TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
-
-        for (int i = 0; i < 3; i++) {
+        trHeading.setTag(-1);
+        rows = new TableRow[5];
+        baButtonDelete = new Button[5];
+        for (int i = 0; i < rows.length; i++) {
             //LayoutInflater trInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = (TableRow) inflater.inflate(R.layout.table_row, null);
-            row.setTag(i);
-            tlPolicy.addView(row, i);
+            baButtonDelete[i] = row.findViewById(R.id.btn_table_row_delete);
+            rows[i] = row;
+            rows[i].setTag(i);
+            final int finalI = i;
+            if (isInEditMode) {
+                rows[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int nRowIndex = Integer.valueOf(rows[finalI].getTag().toString()); //index of row
+                        dialogMultiple.onCreate(2);
+                        prepareDialogToEdit(nRowIndex);
+                        dialogMultiple.dialog.show();
+                    }
+                });
+
+                baButtonDelete[finalI].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        row = rows[finalI];
+                        rows[finalI].removeAllViews();
+                        tlPolicy.removeView(row);
+                    }
+                });
+            } else {
+                baButtonDelete[finalI].setVisibility(View.GONE);
+            }
+            tlPolicy.addView(rows[i], i);
         }
         tlPolicy.addView(trHeading, 0);
         return view;
+    }
+
+    private void prepareDialogToEdit(final int index) {
+        TextView tv;
+        row = rows[index];
+
+        tv = row.findViewById(R.id.tv_table_row_2);
+        String sEmissionNo = tv.getText().toString();
+
+        tv = row.findViewById(R.id.tv_table_row_3);
+        String sEmissionProvider = tv.getText().toString();
+
+        tv = row.findViewById(R.id.tv_table_row_4);
+        String sStartDate = tv.getText().toString();
+
+        tv = row.findViewById(R.id.tv_table_row_5);
+        String sExpiryDate = tv.getText().toString();
+
+        tv = row.findViewById(R.id.tv_table_row_6);
+        String sRemainderDate = tv.getText().toString();
+
+        dialogMultiple.tvTitle.setText(getActivity().getResources().getString(R.string.title_edit_emission));
+        dialogMultiple.etCustomOne.getEditText().setText(sEmissionNo);
+        dialogMultiple.etCustomTwo.getEditText().setText(sEmissionProvider);
+        dialogMultiple.tvStartDateValue.setText(sStartDate);
+        dialogMultiple.tvExpiryDateValue.setText(sExpiryDate);
+        dialogMultiple.tvRemainderDateValue.setText(sRemainderDate);
+        dialogMultiple.llDateValue.setVisibility(View.VISIBLE);
     }
 
 
@@ -184,21 +247,27 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
         switch (sMessage) {
             case "ADD_TABLE_ROW":
                 String[] saData = sActivityName.split(",");
-                int count = tlPolicy.getChildCount();
-                row = (TableRow) getLayoutInflater().inflate(R.layout.table_row, null);
-                TextView tvSlNo = row.getChildAt(0).findViewById(R.id.tv_table_row_1);
+                if (!isInEditMode) {
+                    int count = tlPolicy.getChildCount();
+                    row = (TableRow) getLayoutInflater().inflate(R.layout.table_row, null);
+                    TextView tvSlNo = row.getChildAt(0).findViewById(R.id.tv_table_row_1);
+                    tvSlNo.setText(String.valueOf(count));
+                }
                 TextView tvEmissionNo = row.getChildAt(1).findViewById(R.id.tv_table_row_2);
                 TextView tvEmissionProvider = row.getChildAt(2).findViewById(R.id.tv_table_row_3);
                 TextView tvStartDate = row.getChildAt(3).findViewById(R.id.tv_table_row_4);
                 TextView tvExpiryDate = row.getChildAt(4).findViewById(R.id.tv_table_row_5);
                 TextView tvRemainderDate = row.getChildAt(5).findViewById(R.id.tv_table_row_6);
-                tvSlNo.setText(String.valueOf(count));
+
                 tvEmissionNo.setText(saData[0]);
                 tvEmissionProvider.setText(saData[1]);
                 tvStartDate.setText(saData[2]);
                 tvExpiryDate.setText(saData[3]);
                 tvRemainderDate.setText(saData[4]);
-                tlPolicy.addView(row);
+
+                if (!isInEditMode) {
+                    tlPolicy.addView(row);
+                }
                 break;
         }
     }

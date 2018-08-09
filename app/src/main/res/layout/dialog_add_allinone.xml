@@ -76,7 +76,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:imeOptions="actionNext"
-                        android:inputType="textNoSuggestions"
+                        android:inputType="number"
                         android:maxLines="1"
                         android:textAppearance="@android:style/TextAppearance.Medium"
                         android:textColorHint="@color/colorAccent" />

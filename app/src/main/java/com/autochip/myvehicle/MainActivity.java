@@ -432,6 +432,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 //30-07
                 view.setVisibility(View.GONE);
                 tvUpdate.setVisibility(View.VISIBLE);
+                tvSubtitle.setVisibility(View.VISIBLE);
                 tvSubtitle.setText(R.string.register);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 break;
@@ -451,6 +452,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
             sharedPreferenceClass.setVehicleInfo(null);
             View view = findViewById(R.id.action_add);
             tvUpdate.setVisibility(View.GONE);
+            tvSubtitle.setVisibility(View.GONE);
+            //tvSubtitle.setText("");
             view.setVisibility(View.VISIBLE);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             //navigation.setVisibility(View.GONE); //added 06-08
@@ -804,6 +807,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 myVehicleTrackingRVAdapter.notifyItemInserted(vehicleDataStorage.alID.size() - 1);
                 sharedPreferenceClass.setVehicleInfo(null); //sets value of setVehicle to null so that next time we can add new data without any problems
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                tvSubtitle.setVisibility(View.GONE);
 
                 db.addDataToUserVehicle(new DataBaseHelper(vehicleID, sBrandName, brandID, sModelName, modelID, sLicensePlate, sEncodedDP, sModelYear));
                 break;

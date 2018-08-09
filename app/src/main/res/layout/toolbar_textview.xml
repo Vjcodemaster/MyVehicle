@@ -27,6 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:gravity="center"
         android:layout_marginBottom="3dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="3dp"
@@ -56,6 +57,7 @@
             android:longClickable="false"
             android:maxLines="1"
             android:textAllCaps="false"
+            android:visibility="gone"
             android:textAppearance="@android:style/TextAppearance.Small"
             android:textColor="@color/colorAccent"
             android:textStyle="normal" />

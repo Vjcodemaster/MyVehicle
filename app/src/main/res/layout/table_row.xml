@@ -12,54 +12,66 @@
         <TextView
             android:id="@+id/tv_table_row_1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
             android:background="@drawable/cell_shape_new"
-            android:padding="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:gravity="center"
             android:text="TextView"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/tv_table_row_2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/cell_shape_new"
-            android:padding="5dp"
+            android:layout_height="25dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:gravity="center"
             android:text="TextView"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/tv_table_row_3"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/cell_shape_new"
-            android:padding="5dp"
+            android:layout_height="25dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:gravity="center"
             android:text="TextView"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/tv_table_row_4"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/cell_shape_new"
-            android:padding="5dp"
+            android:layout_height="25dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:gravity="center"
             android:text="TextView"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/tv_table_row_5"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/cell_shape_new"
-            android:padding="5dp"
+            android:layout_height="25dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:gravity="center"
             android:text="TextView"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/tv_table_row_6"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="25dp"
             android:background="@drawable/cell_shape_new"
-            android:padding="5dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:gravity="center"
             android:text="TextView"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -69,8 +81,8 @@
             android:layout_width="wrap_content"
             android:layout_height="25dp"
             android:background="?attr/selectableItemBackground"
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="3dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
             android:text="Delete"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/colorAccent" />
