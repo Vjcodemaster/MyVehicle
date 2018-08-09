@@ -19,12 +19,16 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +54,7 @@ import static com.autochip.myvehicle.MainActivity.mBitmapCompressListener;
  * Use the {@link InsuranceFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class InsuranceFragment extends Fragment implements OnFragmentInteractionListener{
+public class InsuranceFragment extends Fragment implements OnFragmentInteractionListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -62,16 +66,19 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
     private String mParam1;
     private String mParam2;
 
+    private boolean isInEditMode = false;
     private int viewHeight = 0;
     File sdImageMainDirectory;
 
     Dialog dialog;
-    TextView tvStartDateValue, tvExpiryDateValue, tvRemainderDateValue;
+    //TextView tvStartDateValue, tvExpiryDateValue, tvRemainderDateValue;
     LinearLayout llDate, llDateValue;
     final Calendar myCalendar = Calendar.getInstance();
 
     FloatingActionButton fab;
     TableLayout tlPolicy;
+    TableRow[] rows;
+    Button[] baButtonDelete;
     TableRow row;
     LayoutInflater layoutInflater;
 
@@ -107,7 +114,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //mBitmapCompressListener = this;
-        mListener= this;
+        mListener = this;
         circularProgressBar = new CircularProgressBar(getActivity(), false);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -136,7 +143,8 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         sharedPreferenceClass = new SharedPreferenceClass(getActivity());
 
         fab = view.findViewById(R.id.fab);
-        if(!sharedPreferenceClass.getEditModeStatus()) {
+        isInEditMode = sharedPreferenceClass.getEditModeStatus();
+        if (!isInEditMode) { //!sharedPreferenceClass.getEditModeStatus()
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
             params.bottomMargin = viewHeight + 6;
             fab.setLayoutParams(params);
@@ -144,9 +152,8 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
             fab.setVisibility(View.GONE);
         }
 
-        //this statement is written in setUserVisible Hint because this dialog should be created only when fragment is visible to user
         //dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
-        dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
+        dialogMultiple = new DialogMultiple(getActivity(), 1, mBitmapCompressListener);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -161,20 +168,82 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         by inflating it and setting it to 0th index of Table Layout tlPolicy.addView(trHeading, 0);. to set text we can use,
         TextView tv = (TextView) row.childAt(0);| tv.setText("Text"); or row.findViewById()
          */
-        TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
 
-        for (int i = 0; i < 5; i++) {
+        /*for (int i = 0; i < rows.length; i++) {
             //LayoutInflater trInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = (TableRow) inflater.inflate(R.layout.table_row, null);
+            rows[i] = row;
             row.setTag(i);
             tlPolicy.addView(row, i);
+        }*/
+        TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
+        rows = new TableRow[5];
+        baButtonDelete = new Button[5];
+        for (int i = 0; i < rows.length; i++) {
+            //LayoutInflater trInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            row = (TableRow) inflater.inflate(R.layout.table_row, null);
+            baButtonDelete[i] = row.findViewById(R.id.btn_table_row_delete);
+            rows[i] = row;
+            rows[i].setTag(i);
+
+            final int finalI = i;
+            rows[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (isInEditMode) {
+                        int nRowIndex = Integer.valueOf(rows[finalI].getTag().toString()); //index of row
+                        dialogMultiple.onCreate(1);
+                        prepareDialogToEdit(nRowIndex);
+                        dialogMultiple.dialog.show();
+
+                    } else {
+                        baButtonDelete[finalI].setVisibility(View.GONE);
+                    }
+                }
+            });
+
+            baButtonDelete[finalI].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(getActivity(), "clicked" + finalI, Toast.LENGTH_SHORT).show();
+                }
+            });
+            tlPolicy.addView(rows[i], i);
         }
         tlPolicy.addView(trHeading, 0);
         // Inflate the layout for this fragment
         return view;
     }
 
-    public void initAddDialog() {
+    private void prepareDialogToEdit(final int index) {
+        TextView tv;
+        row = rows[index];
+
+        tv = row.findViewById(R.id.tv_table_row_2);
+        String sInsuranceNo = tv.getText().toString();
+
+        tv = row.findViewById(R.id.tv_table_row_3);
+        String sInsuranceProvider = tv.getText().toString();
+
+        tv = row.findViewById(R.id.tv_table_row_4);
+        String sStartDate = tv.getText().toString();
+
+        tv = row.findViewById(R.id.tv_table_row_5);
+        String sExpiryDate = tv.getText().toString();
+
+        tv = row.findViewById(R.id.tv_table_row_6);
+        String sRemainderDate = tv.getText().toString();
+
+        dialogMultiple.tvTitle.setText(getActivity().getResources().getString(R.string.title_edit_insurance));
+        dialogMultiple.etCustomOne.getEditText().setText(sInsuranceNo);
+        dialogMultiple.etCustomTwo.getEditText().setText(sInsuranceProvider);
+        dialogMultiple.tvStartDateValue.setText(sStartDate);
+        dialogMultiple.tvExpiryDateValue.setText(sExpiryDate);
+        dialogMultiple.tvRemainderDateValue.setText(sRemainderDate);
+        dialogMultiple.llDateValue.setVisibility(View.VISIBLE);
+    }
+
+    /*public void initAddDialog() {
         dialog = new Dialog(getActivity(), R.style.CustomDialogTheme90);
         dialog.setContentView(R.layout.dialog_add_insurance_policy);
         dialog.setCancelable(true);
@@ -253,17 +322,17 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
                 openImageIntent();
             }
         });
-        /*TextView tvHeading = (TextView) DialogMultiple.findViewById(R.id.tv_readmore_heading);
+        *//*TextView tvHeading = (TextView) DialogMultiple.findViewById(R.id.tv_readmore_heading);
         TextView tvSubHeading = (TextView) DialogMultiple.findViewById(R.id.tv_readmore_sub_heading);
         TextView tvDescription = (TextView) DialogMultiple.findViewById(R.id.tv_readmore_description);
         Typeface lightFace = Typeface.createFromAsset(getResources().getAssets(), "fonts/myriad_pro_light.ttf");
         Typeface regularFace = Typeface.createFromAsset(getResources().getAssets(), "fonts/myriad_pro_regular.ttf");
         tvHeading.setTypeface(regularFace);
         tvSubHeading.setTypeface(lightFace);
-        tvDescription.setTypeface(lightFace);*/
-    }
+        tvDescription.setTypeface(lightFace);*//*
+    }*/
 
-    private void openImageIntent() {
+   /* private void openImageIntent() {
         showProgressBar();
 // Determine Uri of camera image to save.
         final File root = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + "Android/data/" + File.separator + getActivity().getPackageName() + File.separator);
@@ -307,7 +376,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         textView.setText(sdf.format(myCalendar.getTime()));
-    }
+    }*/
 
     @Override
     public void onAttach(Context context) {
@@ -372,7 +441,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
                 }
             }
         } //else {
-            stopProgressBar();
+        stopProgressBar();
         //}
     }
 
@@ -407,24 +476,35 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
 
     @Override
     public void onInteraction(String sMessage, int nCase, String sActivityName) {
-        switch (sMessage){
-            case "UPDATE_TABLE_ROW":
+        switch (sMessage) {
+            /*here we are checking 2 conditions, based on editMode
+             **one is for adding new row
+             **second condition is for updating data to existing row
+             */
+            case "ADD_TABLE_ROW":
                 String[] saData = sActivityName.split(",");
-                int count = tlPolicy.getChildCount();
-                row = (TableRow) layoutInflater.inflate(R.layout.table_row, null);
-                TextView tvSlNo = row.getChildAt(0).findViewById(R.id.tv_table_row_1);
+                if (!isInEditMode) {
+                    int count = tlPolicy.getChildCount();
+                    row = (TableRow) layoutInflater.inflate(R.layout.table_row, null);
+                    TextView tvSlNo = row.getChildAt(0).findViewById(R.id.tv_table_row_1);
+                    tvSlNo.setText(String.valueOf(count));
+                }
+
                 TextView tvInsuranceNo = row.getChildAt(1).findViewById(R.id.tv_table_row_2);
                 TextView tvInsuranceProvider = row.getChildAt(2).findViewById(R.id.tv_table_row_3);
                 TextView tvStartDate = row.getChildAt(3).findViewById(R.id.tv_table_row_4);
                 TextView tvExpiryDate = row.getChildAt(4).findViewById(R.id.tv_table_row_5);
                 TextView tvRemainderDate = row.getChildAt(5).findViewById(R.id.tv_table_row_6);
-                tvSlNo.setText(String.valueOf(count));
+
                 tvInsuranceNo.setText(saData[0]);
                 tvInsuranceProvider.setText(saData[1]);
                 tvStartDate.setText(saData[2]);
                 tvExpiryDate.setText(saData[3]);
                 tvRemainderDate.setText(saData[4]);
-                tlPolicy.addView(row);
+
+                if (!isInEditMode) {
+                    tlPolicy.addView(row);
+                }
                 break;
         }
     }

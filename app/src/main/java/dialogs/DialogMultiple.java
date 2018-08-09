@@ -8,13 +8,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -36,7 +34,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -57,10 +54,11 @@ public class DialogMultiple implements OnImageUtilsListener {
 
     public Dialog dialog;
     private Button btnDone;
-    private TextView tvStartDateValue, tvExpiryDateValue, tvRemainderDateValue, tvTitle;
+    public TextView tvStartDateValue, tvExpiryDateValue, tvRemainderDateValue;
+    public TextView tvTitle;
     //EditText etCustomOne, etCustomTwo, etCustomThree;
-    private TextInputLayout etCustomOne, etCustomTwo, etCustomThree;
-    private LinearLayout llDate, llDateValue;
+    public TextInputLayout etCustomOne, etCustomTwo, etCustomThree;
+    public LinearLayout llDate, llDateValue;
     private final Calendar myCalendar = Calendar.getInstance();
     private Uri outputFileUri;
     private ImageView ivPreview, ibClose;
@@ -282,7 +280,7 @@ public class DialogMultiple implements OnImageUtilsListener {
     //checks for required fields and information that is filled by user
     private boolean validateInfo(String info, int totalFields) {
         String[] saVerify = info.split(",");
-        if(saVerify.length == totalFields) {
+        if (saVerify.length == totalFields) {
             for (int i = 1; i < saVerify.length; i++) {
                 if (TextUtils.isEmpty(saVerify[i])) {
                     return false;
@@ -394,7 +392,7 @@ public class DialogMultiple implements OnImageUtilsListener {
 
                     if (validateInfo(sb.toString().trim(), 5)) {
                         sharedPreferenceClass.setInsuranceData(sb.toString());
-                        InsuranceFragment.mListener.onInteraction("UPDATE_TABLE_ROW", nType, sb.toString());
+                        InsuranceFragment.mListener.onInteraction("ADD_TABLE_ROW", nType, sb.toString());
                         dialog.dismiss();
                     } else {
                         Toast.makeText(aActivity, "Please fill all the information", Toast.LENGTH_SHORT).show();
@@ -416,7 +414,7 @@ public class DialogMultiple implements OnImageUtilsListener {
 
                     if (validateInfo(sb.toString().trim(), 5)) {
                         sharedPreferenceClass.setEmissionData(sb.toString());
-                        EmissionFragment.mListener.onInteraction("UPDATE_TABLE_ROW", nType, sb.toString());
+                        EmissionFragment.mListener.onInteraction("ADD_TABLE_ROW", nType, sb.toString());
                         dialog.dismiss();
                     } else {
                         Toast.makeText(aActivity, "Please fill all the information", Toast.LENGTH_SHORT).show();

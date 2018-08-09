@@ -182,7 +182,7 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
     @Override
     public void onInteraction(String sMessage, int nCase, String sActivityName) {
         switch (sMessage) {
-            case "UPDATE_TABLE_ROW":
+            case "ADD_TABLE_ROW":
                 String[] saData = sActivityName.split(",");
                 int count = tlPolicy.getChildCount();
                 row = (TableRow) getLayoutInflater().inflate(R.layout.table_row, null);
