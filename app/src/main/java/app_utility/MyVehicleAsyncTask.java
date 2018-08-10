@@ -7,7 +7,6 @@ package app_utility;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -18,10 +17,8 @@ import android.widget.Toast;
 
 import com.autochip.myvehicle.CircularProgressBar;
 import com.autochip.myvehicle.MainActivity;
-import com.autochip.myvehicle.RegisterVehicleFragment;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,23 +26,29 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import static android.content.ContentValues.TAG;
 import static app_utility.StaticReferenceClass.DB_NAME;
+import static app_utility.StaticReferenceClass.MODEL_EMISSION_FIELDS;
 import static app_utility.StaticReferenceClass.MODEL_EMISSION_HISTORY;
+import static app_utility.StaticReferenceClass.MODEL_INSURANCE_FIELDS;
 import static app_utility.StaticReferenceClass.MODEL_INSURANCE_HISTORY;
 import static app_utility.StaticReferenceClass.PASSWORD;
 import static app_utility.StaticReferenceClass.PORT_NO;
 import static app_utility.StaticReferenceClass.SERVER_URL;
 import static app_utility.StaticReferenceClass.USER_ID;
+import static java.util.Arrays.asList;
 
 public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
@@ -55,16 +58,13 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private int createdId = -1;
     private Boolean isConnected = false;
     private String sMsgResult;
-    int type;
+    private int type;
     private CircularProgressBar circularProgressBar;
-    private double dLatitude, dLongitude;
     private Context context;
-    HashMap<String, Object> object = new HashMap<>();
+    private HashMap<String, Object> object = new HashMap<>();
 
-    HashMap<String, Object> value = new HashMap<>();
-
-    String sBrandName, InsuranceData, EmissionData, sModelName, sRegNo;
-    int brandID, ModelID, sManufactureYear;
+    private String sBrandName, InsuranceData, EmissionData, sModelName, sRegNo;
+    private int brandID, ModelID, sManufactureYear;
 
     private LinkedHashMap<String, ArrayList<String>> lHMFormatData;
     //use this for future delete, edit tasks
@@ -72,26 +72,30 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     //private AsyncInterface asyncInterface;
     private HashMap mHMEditedList = new HashMap<>();
 
-    int vehicleID;
-    int deletedPosition;
-    int deletedID;
+    private int vehicleID;
+    private int deletedPosition;
+    private int deletedID;
 
-    ArrayList<Integer> alID = new ArrayList<>();
-    ArrayList<String> alModelID = new ArrayList<>();
-    ArrayList<Integer> alModelIDNo = new ArrayList<>();
-    ArrayList<String> alModelYear = new ArrayList<>();
-    ArrayList<String> alName = new ArrayList<>();
-    ArrayList<String> alLicensePlate = new ArrayList<>();
-    ArrayList<Bitmap> alDisplayPicture = new ArrayList<>();
-    ArrayList<String> alEncodedDisplayPicture = new ArrayList<>();
-    HashSet<Integer> hsModelIDSingleValues = new HashSet<>();
+    private ArrayList<Integer> alID = new ArrayList<>();
+    private ArrayList<String> alModelID = new ArrayList<>();
+    private ArrayList<Integer> alModelIDNo = new ArrayList<>();
+    private ArrayList<String> alModelYear = new ArrayList<>();
+    private ArrayList<String> alName = new ArrayList<>();
+    private ArrayList<String> alLicensePlate = new ArrayList<>();
+    private ArrayList<Bitmap> alDisplayPicture = new ArrayList<>();
+    private ArrayList<String> alEncodedDisplayPicture = new ArrayList<>();
+    private HashSet<Integer> hsModelIDSingleValues = new HashSet<>();
 
     private String insuranceNo, insuranceVendor, insuranceStartDate, insuranceExpiryDate, insuranceRemainderDate;
 
     private String emissionNo, emissionVendor, emissionStartDate, emissionExpiryDate, emissionRemainderDate;
     private String base64Bitmap;
     private DatabaseHandler db;
-    ArrayList<String> alOne2ManyModelNames;
+    private ArrayList<String> alOne2ManyModelNames;
+    private ArrayList<String> alModelNamesToFetch;
+
+    ArrayList<String[]> alInsuranceHistory = new ArrayList<>();
+    ArrayList<String[]> alEmissionHistory = new ArrayList<>();
 
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
@@ -124,10 +128,9 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     }
 
     //update task
-    public MyVehicleAsyncTask(Context context, double dLatitude, double dLongitude) {
-        this.context = context;
-        this.dLatitude = dLatitude;
-        this.dLongitude = dLongitude;
+    public MyVehicleAsyncTask(Activity aActivity, ArrayList<String> alModelNamesToFetch) {
+        this.aActivity = aActivity;
+        this.alModelNamesToFetch = alModelNamesToFetch;
     }
 
     @Override
@@ -170,6 +173,12 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 readBrandModelTask();
                 break;
             case 10:
+                ArrayList<String[]> alModelNameFields = new ArrayList<>();
+                alModelNameFields.add(MODEL_INSURANCE_FIELDS);
+                alModelNameFields.add(MODEL_EMISSION_FIELDS);
+                for (int i = 0; i < alModelNamesToFetch.size(); i++) {
+                    readVehicleHistoryTask(alModelNamesToFetch.get(i), alModelNameFields.get(i));
+                }
                 //createOne2Many();
                 break;
         }
@@ -233,6 +242,9 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             case 9:
                 //RegisterVehicleFragment.mListener.onRegisterVehicleFragment("REGISTER_DATA", type, lHMFormatData, lHMBrandNameWithIDAndModelID);
                 MainActivity.asyncInterface.onRegisterVehicleFragment("REGISTER_DATA", type, lHMFormatData, lHMBrandNameWithIDAndModelID);
+                break;
+            case 10:
+                Toast.makeText(aActivity, "Executed", Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -417,7 +429,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 put("mobile", "4103246464");
                 put("service_id", ID); //one to many
             }});*/
-            if (alOne2ManyModelNames.size()>= 1) {
+            if (alOne2ManyModelNames.size() >= 1) {
                 @SuppressWarnings("unchecked")
                 Integer one2ManyInsurance = oc.create(alOne2ManyModelNames.get(0), new HashMap() {{
                     put("insurance_doc_no", insuranceNo);
@@ -537,8 +549,45 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void readInsuranceTask(){
+    private void readVehicleHistoryTask(String sModelName, String[] saFields) {
+        OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
+        List<HashMap<String, Object>> data = oc.search_read(sModelName, new Object[]{
+                new Object[]{new Object[]{"create_uid", "=", 107}}}, saFields);
+        /*{"id", "insurance_doc_no", "vender_name", "insurance_start",
+                "insurance_end", "set_reminder", "vehicle_id"}*/
+        for (int i = 0; i < data.size(); i++) {
+            switch (sModelName) {
+                case MODEL_INSURANCE_HISTORY:
+                    String[] saInsuranceData = new String[8];
+                    saInsuranceData[0] = data.get(i).get("id").toString();
+                    saInsuranceData[1] = data.get(i).get("insurance_doc_no").toString();
+                    saInsuranceData[2] = data.get(i).get("vender_name").toString();
+                    saInsuranceData[3] = data.get(i).get("insurance_start").toString();
+                    saInsuranceData[4] = data.get(i).get("insurance_end").toString();
+                    saInsuranceData[5] = data.get(i).get("set_reminder").toString();
+                    //HashMap<String, Object> nodeHashMap = new HashMap<>();
+                    //Object object = (Object) data.get(i).get("vehicle_id");
 
+                    List<Object> fRelation = Collections.singletonList((Object) data.get(i).get("vehicle_id"));
+                    Object f0 = fRelation.get(0);
+                    saInsuranceData[6] = f0.toString();
+                    /*if(object!=null && !object.equals(false))
+                        saInsuranceData[6] = object.get(0).toString();*/
+                    //nodeHashMap.put("vehicle_id", object);
+                    /*if(!data.get(i).get("vehicle_id").equals("false")) {
+                        List fRelation = asList((Object[]) data.get(i).get("vehicle_id"));
+                        saInsuranceData[6] = fRelation.get(0).toString();
+                    } else {
+                        saInsuranceData[6] = "";
+                    }*/
+                    saInsuranceData[7] = data.get(i).get("vender_name_no").toString();
+                    alInsuranceHistory.add(saInsuranceData);
+                    //alID.add(Integer.valueOf(data.get(i).get("id").toString()));
+                    break;
+                case MODEL_EMISSION_HISTORY:
+                    break;
+            }
+        }
     }
 
     /*
@@ -584,7 +633,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             final Boolean isComp = false;
             //final String n = "Vijay";
             final String p = "";
-            final String e = String.valueOf(dLatitude) + "," + String.valueOf(dLongitude);
+            //final String e = String.valueOf(dLatitude) + "," + String.valueOf(dLongitude);
             //int id;
 
             //id = 104;

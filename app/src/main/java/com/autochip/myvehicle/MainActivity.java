@@ -48,6 +48,8 @@ import app_utility.MyVehicleAsyncTask;
 import app_utility.SharedPreferenceClass;
 import dialogs.DialogMultiple;
 
+import static app_utility.StaticReferenceClass.MODEL_EMISSION_HISTORY;
+import static app_utility.StaticReferenceClass.MODEL_INSURANCE_HISTORY;
 import static app_utility.StaticReferenceClass.REGISTER_IMAGE_REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity implements HomeInterfaceListener, OnImageUtilsListener, AsyncInterface {
@@ -676,6 +678,12 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                     adapterPosition = nCase;
                     editModeVehicleID = Integer.valueOf(sActivityName); //this is the id of data to fetch from sql lite database
                     initVehicleInfoDialog();
+
+                   /* ArrayList<String> alModelNamesToFetch = new ArrayList<>();
+                    alModelNamesToFetch.add(MODEL_INSURANCE_HISTORY);
+                    alModelNamesToFetch.add(MODEL_EMISSION_HISTORY);
+                    MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this, alModelNamesToFetch);
+                    myVehicleAsyncTask.execute(String.valueOf(10), "");*/
                     dialogViewInfo.show();
                     break;
             default:

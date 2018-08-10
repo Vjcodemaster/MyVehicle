@@ -17,6 +17,12 @@ public class StaticReferenceClass {
 
     public static final String MODEL_EMISSION_HISTORY = "emission.history";
 
+    public static final String[] MODEL_INSURANCE_FIELDS = {"id", "insurance_doc_no", "vender_name", "insurance_start",
+            "insurance_end", "set_reminder", "vehicle_id"};
+
+    public static final String[] MODEL_EMISSION_FIELDS = {"id", "emission_doc_no", "agency_name", "emission_start",
+            "emision_end", "set_reminder", "vehicle_id"};
+
     public static final String sAPP_PREFERENCES = "TrackProPreferences";
 
     public static final int REGISTER_IMAGE_REQUEST_CODE = 9101;

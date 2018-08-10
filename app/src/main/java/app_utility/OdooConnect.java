@@ -193,15 +193,19 @@ public class OdooConnect {
                     for (String key : keyss) {
 
                         if (attrRelation.get(key).containsValue("many2one")) {
-                            List fRelation = asList((Object[]) listFields.get(key));
-                            Object f0 = fRelation.get(0); //this will get id of brands
-                            Object f = fRelation.get(1); // 1 => name of brands
-                            //String ff =   f+ "," +f0;
-                            listFields.put(key, f);
-                            if (f0 != null && !f0.equals("")) {
-                                String newKey = key + "_no";
-                                listFields.put(newKey, f0);
-                                break; //remove this is error appears
+                            if(!listFields.get(key).equals("false")) {
+                                List fRelation = asList((Object[]) listFields.get(key));
+                                Object f0 = fRelation.get(0); //this will get id of brands
+                                Object f = fRelation.get(1); // 1 => name of brands
+                                //String ff =   f+ "," +f0;
+                                listFields.put(key, f);
+                                if (f0 != null && !f0.equals("")) {
+                                    String newKey = key + "_no";
+                                    listFields.put(newKey, f0);
+                                    break; //remove this is error appears
+                                }
+                            } else {
+                                break;
                             }
 
                         } else if (attrRelation.get(key).containsValue("many2many") ||
@@ -350,6 +354,7 @@ public class OdooConnect {
                         if (f0 != null && !f0.equals("")) {
                             String newKey = key + "_no";
                             listFields.put(newKey, f0);
+                            break;
                         }
 
                     } else if (attrRelation.get(key).containsValue("many2many") ||
