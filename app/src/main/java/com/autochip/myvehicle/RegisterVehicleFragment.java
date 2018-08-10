@@ -11,7 +11,6 @@ import android.content.res.XmlResourceParser;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -168,6 +167,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
                 alDBData = new ArrayList<>(db.getRowDataFromVehicleTable(vehicleID));
                 sPreviousMake = alDBData.get(0).get_brand_name();
                 spinnerMake.setSelection(alMake.indexOf(alDBData.get(0).get_brand_name()));
+                sPreviousModel = alDBData.get(0).get_model_name();
                 //spinnerModel.setSelection(alModel.indexOf(alDBData.get(0).get_model_name()));
 
                 sPreviousRegNo = alDBData.get(0).get_license_plate();
@@ -184,7 +184,6 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
                     mPreviousBitmap = bitmap;
                     //}
                 }
-
             } else {
                 alMake.addAll(db.getAllBrands());
                 adapterMake.notifyDataSetChanged();
@@ -199,7 +198,6 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         }*/
         //ColorStateList etViewColorStateList = new ColorStateList(editTextStates, editTextColors);
         //etMake.setTextColor(etViewColorStateList);
-
         return view;
     }
 
@@ -282,6 +280,11 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
                     if (sharedPreferenceClass.getEditModeStatus()) {
                         spinnerModel.setSelection(alModel.indexOf(alDBData.get(0).get_model_name()));
                         sPreviousModel = alDBData.get(0).get_model_name();
+                        saveStateBeforeDetach();
+                    } else if(sharedPreferenceClass.getVehicleInfo()!=null){
+                        String[] saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
+
+                        spinnerModel.setSelection(Integer.valueOf(saVehicleInfo[2]));
                     }
                 }
                 //}
@@ -355,6 +358,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(etYOM.getText().toString().trim()) || ((BitmapDrawable) ivPreview.getDrawable()).getBitmap() == null) {
             Toast.makeText(getActivity(), "Please fill all information including image", Toast.LENGTH_SHORT).show();
             saveOnDetachFlag = 1;
+            sharedPreferenceClass.setVehicleInfo(null);
         } else {
             int sManufactureYear = Integer.valueOf(etYOM.getText().toString().trim());
 
@@ -417,10 +421,29 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     }*/
 
     private void compareData() {
-        String sNewMake = spinnerMake.getSelectedItem().toString();
-        String sNewModel = spinnerModel.getSelectedItem().toString();
-        String sNewYOM = etYOM.getText().toString().trim();
-        String sNewRegNo = etRegNo.getText().toString().trim();
+        String[] saVehicleInfo;
+        String sNewMake;
+        String sNewModel;
+        String sNewYOM;
+        String sNewRegNo;
+        int sModelPosition;
+        if(sharedPreferenceClass.getVehicleInfo()!=null) {
+            saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
+
+            sNewMake = saVehicleInfo[0];
+            //brandID = Integer.valueOf(saVehicleInfo[1]);
+
+            sModelPosition = Integer.valueOf(saVehicleInfo[2]);
+
+            //ModelID = Integer.valueOf(saVehicleInfo[3]);
+            sNewModel = saVehicleInfo[4];
+        } else {
+            sModelPosition = spinnerModel.getSelectedItemPosition();
+            sNewMake = spinnerMake.getSelectedItem().toString();
+            sNewModel = spinnerModel.getSelectedItem().toString();
+        }
+        sNewYOM = etYOM.getText().toString().trim();
+        sNewRegNo = etRegNo.getText().toString().trim();
 
         Bitmap newBitmap = ((BitmapDrawable) ivPreview.getDrawable()).getBitmap();
 
@@ -434,7 +457,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         }
 
         String sBrandName = spinnerMake.getSelectedItem().toString().trim();
-        int sModelPosition = spinnerModel.getSelectedItemPosition();
+        //sModelPosition = spinnerModel.getSelectedItemPosition();
         int ModelID = db.getModelIDFromSelectedModelName(sBrandName, sModelPosition);
 
         if (!sNewModel.equals(sPreviousModel)) {
@@ -461,11 +484,11 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         }
         if (mHMEditedList.size() == 0) {
             Toast.makeText(getActivity(), "Nothing has changed", Toast.LENGTH_LONG).show();
+            sharedPreferenceClass.setVehicleInfo(null);
         } else {
             MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), mHMEditedList, editModeVehicleID, db);
             myVehicleAsyncTask.execute(String.valueOf(2), "");
         }
-
     }
 
     private void openImageIntent() {
