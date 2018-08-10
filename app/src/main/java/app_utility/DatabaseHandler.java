@@ -17,9 +17,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Database Name
     private static final String DATABASE_NAME = "APP_DB_MANAGER";
 
-    //DataBaseHelper table name
-    private static final String TABLE_RECENT = "DataBaseHelper";
-
     //DataBaseHelper table name (2nd table for all tab)
     private static final String REGISTER_TABLE = "REGISTER_TABLE";
 
@@ -27,18 +24,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     //recyclerManager Table Columns names
     private static final String KEY_ID = "_id";
-    private static final String KEY_TAGID = "tag_id";
     private static final String KEY_NAME = "name";
-    private static final String KEY_DESIGNATION = "designation";
-    private static final String KEY_NUMBER = "phone_number";
-    private static final String KEY_EMAILID = "email_id";
-    private static final String KEY_DATE = "date";
-    private static final String KEY_TIME = "time";
-    private static final String KEY_LAST_SEEN_TIME = "last_seen";
-    private static final String KEY_MAJOR = "major";
-    private static final String KEY_MINOR = "minor";
-    private static final String KEY_UUID = "uuid";
-    private static final String KEY_RSSI = "rssi";
 
     private static final String KEY_BRAND_NAME = "BRAND_NAME";
     private static final String KEY_BRAND_ID = "BRAND_ID";

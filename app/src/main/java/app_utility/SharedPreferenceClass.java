@@ -78,7 +78,7 @@ public class SharedPreferenceClass {
     }
 
     public String getInsuranceData() {
-        return sharedPreferences.getString(INSURANCE_DATA, "");
+        return sharedPreferences.getString(INSURANCE_DATA, null);
     }
 
     public void setEmissionData(String sEmission){
@@ -103,7 +103,7 @@ public class SharedPreferenceClass {
     }
 
     public String getEmissionData() {
-        return sharedPreferences.getString(EMISSION_DATA, "");
+        return sharedPreferences.getString(EMISSION_DATA, null);
     }
 
     public void setEditMode(boolean isEditMode){

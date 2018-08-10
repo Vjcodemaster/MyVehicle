@@ -91,6 +91,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private String emissionNo, emissionVendor, emissionStartDate, emissionExpiryDate, emissionRemainderDate;
     private String base64Bitmap;
     private DatabaseHandler db;
+    ArrayList<String> alOne2ManyModelNames;
 
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
@@ -101,7 +102,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     }
 
     public MyVehicleAsyncTask(Activity aActivity, String sBrandName, int brandID, int ModelID, String InsuranceData, String EmissionData,
-                              String sModelName, String sRegNo, int sManufactureYear, String base64Bitmap) {
+                              String sModelName, String sRegNo, int sManufactureYear, String base64Bitmap, ArrayList<String> alOne2ManyModelNames) {
         this.aActivity = aActivity;
         this.sBrandName = sBrandName;
         this.brandID = brandID;
@@ -112,6 +113,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         this.sRegNo = sRegNo;
         this.sManufactureYear = sManufactureYear;
         this.base64Bitmap = base64Bitmap;
+        this.alOne2ManyModelNames = alOne2ManyModelNames;
     }
 
     public MyVehicleAsyncTask(Activity aActivity, HashMap mHMEditedList, int vehicleID, DatabaseHandler db) {
@@ -395,16 +397,16 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 //put("insurance_ids", insuranceID);
             }});
             createdId = idC;
-            String[] saModelNames = {MODEL_INSURANCE_HISTORY, MODEL_EMISSION_HISTORY};
+            //String[] saModelNames = {MODEL_INSURANCE_HISTORY, MODEL_EMISSION_HISTORY};
 
-            createOne2Many(saModelNames, "insurance.history", idC);
+            createOne2Many(alOne2ManyModelNames, "insurance.history", idC);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void createOne2Many(String[] saModelNames, String Model, final int ID) {
+    private void createOne2Many(ArrayList<String> alOne2ManyModelNames, String Model, final int ID) {
 
         try {
             OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
@@ -415,9 +417,9 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 put("mobile", "4103246464");
                 put("service_id", ID); //one to many
             }});*/
-            if (saModelNames.length >= 1) {
+            if (alOne2ManyModelNames.size()>= 1) {
                 @SuppressWarnings("unchecked")
-                Integer one2ManyInsurance = oc.create(saModelNames[0], new HashMap() {{
+                Integer one2ManyInsurance = oc.create(alOne2ManyModelNames.get(0), new HashMap() {{
                     put("insurance_doc_no", insuranceNo);
                     put("vender_name", 194); //one to many  //vender id to fetch is 194
                     put("insurance_start", insuranceStartDate);
@@ -427,9 +429,9 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 }});
             }
 
-            if (saModelNames.length >= 2) {
+            if (alOne2ManyModelNames.size() >= 2) {
                 @SuppressWarnings("unchecked")
-                Integer one2ManyEmission = oc.create(saModelNames[1], new HashMap() {{
+                Integer one2ManyEmission = oc.create(alOne2ManyModelNames.get(1), new HashMap() {{
                     put("emission_doc_no", emissionNo);
                     put("agency_name", emissionVendor); //one to many  //vender id to fetch is 194
                     put("emission_start", emissionStartDate);
@@ -533,6 +535,10 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 lHMFormatData.put(sBrandNameTmp, alTmp);
             }
         }
+    }
+
+    private void readInsuranceTask(){
+
     }
 
     /*

@@ -43,6 +43,8 @@ import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
 import app_utility.SharedPreferenceClass;
 
+import static app_utility.StaticReferenceClass.MODEL_EMISSION_HISTORY;
+import static app_utility.StaticReferenceClass.MODEL_INSURANCE_HISTORY;
 import static app_utility.StaticReferenceClass.REGISTER_IMAGE_REQUEST_CODE;
 import static com.autochip.myvehicle.MainActivity.PICTURE_REQUEST_CODE;
 import static com.autochip.myvehicle.MainActivity.editModeVehicleID;
@@ -326,6 +328,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         String InsuranceData;
         String EmissionData;
         String sModelName;
+        ArrayList<String> alOne2Many = new ArrayList<>();
         //sharedPreferenceClass = new SharedPreferenceClass(getActivity());
         if(sharedPreferenceClass.getVehicleInfo()!=null) {
             saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
@@ -333,7 +336,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             sBrandName = saVehicleInfo[0];
             brandID = Integer.valueOf(saVehicleInfo[1]);
 
-            sModelPosition = Integer.valueOf(saVehicleInfo[2]);
+            //sModelPosition = Integer.valueOf(saVehicleInfo[2]);
 
             ModelID = Integer.valueOf(saVehicleInfo[3]);
             sModelName = saVehicleInfo[4];
@@ -350,10 +353,16 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         }
 
         InsuranceData = sharedPreferenceClass.getInsuranceData();
+        if(InsuranceData!=null){
+            alOne2Many.add(MODEL_INSURANCE_HISTORY);
+        }
 
         EmissionData = sharedPreferenceClass.getEmissionData();
-        String sRegNo = etRegNo.getText().toString().trim();
+        if(EmissionData!=null){
+            alOne2Many.add(MODEL_EMISSION_HISTORY);
+        }
 
+        String sRegNo = etRegNo.getText().toString().trim();
 
         if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(etYOM.getText().toString().trim()) || ((BitmapDrawable) ivPreview.getDrawable()).getBitmap() == null) {
             Toast.makeText(getActivity(), "Please fill all information including image", Toast.LENGTH_SHORT).show();
@@ -369,13 +378,12 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
-            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, sModelName, sRegNo, sManufactureYear, encodedBitmap);
+            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, sModelName, sRegNo, sManufactureYear, encodedBitmap, alOne2Many);
             myVehicleAsyncTask.execute(String.valueOf(5), "");
             MainActivity.homeInterfaceListener.onHomeCalled("CREATE_CONDITION_SATISFIED", 10, this.getClass().getName(), null);
             saveOnDetachFlag = 0;
             isVisibleToUser = false;
         }
-
     }
 
     /*private void prepareToCreate() {
