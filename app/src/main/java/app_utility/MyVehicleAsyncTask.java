@@ -128,9 +128,10 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     }
 
     //update task
-    public MyVehicleAsyncTask(Activity aActivity, ArrayList<String> alModelNamesToFetch) {
+    public MyVehicleAsyncTask(Activity aActivity, ArrayList<String> alModelNamesToFetch, DatabaseHandler db) {
         this.aActivity = aActivity;
         this.alModelNamesToFetch = alModelNamesToFetch;
+        this.db = db;
     }
 
     @Override
@@ -555,6 +556,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 new Object[]{new Object[]{"create_uid", "=", 107}}}, saFields);
         /*{"id", "insurance_doc_no", "vender_name", "insurance_start",
                 "insurance_end", "set_reminder", "vehicle_id"}*/
+        int vehicleID = -1;
         for (int i = 0; i < data.size(); i++) {
             switch (sModelName) {
                 case MODEL_INSURANCE_HISTORY:
@@ -565,26 +567,43 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     saInsuranceData[3] = data.get(i).get("insurance_start").toString();
                     saInsuranceData[4] = data.get(i).get("insurance_end").toString();
                     saInsuranceData[5] = data.get(i).get("set_reminder").toString();
-                    //HashMap<String, Object> nodeHashMap = new HashMap<>();
-                    //Object object = (Object) data.get(i).get("vehicle_id");
 
-                    List<Object> fRelation = Collections.singletonList((Object) data.get(i).get("vehicle_id"));
-                    Object f0 = fRelation.get(0);
-                    saInsuranceData[6] = f0.toString();
-                    /*if(object!=null && !object.equals(false))
-                        saInsuranceData[6] = object.get(0).toString();*/
-                    //nodeHashMap.put("vehicle_id", object);
-                    /*if(!data.get(i).get("vehicle_id").equals("false")) {
-                        List fRelation = asList((Object[]) data.get(i).get("vehicle_id"));
-                        saInsuranceData[6] = fRelation.get(0).toString();
+                    if (!data.get(i).get("vehicle_id").equals(false)) {
+                        HashMap<String, Object> listFields = new HashMap<>();
+                        listFields.put("vehicle_id", data.get(i).get("vehicle_id"));
+                        List fRelation = asList((Object[]) listFields.get("vehicle_id"));
+                        Object f0 = fRelation.get(0); //this will get id of brands
+                        saInsuranceData[6] = f0.toString();
                     } else {
                         saInsuranceData[6] = "";
-                    }*/
+                    }
+
                     saInsuranceData[7] = data.get(i).get("vender_name_no").toString();
-                    alInsuranceHistory.add(saInsuranceData);
-                    //alID.add(Integer.valueOf(data.get(i).get("id").toString()));
+                    if(!saInsuranceData[6].equals("")) {
+                        alInsuranceHistory.add(saInsuranceData);
+                        String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
+                        db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
+                    }
                     break;
                 case MODEL_EMISSION_HISTORY:
+                    String[] saEmissionData = new String[7];
+                    saEmissionData[0] = data.get(i).get("id").toString();
+                    saEmissionData[1] = data.get(i).get("emission_doc_no").toString();
+                    saEmissionData[2] = data.get(i).get("agency_name").toString();
+                    saEmissionData[3] = data.get(i).get("emission_start").toString();
+                    saEmissionData[4] = data.get(i).get("emision_end").toString();
+                    saEmissionData[5] = data.get(i).get("set_reminder").toString();
+
+                    if(data.get(i).containsKey("vehicle_id_no")){
+                        saEmissionData[6] = data.get(i).get("vehicle_id_no").toString();
+                    } else {
+                        saEmissionData[6] = "";
+                    }
+                    alEmissionHistory.add(saEmissionData);
+                    if(!saEmissionData[6].equals("")) {
+                    String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
+                    db.updateEmissionInfoByVehicleID(new DataBaseHelper(sJoinedEmissionInfo, Integer.valueOf(saEmissionData[0]), ""), Integer.valueOf(saEmissionData[6]));
+                    }
                     break;
             }
         }

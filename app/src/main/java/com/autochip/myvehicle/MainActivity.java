@@ -679,11 +679,11 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                     editModeVehicleID = Integer.valueOf(sActivityName); //this is the id of data to fetch from sql lite database
                     initVehicleInfoDialog();
 
-                   /* ArrayList<String> alModelNamesToFetch = new ArrayList<>();
+                    ArrayList<String> alModelNamesToFetch = new ArrayList<>();
                     alModelNamesToFetch.add(MODEL_INSURANCE_HISTORY);
                     alModelNamesToFetch.add(MODEL_EMISSION_HISTORY);
-                    MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this, alModelNamesToFetch);
-                    myVehicleAsyncTask.execute(String.valueOf(10), "");*/
+                    MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this, alModelNamesToFetch, db);
+                    myVehicleAsyncTask.execute(String.valueOf(10), "");
                     dialogViewInfo.show();
                     break;
             default:

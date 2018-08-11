@@ -77,6 +77,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_MODEL_NAME + " TEXT, "
                 + KEY_MODEL_ID + " TEXT)";
 
+        /*String TABLE_USER_LIST = "CREATE TABLE " + USER_VEHICLE_TABLE + "("
+                + KEY_VEHICLE_ID_ODOO + " INTEGER PRIMARY KEY, "
+                + KEY_BRAND_NAME + " TEXT, "
+                + KEY_BRAND_ID + " INTEGER, "
+                + KEY_MODEL_NAME + " TEXT, "
+                + KEY_MODEL_ID + " INTEGER, "
+                + KEY_LICENSE_PLATE + " TEXT, "
+                + KEY_IMAGE_BASE64 + " TEXT, "
+                + KEY_MODEL_YEAR + " TEXT)";*/
+
         String TABLE_USER_LIST = "CREATE TABLE " + USER_VEHICLE_TABLE + "("
                 + KEY_VEHICLE_ID_ODOO + " INTEGER PRIMARY KEY, "
                 + KEY_BRAND_NAME + " TEXT, "
@@ -85,9 +95,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_MODEL_ID + " INTEGER, "
                 + KEY_LICENSE_PLATE + " TEXT, "
                 + KEY_IMAGE_BASE64 + " TEXT, "
-                + KEY_MODEL_YEAR + " TEXT)";
+                + KEY_MODEL_YEAR + " TEXT, "
+                + KEY_INSURANCE + " TEXT, "
+                + KEY_INSURANCE_ID + " INTEGER, "
+                + KEY_EMISSION + " TEXT, "
+                + KEY_EMISSION_ID + " INTEGER)";
 
-        String TABLE_VEHICLE_HISTORY= "CREATE TABLE " + USER_VEHICLE_TABLE + "("
+        String TABLE_VEHICLE_HISTORY = "CREATE TABLE " + USER_VEHICLE_TABLE + "("
                 + KEY_VEHICLE_ID_ODOO + " INTEGER PRIMARY KEY, "
                 + KEY_INSURANCE + " TEXT, "
                 + KEY_INSURANCE_ID + " INTEGER, "
@@ -140,6 +154,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_LICENSE_PLATE, dataBaseHelper.get_license_plate());
         values.put(KEY_IMAGE_BASE64, dataBaseHelper.get_image_base64());
         values.put(KEY_MODEL_YEAR, dataBaseHelper.get_model_year());
+        values.put(KEY_INSURANCE, dataBaseHelper.get_insurance_info());
+        values.put(KEY_INSURANCE_ID, dataBaseHelper.get_insurance_id());
+        values.put(KEY_EMISSION, dataBaseHelper.get_emission_info());
+        values.put(KEY_EMISSION_ID, dataBaseHelper.get_emission_id());
         // Inserting Row
         //db.insert(TABLE_RECENT, null, values);
         db.insert(USER_VEHICLE_TABLE, null, values);
@@ -569,6 +587,40 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(KEY_IMAGE_BASE64, dataBaseHelper.get_image_base64());
         if (sModelYear != null && !sModelYear.equals(""))
             values.put(KEY_MODEL_YEAR, dataBaseHelper.get_model_year());
+
+        // updating row
+        //return db.update(TABLE_RECENT, values, column + "last_seen", new String[] {String.valueOf(KEY_ID)});
+        if (values.size() >= 1)
+            db.update(USER_VEHICLE_TABLE, values, KEY_VEHICLE_ID_ODOO + " = " + VEHICLE_ID, null);
+    }
+
+    public void updateInsuranceInfoByVehicleID(DataBaseHelper dataBaseHelper, int VEHICLE_ID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        String sInsuranceInfo = dataBaseHelper.get_insurance_info();
+        int nInsuranceID = dataBaseHelper.get_insurance_id();
+
+
+        if (sInsuranceInfo != null && !sInsuranceInfo.equals(""))
+            values.put(KEY_INSURANCE, sInsuranceInfo);
+        //if (sBase64Image != null && !sBase64Image.equals(""))
+        values.put(KEY_INSURANCE_ID, nInsuranceID);
+
+        // updating row
+        //return db.update(TABLE_RECENT, values, column + "last_seen", new String[] {String.valueOf(KEY_ID)});
+        if (values.size() >= 1)
+            db.update(USER_VEHICLE_TABLE, values, KEY_VEHICLE_ID_ODOO + " = " + VEHICLE_ID, null);
+    }
+
+    public void updateEmissionInfoByVehicleID(DataBaseHelper dataBaseHelper, int VEHICLE_ID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        String sEmissionInfo = dataBaseHelper.get_emission_info();
+        int nEmissionID = dataBaseHelper.get_emission_id();
+
+        if (sEmissionInfo != null && !sEmissionInfo.equals(""))
+            values.put(KEY_EMISSION, sEmissionInfo);
+        values.put(KEY_EMISSION_ID, nEmissionID);
 
         // updating row
         //return db.update(TABLE_RECENT, values, column + "last_seen", new String[] {String.valueOf(KEY_ID)});

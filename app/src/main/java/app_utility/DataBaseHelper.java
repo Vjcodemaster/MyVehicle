@@ -21,6 +21,14 @@ public class DataBaseHelper {
 
     private String _model_year;
 
+    private String _insurance_info;
+
+    private int _insurance_id;
+
+    private String _emission_info;
+
+    private int _emission_id;
+
     // Empty constructor
     public DataBaseHelper(){
 
@@ -50,6 +58,16 @@ public class DataBaseHelper {
         this._license_plate = _license_plate;
         this._image_base64 = _image_base64;
         this._model_year = _model_year;
+    }
+
+    public DataBaseHelper(String _insurance_info, int _insurance_id) {
+        this._insurance_info = _insurance_info;
+        this._insurance_id = _insurance_id;
+    }
+
+    public DataBaseHelper(String _emission_info, int _emission_id, Object object){
+        this._emission_info = _emission_info;
+        this._emission_id = _emission_id;
     }
 
     // getting brandname
@@ -134,4 +152,35 @@ public class DataBaseHelper {
         this.model_id = model_id;
     }
 
+    public String get_insurance_info(){
+        return this._insurance_info;
+    }
+
+    public void set_insurance_info(String insurance_info){
+        this._insurance_info = insurance_info;
+    }
+
+    public int get_insurance_id(){
+        return this._insurance_id;
+    }
+
+    public void set_insurance_id(int insurance_id){
+        this._insurance_id = insurance_id;
+    }
+
+    public String get_emission_info(){
+        return this._insurance_info;
+    }
+
+    public void set_emission_info(String emission_info){
+        this._emission_info = emission_info;
+    }
+
+    public int get_emission_id(){
+        return this._emission_id;
+    }
+
+    public void set_emission_id(int emission_id){
+        this._emission_id = emission_id;
+    }
 }
