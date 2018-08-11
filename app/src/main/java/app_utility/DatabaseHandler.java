@@ -406,6 +406,37 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return dataBaseHelperList;
     }
 
+    public List<DataBaseHelper> getSingleVehicleHistoryByVehicleID(int vehicleID) {
+        List<DataBaseHelper> dataBaseHelperList = new ArrayList<>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + USER_VEHICLE_TABLE + " WHERE " + KEY_VEHICLE_ID_ODOO + " = " + vehicleID;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                DataBaseHelper dataBaseHelper = new DataBaseHelper();
+                /*dataBaseHelper.set_vehicle_id(cursor.getInt(0));
+                dataBaseHelper.set_brand_name(cursor.getString(1));
+                dataBaseHelper.set_brand_id_no(cursor.getInt(2));
+                dataBaseHelper.set_model_name(cursor.getString(3));
+                dataBaseHelper.set_model_id_no(cursor.getInt(4));
+                dataBaseHelper.set_license_plate(cursor.getString(5));
+                dataBaseHelper.set_image_base64(cursor.getString(6));
+                dataBaseHelper.set_model_year(cursor.getString(7));*/
+                dataBaseHelper.set_insurance_info(cursor.getString(8));
+                dataBaseHelper.set_insurance_id(cursor.getInt(9));
+                dataBaseHelper.set_emission_info(cursor.getString(10));
+                dataBaseHelper.set_emission_id(cursor.getInt(11));
+                // Adding data to list
+                dataBaseHelperList.add(dataBaseHelper);
+            } while (cursor.moveToNext());
+        }
+        // return recent list
+        return dataBaseHelperList;
+    }
+
     public List<DataBaseHelper> getAllUserVehicleData() {
         List<DataBaseHelper> dataBaseHelperList = new ArrayList<>();
         // Select All Query

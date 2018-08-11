@@ -22,10 +22,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import app_utility.DataBaseHelper;
+import app_utility.DatabaseHandler;
 import app_utility.SharedPreferenceClass;
 import dialogs.DialogMultiple;
 
 import static android.app.Activity.RESULT_OK;
+import static com.autochip.myvehicle.MainActivity.editModeVehicleID;
 import static com.autochip.myvehicle.MainActivity.mBitmapCompressListener;
 
 
@@ -70,6 +73,8 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
 
     private CircularProgressBar circularProgressBar;
     private SharedPreferenceClass sharedPreferenceClass;
+    DatabaseHandler databaseHandler;
+    ArrayList<DataBaseHelper> alDBData;
     //public static OnImageUtilsListener mBitmapCompressListener;
 
     public InsuranceFragment() {
@@ -98,6 +103,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         super.onCreate(savedInstanceState);
         //mBitmapCompressListener = this;
         mListener = this;
+        databaseHandler = new DatabaseHandler(getActivity());
         circularProgressBar = new CircularProgressBar(getActivity(), false);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -159,11 +165,16 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
             row.setTag(i);
             tlPolicy.addView(row, i);
         }*/
+
+        //added at 11-08-2018
+
+        alDBData = new ArrayList<>(databaseHandler.getSingleVehicleHistoryByVehicleID(editModeVehicleID));
+
         TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
         trHeading.setTag(-1);
-        rows = new TableRow[5];
+        rows = new TableRow[1];
         baButtonDelete = new Button[5];
-        for (int i = 0; i < rows.length; i++) {
+        for (int i = 0; i <1; i++) { // for (int i = 0; i < rows.length; i++) {
             //LayoutInflater trInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = (TableRow) inflater.inflate(R.layout.table_row, null);
             baButtonDelete[i] = row.findViewById(R.id.btn_table_row_delete);
@@ -192,6 +203,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
             } else {
                 baButtonDelete[finalI].setVisibility(View.GONE);
             }
+            loadDataToTable(i);
             tlPolicy.addView(rows[i], i);
         }
         tlPolicy.addView(trHeading, 0);
@@ -199,24 +211,53 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         return view;
     }
 
+    private void loadDataToTable(final int index){
+        TextView tv;
+        row = rows[index];
+        String[] saInsuranceData = alDBData.get(index).get_insurance_info().split(",");
+
+        tv = row.findViewById(R.id.tv_table_row_1);
+        tv.setText("1");
+        tv = row.findViewById(R.id.tv_table_row_2);
+        String sInsuranceNo = saInsuranceData[1];
+        tv.setText(sInsuranceNo);
+
+        tv = row.findViewById(R.id.tv_table_row_3);
+        String sInsuranceProvider = saInsuranceData[2];
+        tv.setText(sInsuranceProvider);
+
+        tv = row.findViewById(R.id.tv_table_row_4);
+        String sStartDate = saInsuranceData[3];
+        tv.setText(sStartDate);
+
+        tv = row.findViewById(R.id.tv_table_row_5);
+        String sExpiryDate = saInsuranceData[4];
+        tv.setText(sExpiryDate);
+
+        tv = row.findViewById(R.id.tv_table_row_6);
+        String sRemainderDate = saInsuranceData[5];
+        tv.setText(sRemainderDate);
+    }
+
     private void prepareDialogToEdit(final int index) {
         TextView tv;
         row = rows[index];
+        String[] saInsuranceData = alDBData.get(index).get_insurance_info().split(",");
 
         tv = row.findViewById(R.id.tv_table_row_2);
-        String sInsuranceNo = tv.getText().toString();
+        String sInsuranceNo = saInsuranceData[1];
 
         tv = row.findViewById(R.id.tv_table_row_3);
-        String sInsuranceProvider = tv.getText().toString();
+        String sInsuranceProvider = saInsuranceData[2];
 
         tv = row.findViewById(R.id.tv_table_row_4);
-        String sStartDate = tv.getText().toString();
+        String sStartDate = saInsuranceData[3];
 
         tv = row.findViewById(R.id.tv_table_row_5);
-        String sExpiryDate = tv.getText().toString();
+        String sExpiryDate = saInsuranceData[4];
 
         tv = row.findViewById(R.id.tv_table_row_6);
-        String sRemainderDate = tv.getText().toString();
+        String sRemainderDate = saInsuranceData[5];
 
         dialogMultiple.tvTitle.setText(getActivity().getResources().getString(R.string.title_edit_insurance));
         dialogMultiple.etCustomOne.getEditText().setText(sInsuranceNo);

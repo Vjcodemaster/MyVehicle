@@ -674,18 +674,18 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                         vehicleDataStorage.alLicensePlate, vehicleDataStorage.alModelYear, vehicleDataStorage.alDisplayPicture);
                 recyclerView.setAdapter(myVehicleTrackingRVAdapter);
                 break;
-                case "VIEW_VEHICLE_INFO":
-                    adapterPosition = nCase;
-                    editModeVehicleID = Integer.valueOf(sActivityName); //this is the id of data to fetch from sql lite database
-                    initVehicleInfoDialog();
+            case "VIEW_VEHICLE_INFO":
+                adapterPosition = nCase;
+                editModeVehicleID = Integer.valueOf(sActivityName); //this is the id of data to fetch from sql lite database
+                initVehicleInfoDialog();
 
-                    ArrayList<String> alModelNamesToFetch = new ArrayList<>();
+                    /*ArrayList<String> alModelNamesToFetch = new ArrayList<>();
                     alModelNamesToFetch.add(MODEL_INSURANCE_HISTORY);
                     alModelNamesToFetch.add(MODEL_EMISSION_HISTORY);
                     MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this, alModelNamesToFetch, db);
-                    myVehicleAsyncTask.execute(String.valueOf(10), "");
-                    dialogViewInfo.show();
-                    break;
+                    myVehicleAsyncTask.execute(String.valueOf(10), "");*/
+                dialogViewInfo.show();
+                break;
             default:
 
                 break;
@@ -936,13 +936,17 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                         vehicleDataStorage.alModelIDNo.get(i), vehicleDataStorage.alLicensePlate.get(i), vehicleDataStorage.alEncodedDisplayPicture.get(i),
                         vehicleDataStorage.alModelYear.get(i)));
             }
-
             return null;
         }
 
         @Override
         protected void onPostExecute(String result) {
-
+//This is called after we have all the information other than insurance/emission and other history data
+            ArrayList<String> alModelNamesToFetch = new ArrayList<>();
+            alModelNamesToFetch.add(MODEL_INSURANCE_HISTORY);
+            alModelNamesToFetch.add(MODEL_EMISSION_HISTORY);
+            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this, alModelNamesToFetch, db);
+            myVehicleAsyncTask.execute(String.valueOf(10), "");
         }
     }
 

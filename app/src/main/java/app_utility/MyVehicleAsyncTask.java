@@ -18,23 +18,17 @@ import android.widget.Toast;
 import com.autochip.myvehicle.CircularProgressBar;
 import com.autochip.myvehicle.MainActivity;
 
-import org.w3c.dom.Node;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -245,7 +239,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 MainActivity.asyncInterface.onRegisterVehicleFragment("REGISTER_DATA", type, lHMFormatData, lHMBrandNameWithIDAndModelID);
                 break;
             case 10:
-                Toast.makeText(aActivity, "Executed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(aActivity, "App is all set and ready to use", Toast.LENGTH_LONG).show();
                 break;
         }
 
@@ -556,7 +550,6 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 new Object[]{new Object[]{"create_uid", "=", 107}}}, saFields);
         /*{"id", "insurance_doc_no", "vender_name", "insurance_start",
                 "insurance_end", "set_reminder", "vehicle_id"}*/
-        int vehicleID = -1;
         for (int i = 0; i < data.size(); i++) {
             switch (sModelName) {
                 case MODEL_INSURANCE_HISTORY:
@@ -578,8 +571,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                         saInsuranceData[6] = "";
                     }
 
-                    saInsuranceData[7] = data.get(i).get("vender_name_no").toString();
-                    if(!saInsuranceData[6].equals("")) {
+                    if (!saInsuranceData[6].equals("")) {
+                        saInsuranceData[7] = data.get(i).get("vender_name_no").toString();
                         alInsuranceHistory.add(saInsuranceData);
                         String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
                         db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
@@ -594,15 +587,15 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     saEmissionData[4] = data.get(i).get("emision_end").toString();
                     saEmissionData[5] = data.get(i).get("set_reminder").toString();
 
-                    if(data.get(i).containsKey("vehicle_id_no")){
+                    if (data.get(i).containsKey("vehicle_id_no")) {
                         saEmissionData[6] = data.get(i).get("vehicle_id_no").toString();
                     } else {
                         saEmissionData[6] = "";
                     }
-                    alEmissionHistory.add(saEmissionData);
-                    if(!saEmissionData[6].equals("")) {
-                    String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
-                    db.updateEmissionInfoByVehicleID(new DataBaseHelper(sJoinedEmissionInfo, Integer.valueOf(saEmissionData[0]), ""), Integer.valueOf(saEmissionData[6]));
+                    if (!saEmissionData[6].equals("")) {
+                        alEmissionHistory.add(saEmissionData);
+                        String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
+                        db.updateEmissionInfoByVehicleID(new DataBaseHelper(sJoinedEmissionInfo, Integer.valueOf(saEmissionData[0]), ""), Integer.valueOf(saEmissionData[6]));
                     }
                     break;
             }
