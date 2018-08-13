@@ -456,7 +456,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private void readBrandTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle.model.brand", new Object[]{
-                new Object[]{new Object[]{"create_uid", "!=", 100}}}, "name", "id");
+                new Object[]{new Object[]{"create_uid", "!=", 113}}}, "name", "id");
         alID = new ArrayList<>();
         alName = new ArrayList<>();
         for (int i = 0; i < data.size(); ++i) {
@@ -473,8 +473,18 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
     private void readBrandModelTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
-        List<HashMap<String, Object>> data = oc.search_read_brands("product.template", new Object[]{
-                new Object[]{new Object[]{"brand_id", "!=", false}}}, "name", "brand_id");
+        /*
+        below line is commented and Objects of conditions has been added so that we can differentiate between one condition with another.
+        and also improves readability of code which can be easily read. we are adding 2 conditions to get the data
+        1. to make sure brand_id is  not false. (reject brands which do not have data)
+        2. show and update brands and models only with vehicle types, not with spare parts or other materials.
+         */
+        Object[] conditions = new Object[2];
+        conditions[0] = new Object[]{"brand_id", "!=", false};
+        conditions[1] = new Object[] {"catalog_type", "=", "Vehicle"};
+        List<HashMap<String, Object>> data = oc.search_read_brands("product.template", new Object[]{conditions}, "name", "brand_id");
+        /*List<HashMap<String, Object>> data = oc.search_read_brands("product.template", new Object[]{
+                new Object[]{new Object[]{"brand_id", "!=", false}}}, "name", "brand_id");*/
         ArrayList<Integer> alBrandID = new ArrayList<>();
         ArrayList<String> alBrandName = new ArrayList<>();
         ArrayList<String> alModelName = new ArrayList<>();
@@ -547,7 +557,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private void readVehicleHistoryTask(String sModelName, String[] saFields) {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read(sModelName, new Object[]{
-                new Object[]{new Object[]{"create_uid", "=", 107}}}, saFields);
+                new Object[]{new Object[]{"create_uid", "=", 113}}}, saFields);
         /*{"id", "insurance_doc_no", "vender_name", "insurance_start",
                 "insurance_end", "set_reminder", "vehicle_id"}*/
         for (int i = 0; i < data.size(); i++) {
@@ -699,7 +709,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private void readTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle", new Object[]{
-                new Object[]{new Object[]{"create_uid", "=", 107}}}, "id", "image_medium", "model_id", "model_year", "name", "license_plate");
+                new Object[]{new Object[]{"create_uid", "=", 113}}}, "id", "image_medium", "model_id", "model_year", "name", "license_plate");
 
 
         for (int i = 0; i < data.size(); ++i) {

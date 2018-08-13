@@ -217,7 +217,7 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
     private void loadDataToTable(final int index){
         TextView tv;
         row = rows[index];
-        if(alDBData.get(index).get_emission_info()!=null) {
+        if(alDBData.size()>=1 && alDBData.get(index).get_emission_info()!=null) {
             saEmissionData = alDBData.get(index).get_emission_info().split(",");
 
             tv = row.findViewById(R.id.tv_table_row_1);
