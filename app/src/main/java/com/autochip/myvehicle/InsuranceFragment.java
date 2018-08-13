@@ -168,9 +168,33 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
 
         //added at 11-08-2018
 
-        alDBData = new ArrayList<>(databaseHandler.getSingleVehicleHistoryByVehicleID(editModeVehicleID));
-
+        /*
+        modified code so that unnecessary for loop is removed
+         */
         TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
+        trHeading.setTag(-1);
+        tlPolicy.addView(trHeading, 0);
+        if (isInEditMode) {
+            alDBData = new ArrayList<>(databaseHandler.getSingleVehicleHistoryByVehicleID(editModeVehicleID));
+
+            row = (TableRow) inflater.inflate(R.layout.table_row, null);
+            Button btnDeleteRow = row.findViewById(R.id.btn_table_row_delete);
+
+            row.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialogMultiple.onCreate(1);
+                    prepareDialogToEdit();
+                    dialogMultiple.dialog.show();
+                }
+            });
+            btnDeleteRow.setOnClickListener(tableClick);
+            //tlPolicy.addView(trHeading, 0);
+            loadDataToTable();
+            tlPolicy.addView(row, 1);
+        }
+
+        /*TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
         trHeading.setTag(-1);
         rows = new TableRow[1];
         baButtonDelete = new Button[5];
@@ -206,12 +230,86 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
             loadDataToTable(i);
             tlPolicy.addView(rows[i], i);
         }
-        tlPolicy.addView(trHeading, 0);
+        tlPolicy.addView(trHeading, 0);*/
         // Inflate the layout for this fragment
         return view;
     }
 
-    private void loadDataToTable(final int index){
+    //declaring OnClickListener as an object
+    private View.OnClickListener tableClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.layout.table_row:
+                    /*dialogMultiple.onCreate(1);
+                    prepareDialogToEdit();
+                    dialogMultiple.dialog.show();*/
+                    break;
+                case R.id.btn_table_row_delete:
+                    tlPolicy.removeView(row);
+                    break;
+            }
+        }
+    };
+
+    private void loadDataToTable(){
+        TextView tv;
+        if(alDBData.get(0).get_insurance_info()!=null) {
+            String[] saInsuranceData = alDBData.get(0).get_insurance_info().split(",");
+
+            tv = row.findViewById(R.id.tv_table_row_1);
+            tv.setText("1");
+            tv = row.findViewById(R.id.tv_table_row_2);
+            String sInsuranceNo = saInsuranceData[1];
+            tv.setText(sInsuranceNo);
+
+            tv = row.findViewById(R.id.tv_table_row_3);
+            String sInsuranceProvider = saInsuranceData[2];
+            tv.setText(sInsuranceProvider);
+
+            tv = row.findViewById(R.id.tv_table_row_4);
+            String sStartDate = saInsuranceData[3];
+            tv.setText(sStartDate);
+
+            tv = row.findViewById(R.id.tv_table_row_5);
+            String sExpiryDate = saInsuranceData[4];
+            tv.setText(sExpiryDate);
+
+            tv = row.findViewById(R.id.tv_table_row_6);
+            String sRemainderDate = saInsuranceData[5];
+            tv.setText(sRemainderDate);
+        }
+    }
+
+    private void prepareDialogToEdit() {
+        //TextView tv;
+        String[] saInsuranceData = alDBData.get(0).get_insurance_info().split(",");
+
+        //tv = row.findViewById(R.id.tv_table_row_2);
+        String sInsuranceNo = saInsuranceData[1];
+
+        //tv = row.findViewById(R.id.tv_table_row_3);
+        String sInsuranceProvider = saInsuranceData[2];
+
+        //tv = row.findViewById(R.id.tv_table_row_4);
+        String sStartDate = saInsuranceData[3];
+
+        //tv = row.findViewById(R.id.tv_table_row_5);
+        String sExpiryDate = saInsuranceData[4];
+
+        //tv = row.findViewById(R.id.tv_table_row_6);
+        String sRemainderDate = saInsuranceData[5];
+
+        dialogMultiple.tvTitle.setText(getActivity().getResources().getString(R.string.title_edit_insurance));
+        dialogMultiple.etCustomOne.getEditText().setText(sInsuranceNo);
+        dialogMultiple.etCustomTwo.getEditText().setText(sInsuranceProvider);
+        dialogMultiple.tvStartDateValue.setText(sStartDate);
+        dialogMultiple.tvExpiryDateValue.setText(sExpiryDate);
+        dialogMultiple.tvRemainderDateValue.setText(sRemainderDate);
+        dialogMultiple.llDateValue.setVisibility(View.VISIBLE);
+    }
+
+    /*private void loadDataToTable(final int index){
         TextView tv;
         row = rows[index];
         if(alDBData.get(index).get_insurance_info()!=null) {
@@ -268,7 +366,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         dialogMultiple.tvExpiryDateValue.setText(sExpiryDate);
         dialogMultiple.tvRemainderDateValue.setText(sRemainderDate);
         dialogMultiple.llDateValue.setVisibility(View.VISIBLE);
-    }
+    }*/
 
     /*public void initAddDialog() {
         dialog = new Dialog(getActivity(), R.style.CustomDialogTheme90);
