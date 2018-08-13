@@ -50,6 +50,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private Activity aActivity;
     private String res = "";
     private int createdId = -1;
+    private Integer[] iaOne2ManyID = new Integer[2];
     private Boolean isConnected = false;
     private String sMsgResult;
     private int type;
@@ -223,16 +224,43 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             case 4:
                 break;
             case 5:
+
+                String[] saInsuranceData = new String[8];
+                saInsuranceData[0] = iaOne2ManyID[0].toString();
+                saInsuranceData[1] = InsuranceData.split(",")[0];
+                saInsuranceData[2] = "Autochip";
+                saInsuranceData[3] = InsuranceData.split(",")[2];
+                saInsuranceData[4] = InsuranceData.split(",")[3];
+                saInsuranceData[5] = InsuranceData.split(",")[4];
+                saInsuranceData[6] = String.valueOf(createdId);
+                saInsuranceData[7] = "194";
+                //String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
+                //db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
+
+                String[] saEmissionData = new String[7];
+                saEmissionData[0] = iaOne2ManyID[1].toString();
+                saEmissionData[1] = EmissionData.split(",")[0];
+                saEmissionData[2] = EmissionData.split(",")[1];
+                saEmissionData[3] = EmissionData.split(",")[2];
+                saEmissionData[4] = EmissionData.split(",")[3];
+                saEmissionData[5] = EmissionData.split(",")[4];
+                saEmissionData[6] = String.valueOf(createdId);
+                //String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
+                //db.updateEmissionInfoByVehicleID(new DataBaseHelper(sJoinedEmissionInfo, Integer.valueOf(saEmissionData[0]), ""), Integer.valueOf(saEmissionData[6]));
+                ArrayList<String[]> alModelArray = new ArrayList<>();
+                alModelArray.add(saInsuranceData);
+                alModelArray.add(saEmissionData);
+
                 String saAddedData;
                 saAddedData = String.valueOf(createdId) + "," + sBrandName + "," + brandID + "," + sModelName + "," + ModelID + "," + sRegNo + ","
                         + base64Bitmap + "," + sManufactureYear;
                 //MainActivity.homeInterfaceListener.onHomeCalled("CREATE_CONDITION_SATISFIED", 10, this.getClass().getName(), null);
                 //saAddedData = String.valueOf(createdId) + "," + sModelName + "," + sRegNo + "," + sManufactureYear;
-                MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("ADDED_NEW_DATA", type, type, saAddedData);
+                MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("ADDED_NEW_DATA", type, type, saAddedData, alModelArray);
                 Toast.makeText(aActivity, "Vehicle Registered", Toast.LENGTH_LONG).show();
                 break;
             case 7:
-                MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("REMOVE_POSITION", type, deletedPosition, String.valueOf(deletedID));
+                MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("REMOVE_POSITION", type, deletedPosition, String.valueOf(deletedID), null);
                 break;
             case 9:
                 //RegisterVehicleFragment.mListener.onRegisterVehicleFragment("REGISTER_DATA", type, lHMFormatData, lHMBrandNameWithIDAndModelID);
@@ -424,6 +452,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 put("mobile", "4103246464");
                 put("service_id", ID); //one to many
             }});*/
+
             if (alOne2ManyModelNames.size() >= 1) {
                 @SuppressWarnings("unchecked")
                 Integer one2ManyInsurance = oc.create(alOne2ManyModelNames.get(0), new HashMap() {{
@@ -434,7 +463,21 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     put("set_reminder", insuranceRemainderDate);
                     put("vehicle_id", ID);
                 }});
+                iaOne2ManyID[0] = one2ManyInsurance;
+
+                /*String[] saInsuranceData = new String[8];
+                saInsuranceData[0] = iaOne2ManyID[0].toString();
+                saInsuranceData[1] = InsuranceData.split(",")[0];
+                saInsuranceData[2] = "Autochip";
+                saInsuranceData[3] = InsuranceData.split(",")[2];
+                saInsuranceData[4] = InsuranceData.split(",")[3];
+                saInsuranceData[5] = InsuranceData.split(",")[4];
+                saInsuranceData[6] = String.valueOf(createdId);
+                saInsuranceData[7] = "194";
+                String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
+                db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));*/
             }
+
 
             if (alOne2ManyModelNames.size() >= 2) {
                 @SuppressWarnings("unchecked")
@@ -446,6 +489,18 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     put("set_reminder", emissionRemainderDate);
                     put("vehicle_id", ID);
                 }});
+                iaOne2ManyID[1] = one2ManyEmission;
+
+                /*String[] saEmissionData = new String[7];
+                saEmissionData[0] = iaOne2ManyID[1].toString();
+                saEmissionData[1] = EmissionData.split(",")[0];
+                saEmissionData[2] = EmissionData.split(",")[1];
+                saEmissionData[3] = EmissionData.split(",")[2];
+                saEmissionData[4] = EmissionData.split(",")[3];
+                saEmissionData[5] = EmissionData.split(",")[4];
+                saEmissionData[6] = String.valueOf(createdId);
+                String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
+                db.updateEmissionInfoByVehicleID(new DataBaseHelper(sJoinedEmissionInfo, Integer.valueOf(saEmissionData[0]), ""), Integer.valueOf(saEmissionData[6]));*/
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -481,7 +536,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
          */
         Object[] conditions = new Object[2];
         conditions[0] = new Object[]{"brand_id", "!=", false};
-        conditions[1] = new Object[] {"catalog_type", "=", "Vehicle"};
+        conditions[1] = new Object[]{"catalog_type", "=", "Vehicle"};
         List<HashMap<String, Object>> data = oc.search_read_brands("product.template", new Object[]{conditions}, "name", "brand_id");
         /*List<HashMap<String, Object>> data = oc.search_read_brands("product.template", new Object[]{
                 new Object[]{new Object[]{"brand_id", "!=", false}}}, "name", "brand_id");*/
@@ -573,8 +628,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
                     if (data.get(i).containsKey("vehicle_id_no")) {
                         saInsuranceData[6] = data.get(i).get("vehicle_id_no").toString();
-                    } else
-                    if (!data.get(i).get("vehicle_id").equals(false)) {
+                    } else if (!data.get(i).get("vehicle_id").equals(false)) {
                         HashMap<String, Object> listFields = new HashMap<>();
                         listFields.put("vehicle_id", data.get(i).get("vehicle_id"));
                         List fRelation = asList((Object[]) listFields.get("vehicle_id"));
@@ -591,7 +645,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                         String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
                         db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
                     } else {
-                        if(!saInsuranceData[6].equals("")) {
+                        if (!saInsuranceData[6].equals("")) {
                             HashMap<String, Object> listFields = new HashMap<>();
                             listFields.put("vender_name", data.get(i).get("vender_name"));
                             List fRelation = asList((Object[]) listFields.get("vender_name"));

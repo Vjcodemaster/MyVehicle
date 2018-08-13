@@ -330,7 +330,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         String sModelName;
         ArrayList<String> alOne2Many = new ArrayList<>();
         //sharedPreferenceClass = new SharedPreferenceClass(getActivity());
-        if(sharedPreferenceClass.getVehicleInfo()!=null) {
+        /*if(sharedPreferenceClass.getVehicleInfo()!=null) {
             saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
             //int sBrandID = spinnerMake.getSelectedItemPosition();
             sBrandName = saVehicleInfo[0];
@@ -340,7 +340,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
 
             ModelID = Integer.valueOf(saVehicleInfo[3]);
             sModelName = saVehicleInfo[4];
-        } else {
+        } else */{
             //saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
             //int sBrandID = spinnerMake.getSelectedItemPosition();
             sBrandName = spinnerMake.getSelectedItem().toString();

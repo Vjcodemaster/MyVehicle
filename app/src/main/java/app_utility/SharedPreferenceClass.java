@@ -98,6 +98,17 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
+    public void setAllVehicleInfoToNull(String sVehicleInfo, String sInsurance, String sEmission){
+        SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
+        SharedPreferences.Editor editor;
+        editor = sharedPreferences.edit();
+        editor.putString(VEHICLE_INFO, sVehicleInfo);
+        editor.putString(INSURANCE_DATA, sInsurance);
+        editor.putString(EMISSION_DATA, sEmission);
+
+        editor.apply();
+    }
+
     public String getVehicleInfo(){
         return sharedPreferences.getString(VEHICLE_INFO, null);
     }

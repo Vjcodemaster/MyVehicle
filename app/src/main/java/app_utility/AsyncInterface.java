@@ -3,6 +3,7 @@ package app_utility;
 import android.graphics.Bitmap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
@@ -17,7 +18,7 @@ public interface AsyncInterface {
                              ArrayList<String> alEncodedDisplayPicture,
                              HashSet<Integer> hsModelIDSingleValues);
 
-    void onAsyncTaskCompleteGeneral(String sMessage, int nCase, int position, String sData);
+    void onAsyncTaskCompleteGeneral(String sMessage, int nCase, int position, String sData, ArrayList<String[]> alModelArray);
 
     void onRegisterVehicleFragment(String sMessage, int nCase, LinkedHashMap<String, ArrayList<String>>
             lHMFormatData, LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID);

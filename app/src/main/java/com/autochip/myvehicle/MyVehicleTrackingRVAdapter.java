@@ -142,9 +142,9 @@ public class MyVehicleTrackingRVAdapter extends RecyclerView.Adapter<MyVehicleTr
                 @Override
                 public void onClick(View view) {
                     MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(context);
-                    int vehicleID = alID.get(holder.getAdapterPosition());
-                    int currentPosition = holder.getAdapterPosition();
-                    myVehicleAsyncTask.execute(String.valueOf(7), String.valueOf(vehicleID), String.valueOf(currentPosition));
+                    int vehicleID = alID.get(position);
+                    int currentPosition = position;
+                    myVehicleAsyncTask.execute(String.valueOf(7), String.valueOf(vehicleID), String.valueOf(position));
                 }
             });
 

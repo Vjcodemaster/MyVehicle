@@ -20,6 +20,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -775,7 +776,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     }
 
     @Override
-    public void onAsyncTaskCompleteGeneral(String sMessage, int nCase, int position, String sData) {
+    public void onAsyncTaskCompleteGeneral(String sMessage, int nCase, int position, String sData, ArrayList<String[]> alModelArray) {
         switch (sMessage) {
             case "REMOVE_POSITION":
                 vehicleDataStorage.alID.remove(position);
@@ -813,11 +814,20 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 Bitmap bitmap = BitmapBase64.convertToBitmap(sEncodedDP);
                 vehicleDataStorage.alDisplayPicture.add(bitmap);
                 myVehicleTrackingRVAdapter.notifyItemInserted(vehicleDataStorage.alID.size() - 1);
-                sharedPreferenceClass.setVehicleInfo(null); //sets value of setVehicle to null so that next time we can add new data without any problems
+                sharedPreferenceClass.setAllVehicleInfoToNull(null, null, null);
+                //sharedPreferenceClass.setVehicleInfo(null); //sets value of setVehicle to null so that next time we can add new data without any problems
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 tvSubtitle.setVisibility(View.GONE);
 
                 db.addDataToUserVehicle(new DataBaseHelper(vehicleID, sBrandName, brandID, sModelName, modelID, sLicensePlate, sEncodedDP, sModelYear));
+
+                String[] saInsuranceData = alModelArray.get(0);
+                String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
+                db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
+
+                String[] saEmissionData = alModelArray.get(1);
+                String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
+                db.updateEmissionInfoByVehicleID(new DataBaseHelper(sJoinedEmissionInfo, Integer.valueOf(saEmissionData[0]), ""), Integer.valueOf(saEmissionData[6]));
                 break;
         }
     }
