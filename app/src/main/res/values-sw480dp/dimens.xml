@@ -4,9 +4,9 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="layout_margin_progressbar">4dp</dimen>
 
-    <dimen name="spinner_width">200dp</dimen>
-    <dimen name="spinner_height">40dp</dimen>
+    <dimen name="spinner_width">260dp</dimen>
+    <dimen name="spinner_height">56dp</dimen>
 
-    <dimen name="image_preview_width">60dp</dimen>
-    <dimen name="image_preview_height">70dp</dimen>
+    <dimen name="image_preview_width">83dp</dimen>
+    <dimen name="image_preview_height">97dp</dimen>
 </resources>

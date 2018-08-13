@@ -21,8 +21,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 
+import app_utility.DataBaseHelper;
+import app_utility.DatabaseHandler;
 import app_utility.SharedPreferenceClass;
 import dialogs.DialogMultiple;
+
+import static com.autochip.myvehicle.MainActivity.editModeVehicleID;
 
 
 /**
@@ -62,10 +66,15 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
     DialogMultiple dialogMultiple;
     SharedPreferenceClass sharedPreferenceClass;
 
+    DatabaseHandler databaseHandler;
+    ArrayList<DataBaseHelper> alDBData;
+
     private boolean isInEditMode = false;
 
     TableRow[] rows;
     Button[] baButtonDelete;
+
+    String[] saEmissionData;
     //TableRow row;
 
     //public static OnImageUtilsListener mBitmapCompressListener;
@@ -97,6 +106,7 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
         super.onCreate(savedInstanceState);
         //mBitmapCompressListener = this;
         mListener = this;
+        databaseHandler = new DatabaseHandler(getActivity());
         circularProgressBar = new CircularProgressBar(getActivity(), false);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -157,6 +167,7 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
             }
         });
 
+        alDBData = new ArrayList<>(databaseHandler.getSingleVehicleHistoryByVehicleID(editModeVehicleID));
         /*
         inflating views dynamically for table layout where we always add the data dynamically from odoo not from xml
         here we are inflating table rows first using for loop depending on the data we receive and then add table row header
@@ -165,9 +176,9 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
          */
         TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
         trHeading.setTag(-1);
-        rows = new TableRow[5];
+        rows = new TableRow[1];
         baButtonDelete = new Button[5];
-        for (int i = 0; i < rows.length; i++) {
+        for (int i = 0; i < 1; i++) {
             //LayoutInflater trInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = (TableRow) inflater.inflate(R.layout.table_row, null);
             baButtonDelete[i] = row.findViewById(R.id.btn_table_row_delete);
@@ -196,34 +207,66 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
             } else {
                 baButtonDelete[finalI].setVisibility(View.GONE);
             }
+            loadDataToTable(i);
             tlPolicy.addView(rows[i], i);
         }
         tlPolicy.addView(trHeading, 0);
         return view;
     }
 
-    private void prepareDialogToEdit(final int index) {
+    private void loadDataToTable(final int index){
         TextView tv;
         row = rows[index];
+        if(alDBData.get(index).get_emission_info()!=null) {
+            saEmissionData = alDBData.get(index).get_emission_info().split(",");
 
-        tv = row.findViewById(R.id.tv_table_row_2);
-        String sEmissionNo = tv.getText().toString();
+            tv = row.findViewById(R.id.tv_table_row_1);
+            tv.setText("1");
 
-        tv = row.findViewById(R.id.tv_table_row_3);
-        String sEmissionProvider = tv.getText().toString();
+            tv = row.findViewById(R.id.tv_table_row_2);
+            String sEmissionNo = saEmissionData[1];
+            tv.setText(sEmissionNo);
 
-        tv = row.findViewById(R.id.tv_table_row_4);
-        String sStartDate = tv.getText().toString();
+            tv = row.findViewById(R.id.tv_table_row_3);
+            String sAgencyName = saEmissionData[2];
+            tv.setText(sAgencyName);
 
-        tv = row.findViewById(R.id.tv_table_row_5);
-        String sExpiryDate = tv.getText().toString();
+            tv = row.findViewById(R.id.tv_table_row_4);
+            String sStartDate = saEmissionData[3];
+            tv.setText(sStartDate);
 
-        tv = row.findViewById(R.id.tv_table_row_6);
-        String sRemainderDate = tv.getText().toString();
+            tv = row.findViewById(R.id.tv_table_row_5);
+            String sExpiryDate = saEmissionData[4];
+            tv.setText(sExpiryDate);
+
+            tv = row.findViewById(R.id.tv_table_row_6);
+            String sRemainderDate = saEmissionData[5];
+            tv.setText(sRemainderDate);
+        }
+    }
+
+    private void prepareDialogToEdit(final int index) {
+        //TextView tv;
+        row = rows[index];
+
+        //tv = row.findViewById(R.id.tv_table_row_2);
+        String sEmissionNo = saEmissionData[1];
+
+        //tv = row.findViewById(R.id.tv_table_row_3);
+        String sAgencyName = saEmissionData[2];
+
+        //tv = row.findViewById(R.id.tv_table_row_4);
+        String sStartDate = saEmissionData[3];
+
+        //tv = row.findViewById(R.id.tv_table_row_5);
+        String sExpiryDate = saEmissionData[4];
+
+        //tv = row.findViewById(R.id.tv_table_row_6);
+        String sRemainderDate = saEmissionData[5];
 
         dialogMultiple.tvTitle.setText(getActivity().getResources().getString(R.string.title_edit_emission));
         dialogMultiple.etCustomOne.getEditText().setText(sEmissionNo);
-        dialogMultiple.etCustomTwo.getEditText().setText(sEmissionProvider);
+        dialogMultiple.etCustomTwo.getEditText().setText(sAgencyName);
         dialogMultiple.tvStartDateValue.setText(sStartDate);
         dialogMultiple.tvExpiryDateValue.setText(sExpiryDate);
         dialogMultiple.tvRemainderDateValue.setText(sRemainderDate);

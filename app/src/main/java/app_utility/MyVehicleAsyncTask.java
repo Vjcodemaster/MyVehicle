@@ -561,6 +561,9 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     saInsuranceData[4] = data.get(i).get("insurance_end").toString();
                     saInsuranceData[5] = data.get(i).get("set_reminder").toString();
 
+                    if (data.get(i).containsKey("vehicle_id_no")) {
+                        saInsuranceData[6] = data.get(i).get("vehicle_id_no").toString();
+                    } else
                     if (!data.get(i).get("vehicle_id").equals(false)) {
                         HashMap<String, Object> listFields = new HashMap<>();
                         listFields.put("vehicle_id", data.get(i).get("vehicle_id"));
@@ -571,11 +574,24 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                         saInsuranceData[6] = "";
                     }
 
-                    if (!saInsuranceData[6].equals("")) {
+                    //slightly modified for tab because this is acting weird with yureka and lenovo tablet
+                    if (!saInsuranceData[6].equals("") && data.get(i).containsKey("vender_name_no")) {
                         saInsuranceData[7] = data.get(i).get("vender_name_no").toString();
                         alInsuranceHistory.add(saInsuranceData);
                         String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
                         db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
+                    } else {
+                        if(!saInsuranceData[6].equals("")) {
+                            HashMap<String, Object> listFields = new HashMap<>();
+                            listFields.put("vender_name", data.get(i).get("vender_name"));
+                            List fRelation = asList((Object[]) listFields.get("vender_name"));
+                            Object f0 = fRelation.get(0); //this will get id of brands
+                            Object f1 = fRelation.get(1);
+                            saInsuranceData[2] = f1.toString();
+                            saInsuranceData[7] = f0.toString();
+                            String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
+                            db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
+                        }
                     }
                     break;
                 case MODEL_EMISSION_HISTORY:

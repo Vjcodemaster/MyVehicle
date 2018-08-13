@@ -214,49 +214,51 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
     private void loadDataToTable(final int index){
         TextView tv;
         row = rows[index];
-        String[] saInsuranceData = alDBData.get(index).get_insurance_info().split(",");
+        if(alDBData.get(index).get_insurance_info()!=null) {
+            String[] saInsuranceData = alDBData.get(index).get_insurance_info().split(",");
 
-        tv = row.findViewById(R.id.tv_table_row_1);
-        tv.setText("1");
-        tv = row.findViewById(R.id.tv_table_row_2);
-        String sInsuranceNo = saInsuranceData[1];
-        tv.setText(sInsuranceNo);
+            tv = row.findViewById(R.id.tv_table_row_1);
+            tv.setText("1");
+            tv = row.findViewById(R.id.tv_table_row_2);
+            String sInsuranceNo = saInsuranceData[1];
+            tv.setText(sInsuranceNo);
 
-        tv = row.findViewById(R.id.tv_table_row_3);
-        String sInsuranceProvider = saInsuranceData[2];
-        tv.setText(sInsuranceProvider);
+            tv = row.findViewById(R.id.tv_table_row_3);
+            String sInsuranceProvider = saInsuranceData[2];
+            tv.setText(sInsuranceProvider);
 
-        tv = row.findViewById(R.id.tv_table_row_4);
-        String sStartDate = saInsuranceData[3];
-        tv.setText(sStartDate);
+            tv = row.findViewById(R.id.tv_table_row_4);
+            String sStartDate = saInsuranceData[3];
+            tv.setText(sStartDate);
 
-        tv = row.findViewById(R.id.tv_table_row_5);
-        String sExpiryDate = saInsuranceData[4];
-        tv.setText(sExpiryDate);
+            tv = row.findViewById(R.id.tv_table_row_5);
+            String sExpiryDate = saInsuranceData[4];
+            tv.setText(sExpiryDate);
 
-        tv = row.findViewById(R.id.tv_table_row_6);
-        String sRemainderDate = saInsuranceData[5];
-        tv.setText(sRemainderDate);
+            tv = row.findViewById(R.id.tv_table_row_6);
+            String sRemainderDate = saInsuranceData[5];
+            tv.setText(sRemainderDate);
+        }
     }
 
     private void prepareDialogToEdit(final int index) {
-        TextView tv;
+        //TextView tv;
         row = rows[index];
         String[] saInsuranceData = alDBData.get(index).get_insurance_info().split(",");
 
-        tv = row.findViewById(R.id.tv_table_row_2);
+        //tv = row.findViewById(R.id.tv_table_row_2);
         String sInsuranceNo = saInsuranceData[1];
 
-        tv = row.findViewById(R.id.tv_table_row_3);
+        //tv = row.findViewById(R.id.tv_table_row_3);
         String sInsuranceProvider = saInsuranceData[2];
 
-        tv = row.findViewById(R.id.tv_table_row_4);
+        //tv = row.findViewById(R.id.tv_table_row_4);
         String sStartDate = saInsuranceData[3];
 
-        tv = row.findViewById(R.id.tv_table_row_5);
+        //tv = row.findViewById(R.id.tv_table_row_5);
         String sExpiryDate = saInsuranceData[4];
 
-        tv = row.findViewById(R.id.tv_table_row_6);
+        //tv = row.findViewById(R.id.tv_table_row_6);
         String sRemainderDate = saInsuranceData[5];
 
         dialogMultiple.tvTitle.setText(getActivity().getResources().getString(R.string.title_edit_insurance));

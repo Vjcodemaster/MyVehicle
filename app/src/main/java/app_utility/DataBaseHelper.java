@@ -169,7 +169,7 @@ public class DataBaseHelper {
     }
 
     public String get_emission_info(){
-        return this._insurance_info;
+        return this._emission_info;
     }
 
     public void set_emission_info(String emission_info){
