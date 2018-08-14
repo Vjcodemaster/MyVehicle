@@ -171,7 +171,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         /*
         modified code so that unnecessary for loop is removed
          */
-        TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
+        /*TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
         trHeading.setTag(-1);
         tlPolicy.addView(trHeading, 0);
         if (isInEditMode) {
@@ -192,9 +192,9 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
             //tlPolicy.addView(trHeading, 0);
             loadDataToTable();
             tlPolicy.addView(row, 1);
-        }
+        }*/
 
-        /*TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
+        TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
         trHeading.setTag(-1);
         rows = new TableRow[1];
         baButtonDelete = new Button[5];
@@ -230,29 +230,29 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
             loadDataToTable(i);
             tlPolicy.addView(rows[i], i);
         }
-        tlPolicy.addView(trHeading, 0);*/
+        tlPolicy.addView(trHeading, 0);
         // Inflate the layout for this fragment
         return view;
     }
 
     //declaring OnClickListener as an object
-    private View.OnClickListener tableClick = new View.OnClickListener() {
+    /*private View.OnClickListener tableClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()){
                 case R.layout.table_row:
-                    /*dialogMultiple.onCreate(1);
+                    *//*dialogMultiple.onCreate(1);
                     prepareDialogToEdit();
-                    dialogMultiple.dialog.show();*/
+                    dialogMultiple.dialog.show();*//*
                     break;
                 case R.id.btn_table_row_delete:
                     tlPolicy.removeView(row);
                     break;
             }
         }
-    };
+    };*/
 
-    private void loadDataToTable(){
+    /*private void loadDataToTable(){
         TextView tv;
         if(alDBData.get(0).get_insurance_info()!=null) {
             String[] saInsuranceData = alDBData.get(0).get_insurance_info().split(",");
@@ -279,9 +279,9 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
             String sRemainderDate = saInsuranceData[5];
             tv.setText(sRemainderDate);
         }
-    }
+    }*/
 
-    private void prepareDialogToEdit() {
+    /*private void prepareDialogToEdit() {
         //TextView tv;
         String[] saInsuranceData = alDBData.get(0).get_insurance_info().split(",");
 
@@ -307,12 +307,12 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         dialogMultiple.tvExpiryDateValue.setText(sExpiryDate);
         dialogMultiple.tvRemainderDateValue.setText(sRemainderDate);
         dialogMultiple.llDateValue.setVisibility(View.VISIBLE);
-    }
+    }*/
 
-    /*private void loadDataToTable(final int index){
+    private void loadDataToTable(final int index){
         TextView tv;
         row = rows[index];
-        if(alDBData.get(index).get_insurance_info()!=null) {
+        if(alDBData!=null && alDBData.get(index).get_insurance_info()!=null) {
             String[] saInsuranceData = alDBData.get(index).get_insurance_info().split(",");
 
             tv = row.findViewById(R.id.tv_table_row_1);
@@ -366,7 +366,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         dialogMultiple.tvExpiryDateValue.setText(sExpiryDate);
         dialogMultiple.tvRemainderDateValue.setText(sRemainderDate);
         dialogMultiple.llDateValue.setVisibility(View.VISIBLE);
-    }*/
+    }
 
     /*public void initAddDialog() {
         dialog = new Dialog(getActivity(), R.style.CustomDialogTheme90);
