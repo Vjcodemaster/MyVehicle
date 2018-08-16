@@ -21,7 +21,9 @@
         android:layout_height="wrap_content"
         android:background="@drawable/cell_shape"
         android:padding="5dp"
-        android:text="Policy Provider"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="RO No"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/white" />
 
@@ -31,7 +33,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/cell_shape"
         android:padding="5dp"
-        android:text="Policy No."
+        android:text="Service Type"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/white" />
 
@@ -41,7 +43,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/cell_shape"
         android:padding="5dp"
-        android:text="Date of Start"
+        android:text="Mileage"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/white" />
 
@@ -51,7 +53,9 @@
         android:layout_height="wrap_content"
         android:background="@drawable/cell_shape"
         android:padding="5dp"
-        android:text="Date of Expiry"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
+        android:text="Date"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/white" />
 
@@ -61,7 +65,18 @@
         android:layout_height="wrap_content"
         android:background="@drawable/cell_shape"
         android:padding="5dp"
-        android:text="Remainder Date"
+        android:text="Next Service Due"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/tv_custom_six"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/cell_shape"
+        android:padding="5dp"
+        android:text="Set Reminder"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white" />
+
 </TableRow>

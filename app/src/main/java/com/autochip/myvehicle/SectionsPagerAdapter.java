@@ -40,10 +40,10 @@ class SectionsPagerAdapter extends FragmentStatePagerAdapter {
                 fragment = EmissionFragment.newInstance(String.valueOf(viewHeight), "");
                 break;
             case 3:
-                fragment = RCFCFragment.newInstance("", "");
+                fragment = RCFCFragment.newInstance(String.valueOf(viewHeight), "");
                 break;
             case 4:
-                fragment = ServiceHistoryFragment.newInstance("", "");
+                fragment = ServiceHistoryFragment.newInstance(String.valueOf(viewHeight), "");
                 break;
         }
 

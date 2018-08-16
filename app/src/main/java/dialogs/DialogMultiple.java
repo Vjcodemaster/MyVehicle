@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
@@ -28,6 +29,9 @@ import com.autochip.myvehicle.InsuranceFragment;
 import com.autochip.myvehicle.MainActivity;
 import com.autochip.myvehicle.OnImageUtilsListener;
 import com.autochip.myvehicle.R;
+import com.autochip.myvehicle.RCFCFragment;
+import com.autochip.myvehicle.ServiceHistoryFragment;
+import com.bumptech.glide.load.engine.Resource;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -145,18 +149,19 @@ public class DialogMultiple implements OnImageUtilsListener {
                 tvStartDate.setHint(hintList.get(3));
                 tvExpiryDate.setHint(hintList.get(4));
                 tvRemainderDate.setHint(hintList.get(5));
-               /* etCustomOne = DialogMultiple.findViewById(R.id.et_custom_one);
-                etCustomTwo = DialogMultiple.findViewById(R.id.et_custom_two);
-                etCustomParent = DialogMultiple.findViewById(R.id.et_parent);
-                tvStartDate = DialogMultiple.findViewById(R.id.tv_start_date);
-                tvExpiryDate = DialogMultiple.findViewById(R.id.tv_expiry_date);
-                tvRemainderDate = DialogMultiple.findViewById(R.id.tv_remainder_date);*/
                 break;
             case 3: //Rc/Fc
                 hintList = Arrays.asList(aActivity.getResources().getStringArray(R.array.rc_fc_array));
                 etCustomThree.setVisibility(View.VISIBLE);
                 tvExpiryDate.setVisibility(View.GONE);
                 tvRemainderDate.setVisibility(View.GONE);
+                tvExpiryDateValue.setVisibility(View.GONE);
+                tvRemainderDateValue.setVisibility(View.GONE);
+                int margin = (int) aActivity.getResources().getDimension(R.dimen.dialog_multiple_tv_margin_medium);
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                layoutParams.topMargin = margin;
+                tvStartDateValue.setLayoutParams(layoutParams);
 
                 tvTitle.setText(hintList.get(0));
                 etCustomOne.setHint(hintList.get(1));
@@ -420,6 +425,50 @@ public class DialogMultiple implements OnImageUtilsListener {
                         Toast.makeText(aActivity, "Please fill all the information", Toast.LENGTH_SHORT).show();
                     }
                     //bitmapEmission =((BitmapDrawable)ivPreview.getDrawable()).getBitmap();
+                    break;
+
+                case 3:
+                    sb = new StringBuilder();
+                    String sCustomerName = etCustomOne.getEditText().getText().toString();
+                    sb.append(sCustomerName).append(",");
+                    String sAddress = etCustomTwo.getEditText().getText().toString();
+                    sb.append(sAddress).append(",");
+                    String sMobile = etCustomThree.getEditText().getText().toString();
+                    sb.append(sMobile).append(",");
+                    String sDateOfOwnership = tvStartDateValue.getText().toString();
+                    sb.append(sDateOfOwnership).append(",");
+
+                    if (validateInfo(sb.toString().trim(), 4)) {
+                        //sharedPreferenceClass.setEmissionData(sb.toString());
+                        RCFCFragment.mListener.onInteraction("ADD_TABLE_ROW", nType, sb.toString());
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(aActivity, "Please fill all the information", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+
+                case 4:
+                    sb = new StringBuilder();
+                    String sRoNo = etCustomOne.getEditText().getText().toString();
+                    sb.append(sRoNo).append(",");
+                    String sServiceType = etCustomTwo.getEditText().getText().toString();
+                    sb.append(sServiceType).append(",");
+                    String sMileage = etCustomThree.getEditText().getText().toString();
+                    sb.append(sMileage).append(",");
+                    String sDate = tvStartDateValue.getText().toString();
+                    sb.append(sDate).append(",");
+                    String sNextDueDate = tvExpiryDateValue.getText().toString();
+                    sb.append(sNextDueDate).append(",");
+                    String sRemainderDate = tvRemainderDateValue.getText().toString();
+                    sb.append(sRemainderDate);
+
+                    if (validateInfo(sb.toString().trim(), 6)) {
+                        //sharedPreferenceClass.setEmissionData(sb.toString());
+                        ServiceHistoryFragment.mListener.onInteraction("ADD_TABLE_ROW", nType, sb.toString());
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(aActivity, "Please fill all the information", Toast.LENGTH_SHORT).show();
+                    }
                     break;
             }
         }

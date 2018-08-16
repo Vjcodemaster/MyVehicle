@@ -47,6 +47,7 @@ import static java.util.Arrays.asList;
 public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
     @SuppressLint("StaticFieldLeak")
+    private static int createUID = 107; //113
     private Activity aActivity;
     private String res = "";
     private int createdId = -1;
@@ -89,8 +90,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private ArrayList<String> alOne2ManyModelNames;
     private ArrayList<String> alModelNamesToFetch;
 
-    ArrayList<String[]> alInsuranceHistory = new ArrayList<>();
-    ArrayList<String[]> alEmissionHistory = new ArrayList<>();
+    private ArrayList<String[]> alInsuranceHistory = new ArrayList<>();
+    private ArrayList<String[]> alEmissionHistory = new ArrayList<>();
 
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
@@ -511,7 +512,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private void readBrandTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle.model.brand", new Object[]{
-                new Object[]{new Object[]{"create_uid", "!=", 113}}}, "name", "id");
+                new Object[]{new Object[]{"create_uid", "!=", createUID}}}, "name", "id");
         alID = new ArrayList<>();
         alName = new ArrayList<>();
         for (int i = 0; i < data.size(); ++i) {
@@ -612,7 +613,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private void readVehicleHistoryTask(String sModelName, String[] saFields) {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read(sModelName, new Object[]{
-                new Object[]{new Object[]{"create_uid", "=", 113}}}, saFields);
+                new Object[]{new Object[]{"create_uid", "=", createUID}}}, saFields);
         /*{"id", "insurance_doc_no", "vender_name", "insurance_start",
                 "insurance_end", "set_reminder", "vehicle_id"}*/
         for (int i = 0; i < data.size(); i++) {
@@ -763,7 +764,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private void readTask() {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         List<HashMap<String, Object>> data = oc.search_read("fleet.vehicle", new Object[]{
-                new Object[]{new Object[]{"create_uid", "=", 113}}}, "id", "image_medium", "model_id", "model_year", "name", "license_plate");
+                new Object[]{new Object[]{"create_uid", "=", createUID}}}, "id", "image_medium", "model_id", "model_year", "name", "license_plate");
 
 
         for (int i = 0; i < data.size(); ++i) {

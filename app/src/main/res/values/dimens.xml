@@ -9,4 +9,6 @@
 
     <dimen name="image_preview_width">60dp</dimen>
     <dimen name="image_preview_height">70dp</dimen>
+    
+    <dimen name="dialog_multiple_tv_margin_medium">20dp</dimen>
 </resources>
