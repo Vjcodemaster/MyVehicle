@@ -157,6 +157,10 @@ public class DialogMultiple implements OnImageUtilsListener {
                 tvRemainderDate.setVisibility(View.GONE);
                 tvExpiryDateValue.setVisibility(View.GONE);
                 tvRemainderDateValue.setVisibility(View.GONE);
+                /*
+                programmatically setting dimens for startDate so that it fits in dialog window. removing this will
+                move the text view upwards.
+                 */
                 int margin = (int) aActivity.getResources().getDimension(R.dimen.dialog_multiple_tv_margin_medium);
 
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
