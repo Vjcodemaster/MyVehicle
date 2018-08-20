@@ -44,6 +44,10 @@ public class SharedPreferenceClass {
 
     private static final String EMISSION_DATA = "EMISSION_DATA";
 
+    private static final String RCFC_DATA = "RCFC_DATA";
+
+    private static final String SERVICE_DATA = "SERVICE_DATA";
+
     private static final String VEHICLE_INFO = "VEHICLE_INFO";
 
     private static final String EDIT_MODE = "EDIT_MODE";
@@ -89,6 +93,34 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
+    public String getEmissionData() {
+        return sharedPreferences.getString(EMISSION_DATA, null);
+    }
+
+    public void setRcfcData(String sRcfc){
+        SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
+        SharedPreferences.Editor editor;
+        editor = sharedPreferences.edit();
+        editor.putString(RCFC_DATA, sRcfc);
+        editor.apply();
+    }
+
+    public String getRcfcData() {
+        return sharedPreferences.getString(RCFC_DATA, null);
+    }
+
+    public void setServiceData(String sService){
+        SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
+        SharedPreferences.Editor editor;
+        editor = sharedPreferences.edit();
+        editor.putString(SERVICE_DATA, sService);
+        editor.apply();
+    }
+
+    public String getServiceData() {
+        return sharedPreferences.getString(SERVICE_DATA, null);
+    }
+
     public void setVehicleInfo(String sVehicleInfo){
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
@@ -113,9 +145,6 @@ public class SharedPreferenceClass {
         return sharedPreferences.getString(VEHICLE_INFO, null);
     }
 
-    public String getEmissionData() {
-        return sharedPreferences.getString(EMISSION_DATA, null);
-    }
 
     public void setEditMode(boolean isEditMode){
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);

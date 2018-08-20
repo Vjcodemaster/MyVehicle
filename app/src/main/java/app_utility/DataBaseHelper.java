@@ -29,6 +29,14 @@ public class DataBaseHelper {
 
     private int _emission_id;
 
+    private String _rcfc_info;
+
+    private int _rcfc_id;
+
+    private String _service_info;
+
+    private int _service_id;
+
     // Empty constructor
     public DataBaseHelper(){
 
@@ -68,6 +76,20 @@ public class DataBaseHelper {
     public DataBaseHelper(String _emission_info, int _emission_id, Object object){
         this._emission_info = _emission_info;
         this._emission_id = _emission_id;
+    }
+
+    public DataBaseHelper(String info, int id, int nCase){
+        switch (nCase){
+            case 3:
+                this._rcfc_info = info;
+                this._rcfc_id = id;
+                break;
+            case 4:
+                this._service_info = info;
+                this._service_id = id;
+                break;
+        }
+
     }
 
     // getting brandname
@@ -182,5 +204,37 @@ public class DataBaseHelper {
 
     public void set_emission_id(int emission_id){
         this._emission_id = emission_id;
+    }
+
+    public String get_rcfc_info(){
+        return this._rcfc_info;
+    }
+
+    public void set_rcfc_info(String rcfc_info){
+        this._rcfc_info = rcfc_info;
+    }
+
+    public int get_rcfc_id(){
+        return this._rcfc_id;
+    }
+
+    public void set_rcfc_id(int rcfc_id){
+        this._rcfc_id = rcfc_id;
+    }
+
+    public String get_service_info(){
+        return this._service_info;
+    }
+
+    public void set_service_info(String service_info){
+        this._service_info = service_info;
+    }
+
+    public int get_service_id(){
+        return this._service_id;
+    }
+
+    public void set_service_id(int service_id){
+        this._service_id = service_id;
     }
 }
