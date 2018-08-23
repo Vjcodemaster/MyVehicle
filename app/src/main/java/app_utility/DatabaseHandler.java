@@ -38,9 +38,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final String KEY_INSURANCE = "INSURANCE_HISTORY";
     private static final String KEY_EMISSION = "EMISSION_HISTORY";
+    private static final String KEY_RCFC = "RCFC_HISTORY";
+    private static final String KEY_SERVICE = "SERVICE_HISTORY";
 
     private static final String KEY_EMISSION_ID = "INSURANCE_ID";
     private static final String KEY_INSURANCE_ID = "EMISSION_ID";
+    private static final String KEY_RCFC_ID = "RCFC_ID";
+    private static final String KEY_SERVICE_ID = "SERVICE_ID";
     //private static final String KEY_MODEL_NAME = "model_name";
 
 
@@ -99,7 +103,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_INSURANCE + " TEXT, "
                 + KEY_INSURANCE_ID + " INTEGER, "
                 + KEY_EMISSION + " TEXT, "
-                + KEY_EMISSION_ID + " INTEGER)";
+                + KEY_EMISSION_ID + " INTEGER, "
+                + KEY_RCFC + " TEXT, "
+                + KEY_RCFC_ID + " INTEGER, "
+                + KEY_SERVICE + " TEXT, "
+                + KEY_SERVICE_ID + " INTEGER)";
 
         String TABLE_VEHICLE_HISTORY = "CREATE TABLE " + USER_VEHICLE_TABLE + "("
                 + KEY_VEHICLE_ID_ODOO + " INTEGER PRIMARY KEY, "
@@ -429,6 +437,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 dataBaseHelper.set_insurance_id(cursor.getInt(9));
                 dataBaseHelper.set_emission_info(cursor.getString(10));
                 dataBaseHelper.set_emission_id(cursor.getInt(11));
+                dataBaseHelper.set_rcfc_info(cursor.getString(12));
+                dataBaseHelper.set_rcfc_id(cursor.getInt(13));
+                dataBaseHelper.set_service_info(cursor.getString(14));
+                dataBaseHelper.set_service_id(cursor.getInt(15));
                 // Adding data to list
                 dataBaseHelperList.add(dataBaseHelper);
             } while (cursor.moveToNext());
@@ -651,7 +663,40 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if (sEmissionInfo != null && !sEmissionInfo.equals(""))
             values.put(KEY_EMISSION, sEmissionInfo);
+
         values.put(KEY_EMISSION_ID, nEmissionID);
+
+        // updating row
+        //return db.update(TABLE_RECENT, values, column + "last_seen", new String[] {String.valueOf(KEY_ID)});
+        if (values.size() >= 1)
+            db.update(USER_VEHICLE_TABLE, values, KEY_VEHICLE_ID_ODOO + " = " + VEHICLE_ID, null);
+    }
+
+    public void updateRCFCInfoByVehicleID(DataBaseHelper dataBaseHelper, int VEHICLE_ID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        String sRCFCInfo = dataBaseHelper.get_rcfc_info();
+        int nRCFCID = dataBaseHelper.get_rcfc_id();
+
+        if (sRCFCInfo != null && !sRCFCInfo.equals(""))
+            values.put(KEY_RCFC, sRCFCInfo);
+        values.put(KEY_RCFC_ID, nRCFCID);
+
+        // updating row
+        //return db.update(TABLE_RECENT, values, column + "last_seen", new String[] {String.valueOf(KEY_ID)});
+        if (values.size() >= 1)
+            db.update(USER_VEHICLE_TABLE, values, KEY_VEHICLE_ID_ODOO + " = " + VEHICLE_ID, null);
+    }
+
+    public void updateServiceInfoByVehicleID(DataBaseHelper dataBaseHelper, int VEHICLE_ID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        String sServiceInfo = dataBaseHelper.get_service_info();
+        int nServiceID = dataBaseHelper.get_service_id();
+
+        if (sServiceInfo != null && !sServiceInfo.equals(""))
+            values.put(KEY_SERVICE, sServiceInfo);
+        values.put(KEY_SERVICE_ID, nServiceID);
 
         // updating row
         //return db.update(TABLE_RECENT, values, column + "last_seen", new String[] {String.valueOf(KEY_ID)});

@@ -27,6 +27,12 @@ public class StaticReferenceClass {
     public static final String[] MODEL_EMISSION_FIELDS = {"id", "emission_doc_no", "agency_name", "emission_start",
             "emision_end", "set_reminder", "vehicle_id"};
 
+    public static final String[] MODEL_OWNER_FIELDS = {"id", "custmer_name", "address", "mobile",
+            "date_of_ownership", "vehicle_id"};
+
+    public static final String[] MODEL_SERVICE_FIELDS = {"id", "order", "servicetype", "mileage",
+            "date", "next_serv_due", "set_reminder", "vehicle_id"};
+
     public static final String sAPP_PREFERENCES = "TrackProPreferences";
 
     public static final int REGISTER_IMAGE_REQUEST_CODE = 9101;

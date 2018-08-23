@@ -51,6 +51,8 @@ import dialogs.DialogMultiple;
 
 import static app_utility.StaticReferenceClass.MODEL_EMISSION_HISTORY;
 import static app_utility.StaticReferenceClass.MODEL_INSURANCE_HISTORY;
+import static app_utility.StaticReferenceClass.MODEL_OWNER_HISTORY;
+import static app_utility.StaticReferenceClass.MODEL_SERVICE_HISTORY;
 import static app_utility.StaticReferenceClass.REGISTER_IMAGE_REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity implements HomeInterfaceListener, OnImageUtilsListener, AsyncInterface {
@@ -828,6 +830,14 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 String[] saEmissionData = alModelArray.get(1);
                 String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
                 db.updateEmissionInfoByVehicleID(new DataBaseHelper(sJoinedEmissionInfo, Integer.valueOf(saEmissionData[0]), ""), Integer.valueOf(saEmissionData[6]));
+
+                String[] saRCFCData = alModelArray.get(2);
+                String sJoinedRCFCInfo = TextUtils.join(",", saRCFCData);
+                db.updateRCFCInfoByVehicleID(new DataBaseHelper(sJoinedRCFCInfo, Integer.valueOf(saRCFCData[0]), ""), Integer.valueOf(saRCFCData[5]));
+
+                String[] saServiceData = alModelArray.get(3);
+                String sJoinedServiceInfo = TextUtils.join(",", saServiceData);
+                db.updateServiceInfoByVehicleID(new DataBaseHelper(sJoinedServiceInfo, Integer.valueOf(saServiceData[0]), ""), Integer.valueOf(saServiceData[7]));
                 break;
         }
     }
@@ -955,6 +965,9 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
             ArrayList<String> alModelNamesToFetch = new ArrayList<>();
             alModelNamesToFetch.add(MODEL_INSURANCE_HISTORY);
             alModelNamesToFetch.add(MODEL_EMISSION_HISTORY);
+            alModelNamesToFetch.add(MODEL_OWNER_HISTORY);
+            alModelNamesToFetch.add(MODEL_SERVICE_HISTORY);
+
             MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this, alModelNamesToFetch, db);
             myVehicleAsyncTask.execute(String.valueOf(10), "");
         }

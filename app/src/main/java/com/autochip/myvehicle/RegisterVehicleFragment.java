@@ -45,6 +45,8 @@ import app_utility.SharedPreferenceClass;
 
 import static app_utility.StaticReferenceClass.MODEL_EMISSION_HISTORY;
 import static app_utility.StaticReferenceClass.MODEL_INSURANCE_HISTORY;
+import static app_utility.StaticReferenceClass.MODEL_OWNER_HISTORY;
+import static app_utility.StaticReferenceClass.MODEL_SERVICE_HISTORY;
 import static app_utility.StaticReferenceClass.REGISTER_IMAGE_REQUEST_CODE;
 import static com.autochip.myvehicle.MainActivity.PICTURE_REQUEST_CODE;
 import static com.autochip.myvehicle.MainActivity.editModeVehicleID;
@@ -327,6 +329,8 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         int ModelID;
         String InsuranceData;
         String EmissionData;
+        String RCFCData;
+        String ServiceData;
         String sModelName;
         ArrayList<String> alOne2Many = new ArrayList<>();
         //sharedPreferenceClass = new SharedPreferenceClass(getActivity());
@@ -362,6 +366,16 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             alOne2Many.add(MODEL_EMISSION_HISTORY);
         }
 
+        RCFCData = sharedPreferenceClass.getRcfcData();
+        if(RCFCData!=null){
+            alOne2Many.add(MODEL_OWNER_HISTORY);
+        }
+
+        ServiceData = sharedPreferenceClass.getServiceData();
+        if(ServiceData!=null){
+            alOne2Many.add(MODEL_SERVICE_HISTORY);
+        }
+
         String sRegNo = etRegNo.getText().toString().trim();
 
         if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(etYOM.getText().toString().trim()) || ((BitmapDrawable) ivPreview.getDrawable()).getBitmap() == null) {
@@ -378,7 +392,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
-            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, sModelName, sRegNo, sManufactureYear, encodedBitmap, alOne2Many);
+            MyVehicleAsyncTask myVehicleAsyncTask = new MyVehicleAsyncTask(getActivity(), sBrandName, brandID, ModelID, InsuranceData, EmissionData, RCFCData, ServiceData, sModelName, sRegNo, sManufactureYear, encodedBitmap, alOne2Many);
             myVehicleAsyncTask.execute(String.valueOf(5), "");
             MainActivity.homeInterfaceListener.onHomeCalled("CREATE_CONDITION_SATISFIED", 10, this.getClass().getName(), null);
             saveOnDetachFlag = 0;

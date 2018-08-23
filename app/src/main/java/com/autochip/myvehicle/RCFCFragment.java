@@ -21,6 +21,7 @@ import app_utility.DatabaseHandler;
 import app_utility.SharedPreferenceClass;
 import dialogs.DialogMultiple;
 
+import static com.autochip.myvehicle.MainActivity.editModeVehicleID;
 import static com.autochip.myvehicle.MainActivity.mBitmapCompressListener;
 
 
@@ -37,6 +38,8 @@ public class RCFCFragment extends Fragment implements OnFragmentInteractionListe
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    int rowLength = 0;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -118,9 +121,14 @@ public class RCFCFragment extends Fragment implements OnFragmentInteractionListe
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
             params.bottomMargin = viewHeight + 6;
             fab.setLayoutParams(params);
+            rowLength = 0;
         } else {
             fab.setVisibility(View.GONE);
+            alDBData = new ArrayList<>(databaseHandler.getSingleVehicleHistoryByVehicleID(editModeVehicleID));
+            rowLength = 1;
         }
+
+
 
         TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
         TextView tvCustomerName = trHeading.findViewById(R.id.tv_custom_one);
@@ -138,10 +146,12 @@ public class RCFCFragment extends Fragment implements OnFragmentInteractionListe
         trHeading.setTag(-1);
         rows = new TableRow[1];
         baButtonDelete = new Button[1];
-        for (int i = 0; i <1; i++) { // for (int i = 0; i < rows.length; i++) {
+        for (int i = 0; i <rowLength; i++) { // for (int i = 0; i < rows.length; i++) {
             //LayoutInflater trInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = (TableRow) inflater.inflate(R.layout.table_row, null);
             TextView tv = row.findViewById(R.id.tv_table_row_5);
+            tv.setVisibility(View.GONE);
+            tv = row.findViewById(R.id.tv_table_row_6);
             tv.setVisibility(View.GONE);
             baButtonDelete[i] = row.findViewById(R.id.btn_table_row_delete);
             rows[i] = row;
@@ -180,7 +190,7 @@ public class RCFCFragment extends Fragment implements OnFragmentInteractionListe
     private void prepareDialogToEdit(final int index) {
         //TextView tv;
         row = rows[index];
-        String[] saRCFCData = alDBData.get(index).get_insurance_info().split(",");
+        String[] saRCFCData = alDBData.get(index).get_rcfc_info().split(",");
 
         String sRCFCCustomerName = saRCFCData[1];
 
@@ -204,8 +214,8 @@ public class RCFCFragment extends Fragment implements OnFragmentInteractionListe
     private void loadDataToTable(final int index){
         TextView tv;
         row = rows[index];
-        if(alDBData!=null && alDBData.get(index).get_insurance_info()!=null) {
-            String[] saRCFCData = alDBData.get(index).get_insurance_info().split(",");
+        if(alDBData!=null && alDBData.get(index).get_rcfc_info()!=null) {
+            String[] saRCFCData = alDBData.get(index).get_rcfc_info().split(",");
 
             tv = row.findViewById(R.id.tv_table_row_1);
             tv.setText("1");
@@ -221,7 +231,8 @@ public class RCFCFragment extends Fragment implements OnFragmentInteractionListe
             String sMobile = saRCFCData[3];
             tv.setText(sMobile);
 
-            tv = row.findViewById(R.id.tv_table_row_5);
+            tv = row.findViewById(R.id.tv_table_row_7);
+            tv.setVisibility(View.VISIBLE);
             String sDateOfOwnership = saRCFCData[4];
             tv.setText(sDateOfOwnership);
         }

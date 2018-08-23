@@ -21,6 +21,7 @@ import app_utility.DatabaseHandler;
 import app_utility.SharedPreferenceClass;
 import dialogs.DialogMultiple;
 
+import static com.autochip.myvehicle.MainActivity.editModeVehicleID;
 import static com.autochip.myvehicle.MainActivity.mBitmapCompressListener;
 
 
@@ -56,6 +57,7 @@ public class ServiceHistoryFragment extends Fragment implements OnFragmentIntera
     ArrayList<DataBaseHelper> alDBData;
 
     private int viewHeight = 0;
+    int rowLength = 0;
 
     private SharedPreferenceClass sharedPreferenceClass;
 
@@ -119,15 +121,19 @@ public class ServiceHistoryFragment extends Fragment implements OnFragmentIntera
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
             params.bottomMargin = viewHeight + 6;
             fab.setLayoutParams(params);
+            rowLength = 0;
         } else {
+            alDBData = new ArrayList<>(databaseHandler.getSingleVehicleHistoryByVehicleID(editModeVehicleID));
             fab.setVisibility(View.GONE);
+            rowLength = 1;
         }
+
 
         TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_service_heading, container, false);
         trHeading.setTag(-1);
         rows = new TableRow[1];
         baButtonDelete = new Button[1];
-        for (int i = 0; i <1; i++) { // for (int i = 0; i < rows.length; i++) {
+        for (int i = 0; i <rowLength; i++) { // for (int i = 0; i < rows.length; i++) {
             //LayoutInflater trInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = (TableRow) inflater.inflate(R.layout.table_row, null);
             TextView tv = row.findViewById(R.id.tv_table_row_7);
@@ -169,23 +175,30 @@ public class ServiceHistoryFragment extends Fragment implements OnFragmentIntera
     private void prepareDialogToEdit(final int index) {
         //TextView tv;
         row = rows[index];
-        String[] saRCFCData = alDBData.get(index).get_insurance_info().split(",");
+        String[] saServiceData = alDBData.get(index).get_service_info().split(",");
 
-        String sRCFCCustomerName = saRCFCData[1];
+        String sRONo = saServiceData[1];
 
-        String sAddress = saRCFCData[2];
+        String sServiceType = saServiceData[2];
 
-        String sMobile = saRCFCData[3];
+        String sMileage = saServiceData[3];
 
-        String sDateOfOwnership = saRCFCData[4];
+        String sDate = saServiceData[4];
+
+        String sNextDueDate = saServiceData[4];
+
+        String sRemainderDate = saServiceData[4];
+
 
         //String sRemainderDate = saRCFCData[5];
 
         dialogMultiple.tvTitle.setText(getActivity().getResources().getString(R.string.title_edit_insurance));
-        dialogMultiple.etCustomOne.getEditText().setText(sRCFCCustomerName);
-        dialogMultiple.etCustomTwo.getEditText().setText(sDateOfOwnership);
-        dialogMultiple.tvStartDateValue.setText(sAddress);
-        dialogMultiple.tvExpiryDateValue.setText(sMobile);
+        dialogMultiple.etCustomOne.getEditText().setText(sRONo);
+        dialogMultiple.etCustomTwo.getEditText().setText(sServiceType);
+        dialogMultiple.etCustomThree.getEditText().setText(sMileage);
+        dialogMultiple.tvStartDateValue.setText(sDate);
+        dialogMultiple.tvExpiryDateValue.setText(sNextDueDate);
+        dialogMultiple.tvRemainderDateValue.setText(sRemainderDate);
         dialogMultiple.llDateValue.setVisibility(View.VISIBLE);
     }
 
@@ -193,26 +206,34 @@ public class ServiceHistoryFragment extends Fragment implements OnFragmentIntera
     private void loadDataToTable(final int index){
         TextView tv;
         row = rows[index];
-        if(alDBData!=null && alDBData.get(index).get_insurance_info()!=null) {
-            String[] saRCFCData = alDBData.get(index).get_insurance_info().split(",");
+        if(alDBData!=null && alDBData.get(index).get_service_info()!=null) {
+            String[] saServiceData = alDBData.get(index).get_service_info().split(",");
 
             tv = row.findViewById(R.id.tv_table_row_1);
             tv.setText("1");
             tv = row.findViewById(R.id.tv_table_row_2);
-            String sRCFCCustomerName = saRCFCData[1];
-            tv.setText(sRCFCCustomerName);
+            String sRONo = saServiceData[1];
+            tv.setText(sRONo);
 
             tv = row.findViewById(R.id.tv_table_row_3);
-            String sAddress = saRCFCData[2];
-            tv.setText(sAddress);
+            String sServiceType = saServiceData[2];
+            tv.setText(sServiceType);
 
             tv = row.findViewById(R.id.tv_table_row_4);
-            String sMobile = saRCFCData[3];
-            tv.setText(sMobile);
+            String sMileage = saServiceData[3];
+            tv.setText(sMileage);
 
             tv = row.findViewById(R.id.tv_table_row_5);
-            String sDateOfOwnership = saRCFCData[4];
-            tv.setText(sDateOfOwnership);
+            String sDate = saServiceData[4];
+            tv.setText(sDate);
+
+            tv = row.findViewById(R.id.tv_table_row_6);
+            String sNextDueDate = saServiceData[4];
+            tv.setText(sNextDueDate);
+
+            tv = row.findViewById(R.id.tv_table_row_7);
+            String sReminderDate = saServiceData[4];
+            tv.setText(sReminderDate);
         }
     }
     @Override
@@ -228,7 +249,36 @@ public class ServiceHistoryFragment extends Fragment implements OnFragmentIntera
 
     @Override
     public void onInteraction(String sMessage, int nCase, String sActivityName) {
+        switch (sMessage) {
+            case "ADD_TABLE_ROW":
+                String[] saData = sActivityName.split(",");
+                if (!isInEditMode) {
+                    int count = tlPolicy.getChildCount();
+                    row = (TableRow) getLayoutInflater().inflate(R.layout.table_row, null);
+                    TextView tvSlNo = row.getChildAt(0).findViewById(R.id.tv_table_row_1);
+                    tvSlNo.setText(String.valueOf(count));
+                }
+                TextView tvRoNo = row.getChildAt(1).findViewById(R.id.tv_table_row_2);
+                TextView tvServiceType = row.getChildAt(2).findViewById(R.id.tv_table_row_3);
+                TextView tvMileage = row.getChildAt(3).findViewById(R.id.tv_table_row_4);
+                TextView tvDate = row.getChildAt(4).findViewById(R.id.tv_table_row_5);
 
+                TextView tvNextDueDate = row.getChildAt(5).findViewById(R.id.tv_table_row_6);
+                TextView tvRemainderDate = row.getChildAt(6).findViewById(R.id.tv_table_row_7);
+                tvNextDueDate.setVisibility(View.VISIBLE);
+                tvRemainderDate.setVisibility(View.VISIBLE);
+
+                tvRoNo.setText(saData[0]);
+                tvServiceType.setText(saData[1]);
+                tvMileage.setText(saData[2]);
+                tvDate.setText(saData[3]);
+                tvNextDueDate.setText(saData[4]);
+                tvRemainderDate.setText(saData[5]);
+
+                if (!isInEditMode) {
+                    tlPolicy.addView(row);
+                }
+        }
     }
 
     @Override

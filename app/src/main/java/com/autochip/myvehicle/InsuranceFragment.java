@@ -49,6 +49,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
     private Uri outputFileUri;
     //private ImageView ivPreview;
 
+    int rowLength = 0;
     private String mParam1;
     private String mParam2;
 
@@ -137,8 +138,11 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
             params.bottomMargin = viewHeight + 6;
             fab.setLayoutParams(params);
+            rowLength = 0;
         } else {
+            alDBData = new ArrayList<>(databaseHandler.getSingleVehicleHistoryByVehicleID(editModeVehicleID));
             fab.setVisibility(View.GONE);
+            rowLength = 1;
         }
 
         //dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
@@ -198,7 +202,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         trHeading.setTag(-1);
         rows = new TableRow[1];
         baButtonDelete = new Button[5];
-        for (int i = 0; i <1; i++) { // for (int i = 0; i < rows.length; i++) {
+        for (int i = 0; i <rowLength; i++) { // for (int i = 0; i < rows.length; i++) {
             //LayoutInflater trInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = (TableRow) inflater.inflate(R.layout.table_row, null);
             baButtonDelete[i] = row.findViewById(R.id.btn_table_row_delete);

@@ -443,7 +443,7 @@ public class DialogMultiple implements OnImageUtilsListener {
                     sb.append(sDateOfOwnership).append(",");
 
                     if (validateInfo(sb.toString().trim(), 4)) {
-                        //sharedPreferenceClass.setEmissionData(sb.toString());
+                        sharedPreferenceClass.setRcfcData(sb.toString());
                         RCFCFragment.mListener.onInteraction("ADD_TABLE_ROW", nType, sb.toString());
                         dialog.dismiss();
                     } else {
@@ -467,7 +467,7 @@ public class DialogMultiple implements OnImageUtilsListener {
                     sb.append(sRemainderDate);
 
                     if (validateInfo(sb.toString().trim(), 6)) {
-                        //sharedPreferenceClass.setEmissionData(sb.toString());
+                        sharedPreferenceClass.setServiceData(sb.toString());
                         ServiceHistoryFragment.mListener.onInteraction("ADD_TABLE_ROW", nType, sb.toString());
                         dialog.dismiss();
                     } else {

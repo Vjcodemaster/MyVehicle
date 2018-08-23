@@ -59,6 +59,7 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
     private CircularProgressBar circularProgressBar;
 
     private int viewHeight = 0;
+    int rowLength = 0;
     File sdImageMainDirectory;
 
     public static OnFragmentInteractionListener mListener;
@@ -152,8 +153,11 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
             params.bottomMargin = viewHeight + 6;
             fab.setLayoutParams(params);
+            rowLength = 0;
         } else {
+            alDBData = new ArrayList<>(databaseHandler.getSingleVehicleHistoryByVehicleID(editModeVehicleID));
             fab.setVisibility(View.GONE);
+            rowLength = 1;
         }
 
         //this statement is written in setUserVisible Hint because this dialog should be created only when fragment is visible to user
@@ -167,7 +171,7 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
             }
         });
 
-        alDBData = new ArrayList<>(databaseHandler.getSingleVehicleHistoryByVehicleID(editModeVehicleID));
+
         /*
         inflating views dynamically for table layout where we always add the data dynamically from odoo not from xml
         here we are inflating table rows first using for loop depending on the data we receive and then add table row header
@@ -178,7 +182,7 @@ public class EmissionFragment extends Fragment implements OnFragmentInteractionL
         trHeading.setTag(-1);
         rows = new TableRow[1];
         baButtonDelete = new Button[5];
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < rowLength; i++) {
             //LayoutInflater trInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = (TableRow) inflater.inflate(R.layout.table_row, null);
             baButtonDelete[i] = row.findViewById(R.id.btn_table_row_delete);

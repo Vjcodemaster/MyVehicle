@@ -78,7 +78,7 @@ public class DataBaseHelper {
         this._emission_id = _emission_id;
     }
 
-    public DataBaseHelper(String info, int id, int nCase){
+    public DataBaseHelper(String info, Integer id, int nCase){
         switch (nCase){
             case 3:
                 this._rcfc_info = info;
