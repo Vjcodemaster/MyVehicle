@@ -166,6 +166,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_INSURANCE_ID, dataBaseHelper.get_insurance_id());
         values.put(KEY_EMISSION, dataBaseHelper.get_emission_info());
         values.put(KEY_EMISSION_ID, dataBaseHelper.get_emission_id());
+        values.put(KEY_RCFC, dataBaseHelper.get_rcfc_info());
+        values.put(KEY_RCFC_ID, dataBaseHelper.get_rcfc_id());
+        values.put(KEY_SERVICE, dataBaseHelper.get_service_info());
+        values.put(KEY_SERVICE_ID, dataBaseHelper.get_service_id());
         // Inserting Row
         //db.insert(TABLE_RECENT, null, values);
         db.insert(USER_VEHICLE_TABLE, null, values);
