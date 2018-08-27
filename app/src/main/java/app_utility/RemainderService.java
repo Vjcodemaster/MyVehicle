@@ -1,53 +1,44 @@
 package app_utility;
 
-import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.autochip.myvehicle.MainActivity;
 import com.autochip.myvehicle.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import static android.content.ContentValues.TAG;
 import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
 
-public class TrackingService extends Service implements AsyncInterface {
+public class RemainderService extends Service implements AsyncInterface {
 
-    String channelId = "app_utility.TrackingService";
+    String channelId = "app_utility.RemainderService";
     String channelName = "tracking";
 
     /*startService(new Intent(MyService.ServiceIntent));
     stopService(new Intent((MyService.ServiceIntent));*/
 
-    public static TrackingService refOfService;
+    public static RemainderService refOfService;
     SharedPreferenceClass sharedPreferenceClass;
 
     NotificationManager notifyMgr;
@@ -69,9 +60,10 @@ public class TrackingService extends Service implements AsyncInterface {
     long startTime = 0;
     long endTime = 0;
     long totalTime = 0;
+    DatabaseHandler db;
 
 
-    public TrackingService() {
+    public RemainderService() {
     }
 
     @Override
@@ -82,7 +74,7 @@ public class TrackingService extends Service implements AsyncInterface {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        db = new DatabaseHandler(getApplicationContext());
         /*
         this will make sure service will run on background in oreo and above
         service wont run without a notification from oreo version.
@@ -112,11 +104,13 @@ public class TrackingService extends Service implements AsyncInterface {
         };
         //Starts after 20 sec and will repeat on every 20 sec of time interval.
         timer.schedule(doAsynchronousTask, 0, 10000);
+
+        checkForExpiryDates();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void startForeground() {
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), createNotificationChannel() );
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), createNotificationChannel());
         Notification notification = notificationBuilder.setOngoing(true)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setPriority(PRIORITY_MAX)
@@ -127,7 +121,7 @@ public class TrackingService extends Service implements AsyncInterface {
 
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private String createNotificationChannel(){
+    private String createNotificationChannel() {
         NotificationChannel chan = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_NONE);
         chan.setLightColor(Color.BLUE);
         chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
@@ -145,12 +139,74 @@ public class TrackingService extends Service implements AsyncInterface {
         return START_STICKY;
     }
 
+
+    private void checkForExpiryDates() {
+        int nInsurance = 0;
+        int nEmission = 1;
+        int nService = 2;
+        ArrayList<DataBaseHelper> alDBData;
+        ArrayList<Integer> alVehicleID = new ArrayList<>();
+        ArrayList<String> alVehicleBrand = new ArrayList<>();
+        ArrayList<String> alModelName = new ArrayList<>();
+        ArrayList<String[]> alExpiryDate = new ArrayList<>();
+        ArrayList<String[]> alRemainderDate = new ArrayList<>();
+        ArrayList<String[]> alToNotify = new ArrayList<>();
+        
+        alDBData = new ArrayList<>(db.getAllVehicleID());
+
+        for (int i = 0; i < alDBData.size(); i++) {
+            alVehicleID.add(alDBData.get(i).get_vehicle_id());
+            alVehicleBrand.add(alDBData.get(i).get_brand_name());
+            alModelName.add(alDBData.get(i).get_model_name());
+
+            String[] saAllData = new String[3];
+            saAllData[0] = alDBData.get(i).get_insurance_info().split(",")[3];
+            saAllData[1] = alDBData.get(i).get_emission_info().split(",")[3];
+            saAllData[2] = alDBData.get(i).get_service_info().split(",")[4];
+            alExpiryDate.add(saAllData);
+
+            saAllData[0] = alDBData.get(i).get_insurance_info().split(",")[4];
+            saAllData[1] = alDBData.get(i).get_emission_info().split(",")[4];
+            saAllData[2] = alDBData.get(i).get_service_info().split(",")[5];
+            alRemainderDate.add(saAllData);
+            //.get
+        }
+
+        // Get Current Date Time
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+        String getCurrentDateTime = sdf.format(c.getTime());
+
+        String[] saAllData = alRemainderDate.get(0);
+        String getMyTime = saAllData[0];
+        Log.d("getCurrentDateTime", getCurrentDateTime);
+
+        //getCurrentDateTime: 05/23/2016 18:49 PM
+        //CompareTo method must return negative number if current object is less than other object, positive number if 
+        //current object is greater than other object and zero if both objects are equal to each other.
+
+        if (getCurrentDateTime.compareTo(getMyTime) == 0) {
+            String[] saNotify = new String[6];
+            saNotify[0] = String.valueOf(nInsurance);
+            saNotify[0] = alVehicleID.get(0).toString();
+            saNotify[1] = alVehicleBrand.get(0);
+            saNotify[2] = alModelName.get(0);
+            saNotify[3] = alExpiryDate.get(0)[0];
+            
+            alToNotify.add(saNotify);
+        }
+        /*else
+        {
+            Log.d("Return","getMyTime older than getCurrentDateTime ");
+        }*/
+    }
+
     @Override
     public void onTaskRemoved(Intent in) {
         Log.e("Service is killed", "");
         super.onTaskRemoved(in);
         if (sharedPreferenceClass.getUserTraceableInfo()) {
-            Intent intent = new Intent("app_utility.TrackingService.ServiceStopped");
+            Intent intent = new Intent("app_utility.RemainderService.ServiceStopped");
             sendBroadcast(intent);
         }
     }
@@ -158,14 +214,14 @@ public class TrackingService extends Service implements AsyncInterface {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //TrackingService.this.stopSelf();
+        //RemainderService.this.stopSelf();
         timer.cancel();
         timer.purge();
 
         //refOfService.stopForeground(true);
         refOfService.stopSelf();
         if (sharedPreferenceClass.getUserTraceableInfo()) {
-            Intent intent = new Intent("app_utility.TrackingService.ServiceStopped");
+            Intent intent = new Intent("app_utility.RemainderService.ServiceStopped");
             sendBroadcast(intent);
         }
 
@@ -179,18 +235,18 @@ public class TrackingService extends Service implements AsyncInterface {
         inboxStyle = new NotificationCompat.InboxStyle();
         notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        Intent acceptIntent = new Intent(TrackingService.this, TrackingBroadCastReceiver.class);
+        Intent acceptIntent = new Intent(RemainderService.this, TrackingBroadCastReceiver.class);
         acceptIntent.setAction("android.intent.action.ac.user.accept");
-        PendingIntent acceptPI = PendingIntent.getBroadcast(TrackingService.this, 0, acceptIntent,
+        PendingIntent acceptPI = PendingIntent.getBroadcast(RemainderService.this, 0, acceptIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        Intent declineIntent = new Intent(TrackingService.this, TrackingBroadCastReceiver.class);
+        Intent declineIntent = new Intent(RemainderService.this, TrackingBroadCastReceiver.class);
         declineIntent.setAction("android.intent.action.ac.user.decline");
-        PendingIntent declinePI = PendingIntent.getBroadcast(TrackingService.this, 0, declineIntent,
+        PendingIntent declinePI = PendingIntent.getBroadcast(RemainderService.this, 0, declineIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        nBuilder = new NotificationCompat.Builder(TrackingService.
+        nBuilder = new NotificationCompat.Builder(RemainderService.
                 this, channelId)
                 //.setSmallIcon(R.drawable.ic_launcher_background)
                 .setDefaults(Notification.DEFAULT_ALL)
