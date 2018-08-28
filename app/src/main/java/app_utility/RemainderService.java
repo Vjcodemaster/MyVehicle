@@ -177,24 +177,30 @@ public class RemainderService extends Service implements AsyncInterface {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
         String getCurrentDateTime = sdf.format(c.getTime());
 
-        String[] saAllData = alRemainderDate.get(0);
-        String getMyTime = saAllData[0];
-        Log.d("getCurrentDateTime", getCurrentDateTime);
+        for(int j=0; j<alRemainderDate.size(); j++){
+            String[] saAllData = alRemainderDate.get(j);
+            String getMyTime = saAllData[0];
+            Log.d("getCurrentDateTime", getCurrentDateTime);
+
+            if (getCurrentDateTime.compareTo(getMyTime) == 0) {
+                String[] saNotify = new String[5];
+                saNotify[0] = String.valueOf(nInsurance);
+                saNotify[1] = alVehicleID.get(0).toString();
+                saNotify[2] = alVehicleBrand.get(0);
+                saNotify[3] = alModelName.get(0);
+                saNotify[4] = alExpiryDate.get(0)[0];
+
+                alToNotify.add(saNotify);
+            }
+        }
+
+
 
         //getCurrentDateTime: 05/23/2016 18:49 PM
         //CompareTo method must return negative number if current object is less than other object, positive number if 
         //current object is greater than other object and zero if both objects are equal to each other.
 
-        if (getCurrentDateTime.compareTo(getMyTime) == 0) {
-            String[] saNotify = new String[6];
-            saNotify[0] = String.valueOf(nInsurance);
-            saNotify[0] = alVehicleID.get(0).toString();
-            saNotify[1] = alVehicleBrand.get(0);
-            saNotify[2] = alModelName.get(0);
-            saNotify[3] = alExpiryDate.get(0)[0];
-            
-            alToNotify.add(saNotify);
-        }
+
         /*else
         {
             Log.d("Return","getMyTime older than getCurrentDateTime ");
