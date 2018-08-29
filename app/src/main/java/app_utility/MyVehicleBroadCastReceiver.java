@@ -3,6 +3,9 @@ package app_utility;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+
+import com.autochip.myvehicle.MainActivity;
 
 public class MyVehicleBroadCastReceiver extends BroadcastReceiver {
 
@@ -23,6 +26,11 @@ public class MyVehicleBroadCastReceiver extends BroadcastReceiver {
                 context.startService(service);
                 break;*/
             case "android.intent.action.ac.user.accept":
+                Bundle extras = intent.getExtras();
+                String[] saData = extras.getStringArray("SA");
+                Intent inMain = new Intent(context, MainActivity.class);
+                inMain.putExtra("SA", saData);
+                context.startActivity(inMain);
                 //TrackingService.refOfService.acceptListener();
                 break;
             case "android.intent.action.ac.user.decline":

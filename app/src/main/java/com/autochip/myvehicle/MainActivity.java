@@ -132,6 +132,13 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         init();
 
+        Bundle bundle = getIntent().getExtras();
+        if(bundle!=null){
+            openInboxFragment(bundle);
+            //String[] saData = bundle.getStringArray("SA");
+        }
+
+
         /*myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alMakeModel, alRegNo, alYearOfManufacture);
         recyclerView.setAdapter(myVehicleTrackingRVAdapter);*/
         if (!sharedPreferenceClass.getFetchedBrandsFromOdooFirstTime()) {
@@ -266,6 +273,21 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         recyclerView.setLayoutManager(mLinearLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(MainActivity.this, DividerItemDecoration.VERTICAL));
         recyclerView.setHasFixedSize(true);
+    }
+
+    private void openInboxFragment(Bundle bundle){
+        Fragment newFragment;
+        //Bundle bundle = new Bundle();
+        bundle.putInt("index", 0);
+        newFragment = new InboxFragment();
+        newFragment.setArguments(bundle);
+
+        sBackStackParent = newFragment.getClass().getName();
+        transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.t2b, R.anim.b2t);
+        transaction.replace(R.id.container, newFragment, null);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     /*private void setUpBottomNavigationContent(final BottomNavigationView navigationView) {

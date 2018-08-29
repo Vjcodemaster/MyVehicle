@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
@@ -47,6 +48,8 @@ public class RemainderService extends Service implements AsyncInterface {
     NotificationCompat.InboxStyle inboxStyle;
 
     AsyncInterface asyncInterface;
+
+    ArrayList<String[]> alToNotify = new ArrayList<>();
 
     Timer timer = new Timer();
     Handler handler = new Handler();
@@ -153,7 +156,7 @@ public class RemainderService extends Service implements AsyncInterface {
         ArrayList<String> alModelName = new ArrayList<>();
         ArrayList<ArrayList<String>> alExpiryDate = new ArrayList<>();
         ArrayList<ArrayList<String>> alRemainderDate = new ArrayList<>();
-        ArrayList<String[]> alToNotify = new ArrayList<>();
+
 
         alDBData = new ArrayList<>(db.getAllVehicleID());
 
@@ -299,26 +302,30 @@ public class RemainderService extends Service implements AsyncInterface {
 
         Intent acceptIntent = new Intent(RemainderService.this, MyVehicleBroadCastReceiver.class);
         acceptIntent.setAction("android.intent.action.ac.user.accept");
+        acceptIntent.putExtra("SA",alToNotify);
         PendingIntent acceptPI = PendingIntent.getBroadcast(RemainderService.this, 0, acceptIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        Intent declineIntent = new Intent(RemainderService.this, MyVehicleBroadCastReceiver.class);
+        /*Intent declineIntent = new Intent(RemainderService.this, MyVehicleBroadCastReceiver.class);
         declineIntent.setAction("android.intent.action.ac.user.decline");
         PendingIntent declinePI = PendingIntent.getBroadcast(RemainderService.this, 0, declineIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT);*/
 
         nBuilder = new NotificationCompat.Builder(RemainderService.
                 this, channelId)
-                //.setSmallIcon(R.drawable.ic_launcher_background)
+                .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                        R.mipmap.ic_launcher))
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setColor(getResources().getColor(R.color.colorAccent))
                 .setDefaults(Notification.DEFAULT_ALL)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText("Admin has asked permission to track you. Would you like to accept?")
-                .setSubText("Admin has asked permission to track you. Would you like to accept?")
+                .setContentTitle("Your vehicle document will expire soon. Tap to view")
+                .setContentText("My Vehicle")
+                //.setSubText("Your document will expire soon. Tap to view")
                 //.addAction(R.drawable.download, "Accept", acceptPI)
                 //.addAction(R.drawable.download, "Decline", declinePI)
                 .setContentIntent(acceptPI)
-                .setContentIntent(declinePI)
+                //.setContentIntent(declinePI)
                 .setOnlyAlertOnce(true)
                 .setAutoCancel(true)
                 .setPriority(Notification.PRIORITY_MAX);

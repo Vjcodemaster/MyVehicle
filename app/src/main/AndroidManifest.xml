@@ -29,6 +29,20 @@
                 <action android:name="app_utility.RemainderService" />
             </intent-filter>
         </service>
+
+        <receiver
+            android:name="app_utility.MyVehicleBroadCastReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.ac.user.decline" />
+                <action android:name="android.intent.action.ac.user.accept" />
+                <action android:name="app_utility.TrackingService.ServiceStopped"/>
+            </intent-filter>
+        </receiver>
         <!--<provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.com.vansuita.pickimage.provider"
