@@ -21,6 +21,14 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name="app_utility.RemainderService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter android:label="@string/service_name">
+                <action android:name="app_utility.RemainderService" />
+            </intent-filter>
+        </service>
         <!--<provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.com.vansuita.pickimage.provider"

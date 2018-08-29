@@ -359,14 +359,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<DataBaseHelper> getAllVehicleID() {
         List<DataBaseHelper> dataBaseHelperList = new ArrayList<>();
         // Select All Query
-        String selectQuery = "SELECT  KEY_VEHICLE_ID_ODOO FROM " + USER_VEHICLE_TABLE ;
+        /*String selectQuery = "SELECT  " + KEY_VEHICLE_ID_ODOO + " FROM " + USER_VEHICLE_TABLE ;*/
+        String selectQuery = "SELECT  * FROM " + USER_VEHICLE_TABLE ;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
-            //do {
+            do {
             DataBaseHelper dataBaseHelper = new DataBaseHelper();
 
             dataBaseHelper.set_vehicle_id(cursor.getInt(0));
@@ -387,7 +388,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             dataBaseHelper.set_service_id(cursor.getInt(15));
             // Adding data to list
             dataBaseHelperList.add(dataBaseHelper);
-            //} while (cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
 
         // return recent list

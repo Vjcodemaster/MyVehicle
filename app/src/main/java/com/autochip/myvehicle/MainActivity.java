@@ -2,7 +2,9 @@ package com.autochip.myvehicle;
 
 import android.animation.Animator;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -163,6 +165,15 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
             myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, vehicleDataStorage.alID, vehicleDataStorage.alModelName,
                     vehicleDataStorage.alLicensePlate, vehicleDataStorage.alModelYear, vehicleDataStorage.alDisplayPicture);
             recyclerView.setAdapter(myVehicleTrackingRVAdapter);
+        }
+
+        if (!isMyServiceRunning(app_utility.RemainderService.class)) {
+            Intent in = new Intent(MainActivity.this, app_utility.RemainderService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(in);
+            } else {
+                startService(in);
+            }
         }
 
         /*myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
@@ -607,6 +618,16 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
     private void stopProgressBar() {
         if (circularProgressBar != null && circularProgressBar.isShowing())
             circularProgressBar.dismiss();
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

@@ -76,4 +76,6 @@
     <string name="next_due">Next Service Due</string>
     <string name="service_type">Service Type</string>
     <string name="mileage">Mileage</string>
+
+    <string name="service_name">Remainder Service</string>
 </resources>

@@ -3,11 +3,11 @@ package app_utility;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -15,15 +15,16 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.autochip.myvehicle.MainActivity;
 import com.autochip.myvehicle.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -50,16 +51,16 @@ public class RemainderService extends Service implements AsyncInterface {
     Timer timer = new Timer();
     Handler handler = new Handler();
 
-    Location previousLocation;
+    //Location previousLocation;
 
     //Double radius = 60.0;
 
     //boolean hasNoGpsBug = true;
-    String VOLLEY_STATUS = "NOT_RUNNING";
+    //String VOLLEY_STATUS = "NOT_RUNNING";
 
-    long startTime = 0;
-    long endTime = 0;
-    long totalTime = 0;
+    //long startTime = 0;
+    //long endTime = 0;
+    //long totalTime = 0;
     DatabaseHandler db;
 
 
@@ -126,6 +127,7 @@ public class RemainderService extends Service implements AsyncInterface {
         chan.setLightColor(Color.BLUE);
         chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
         notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        assert notifyMgr != null;
         notifyMgr.createNotificationChannel(chan);
         return channelId;
     }
@@ -141,35 +143,80 @@ public class RemainderService extends Service implements AsyncInterface {
 
 
     private void checkForExpiryDates() {
-        int nInsurance = 0;
-        int nEmission = 1;
-        int nService = 2;
+        ArrayList<Integer> alSwitchCase = new ArrayList<>();
+        alSwitchCase.add(0);
+        alSwitchCase.add(1);
+        alSwitchCase.add(2);
         ArrayList<DataBaseHelper> alDBData;
         ArrayList<Integer> alVehicleID = new ArrayList<>();
         ArrayList<String> alVehicleBrand = new ArrayList<>();
         ArrayList<String> alModelName = new ArrayList<>();
-        ArrayList<String[]> alExpiryDate = new ArrayList<>();
-        ArrayList<String[]> alRemainderDate = new ArrayList<>();
+        ArrayList<ArrayList<String>> alExpiryDate = new ArrayList<>();
+        ArrayList<ArrayList<String>> alRemainderDate = new ArrayList<>();
         ArrayList<String[]> alToNotify = new ArrayList<>();
-        
+
         alDBData = new ArrayList<>(db.getAllVehicleID());
 
         for (int i = 0; i < alDBData.size(); i++) {
-            alVehicleID.add(alDBData.get(i).get_vehicle_id());
-            alVehicleBrand.add(alDBData.get(i).get_brand_name());
-            alModelName.add(alDBData.get(i).get_model_name());
+            //String[] saAllData = new String[3];
+            ArrayList<String> alAllData = new ArrayList<>();
 
-            String[] saAllData = new String[3];
-            saAllData[0] = alDBData.get(i).get_insurance_info().split(",")[3];
-            saAllData[1] = alDBData.get(i).get_emission_info().split(",")[3];
-            saAllData[2] = alDBData.get(i).get_service_info().split(",")[4];
-            alExpiryDate.add(saAllData);
+            if (alDBData.get(i).get_insurance_info() != null && !alDBData.get(i).get_insurance_info().equals("")) {
+                alAllData.add(alDBData.get(i).get_insurance_info().split(",")[3]);
+            } else {
+                alAllData.add("");
+                //saAllData[0] = "";
+            }
 
-            saAllData[0] = alDBData.get(i).get_insurance_info().split(",")[4];
-            saAllData[1] = alDBData.get(i).get_emission_info().split(",")[4];
-            saAllData[2] = alDBData.get(i).get_service_info().split(",")[5];
-            alRemainderDate.add(saAllData);
-            //.get
+            if (alDBData.get(i).get_emission_info() != null && !alDBData.get(i).get_emission_info().equals("")) {
+                alAllData.add(alDBData.get(i).get_emission_info().split(",")[3]);
+            } else {
+                alAllData.add("");
+                //saAllData[1] = "";
+            }
+
+            if (alDBData.get(i).get_service_info() != null && !alDBData.get(i).get_service_info().equals("")) {
+                alAllData.add(alDBData.get(i).get_service_info().split(",")[4]);
+            } else {
+                alAllData.add("");
+                //saAllData[2] = "";
+            }
+            if (checkForNull(alAllData) < alAllData.size()) {
+               /* alVehicleID.add(alDBData.get(i).get_vehicle_id());
+                alVehicleBrand.add(alDBData.get(i).get_brand_name());
+                alModelName.add(alDBData.get(i).get_model_name());*/
+                alExpiryDate.add(alAllData);
+            }
+
+            alAllData = new ArrayList<>();
+            //resetting flag for next case
+
+            if (alDBData.get(i).get_insurance_info() != null && !alDBData.get(i).get_insurance_info().equals("")) {
+                alAllData.add(alDBData.get(i).get_insurance_info().split(",")[4]);
+            } else {
+                alAllData.add("");
+                //saAllData[0] = "";
+            }
+
+            if (alDBData.get(i).get_emission_info() != null && !alDBData.get(i).get_emission_info().equals("")) {
+                alAllData.add(alDBData.get(i).get_emission_info().split(",")[4]);
+            } else {
+                alAllData.add("");
+                //saAllData[1] = "";
+            }
+
+            if (alDBData.get(i).get_service_info() != null && !alDBData.get(i).get_service_info().equals("")) {
+                alAllData.add(alDBData.get(i).get_service_info().split(",")[5]);
+            } else {
+                alAllData.add("");
+                //saAllData[2] = "";
+            }
+            if (checkForNull(alAllData) < alAllData.size()) {
+                alVehicleID.add(alDBData.get(i).get_vehicle_id());
+                alVehicleBrand.add(alDBData.get(i).get_brand_name());
+                alModelName.add(alDBData.get(i).get_model_name());
+                alRemainderDate.add(alAllData);
+            }
         }
 
         // Get Current Date Time
@@ -177,34 +224,43 @@ public class RemainderService extends Service implements AsyncInterface {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
         String getCurrentDateTime = sdf.format(c.getTime());
 
-        for(int j=0; j<alRemainderDate.size(); j++){
-            String[] saAllData = alRemainderDate.get(j);
-            String getMyTime = saAllData[0];
-            Log.d("getCurrentDateTime", getCurrentDateTime);
+        for (int j = 0; j < alRemainderDate.size(); j++) {
+            ArrayList<String> alAllData = alRemainderDate.get(j);
 
-            if (getCurrentDateTime.compareTo(getMyTime) == 0) {
-                String[] saNotify = new String[5];
-                saNotify[0] = String.valueOf(nInsurance);
-                saNotify[1] = alVehicleID.get(0).toString();
-                saNotify[2] = alVehicleBrand.get(0);
-                saNotify[3] = alModelName.get(0);
-                saNotify[4] = alExpiryDate.get(0)[0];
+            for (int k = 0; k < alAllData.size(); k++) {
+                if (!alAllData.get(k).equals("") && !alAllData.get(k).equals("false")) {
+                    String getMyTime = alAllData.get(k);
+                    //Log.d("getCurrentDateTime", getCurrentDateTime);
+                    //CompareTo method must return negative number if current object is less than other object, positive number if
+                    //current object is greater than other object and zero if both objects are equal to each other.
+                    //getCurrentDateTime: 05/23/2016 18:49 PM
+                    if (getCurrentDateTime.compareTo(getMyTime) == 2) {
+                        String[] saNotify = new String[5];
+                        saNotify[0] = String.valueOf(alSwitchCase.get(k));
+                        saNotify[1] = alVehicleID.get(j).toString();
+                        saNotify[2] = alVehicleBrand.get(j);
+                        saNotify[3] = alModelName.get(j);
+                        saNotify[4] = alExpiryDate.get(j).get(k);
 
-                alToNotify.add(saNotify);
+                        alToNotify.add(saNotify);
+                    }
+                }
             }
         }
+        if(alToNotify.size()>=1){
+            notifyUser();
+        }
+        //Log.d("Return","getMyTime older than getCurrentDateTime ");
+        stopSelf();
+    }
 
-
-
-        //getCurrentDateTime: 05/23/2016 18:49 PM
-        //CompareTo method must return negative number if current object is less than other object, positive number if 
-        //current object is greater than other object and zero if both objects are equal to each other.
-
-
-        /*else
-        {
-            Log.d("Return","getMyTime older than getCurrentDateTime ");
-        }*/
+    private int checkForNull(ArrayList<String> alTmp) {
+        int count = 1;
+        for (int i = 0; i < alTmp.size(); i++) {
+            if (alTmp.get(i).equals(""))
+                count = count + 1;
+        }
+        return count;
     }
 
     @Override
@@ -237,17 +293,17 @@ public class RemainderService extends Service implements AsyncInterface {
     private void fireBaseNotifyListener() {
     }
 
-    /*private void notifyUser() {
+    private void notifyUser() {
         inboxStyle = new NotificationCompat.InboxStyle();
         notifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        Intent acceptIntent = new Intent(RemainderService.this, TrackingBroadCastReceiver.class);
+        Intent acceptIntent = new Intent(RemainderService.this, MyVehicleBroadCastReceiver.class);
         acceptIntent.setAction("android.intent.action.ac.user.accept");
         PendingIntent acceptPI = PendingIntent.getBroadcast(RemainderService.this, 0, acceptIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        Intent declineIntent = new Intent(RemainderService.this, TrackingBroadCastReceiver.class);
+        Intent declineIntent = new Intent(RemainderService.this, MyVehicleBroadCastReceiver.class);
         declineIntent.setAction("android.intent.action.ac.user.decline");
         PendingIntent declinePI = PendingIntent.getBroadcast(RemainderService.this, 0, declineIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -271,7 +327,7 @@ public class RemainderService extends Service implements AsyncInterface {
         nBuilder.setStyle(inboxStyle);
         int notificationId = 515;
         notifyMgr.notify(notificationId, nBuilder.build());
-    }*/
+    }
 
 
     public void acceptListener() {
