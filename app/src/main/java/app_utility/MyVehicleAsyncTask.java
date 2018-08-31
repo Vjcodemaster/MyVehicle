@@ -789,11 +789,15 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                         saServiceData[5] = data.get(i).get("next_serv_due").toString();
                         saServiceData[6] = data.get(i).get("set_reminder").toString();
                         //saServiceData[7] = data.get(i).get("vehicle_id_no").toString();
-                        HashMap<String, Object> listFields = new HashMap<>();
-                        listFields.put("vehicle_id", data.get(i).get("vehicle_id"));
-                        List fRelation = asList((Object[]) listFields.get("vehicle_id"));
-                        Object f0 = fRelation.get(0); //this will get id of brands
-                        saServiceData[7] = f0.toString();
+                        if (data.get(i).containsKey("vehicle_id_no")) {
+                            saServiceData[7] = data.get(i).get("vehicle_id_no").toString();
+                        } else {
+                            HashMap<String, Object> listFields = new HashMap<>();
+                            listFields.put("vehicle_id", data.get(i).get("vehicle_id"));
+                            List fRelation = asList((Object[]) listFields.get("vehicle_id"));
+                            Object f0 = fRelation.get(0); //this will get id of brands
+                            saServiceData[7] = f0.toString();
+                        }
                         //saServiceData[8] = data.get(i).get("vehicle_id").toString();
 
                         String sJoinedServiceInfo = TextUtils.join(",", saServiceData);

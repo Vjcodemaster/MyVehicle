@@ -132,9 +132,9 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         init();
 
-        Bundle bundle = getIntent().getExtras();
-        if(bundle!=null){
-            openInboxFragment(bundle);
+        final Intent intent = getIntent();
+        if(intent!=null){
+            openInboxFragment();
             //String[] saData = bundle.getStringArray("SA");
         }
 
@@ -275,12 +275,12 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         recyclerView.setHasFixedSize(true);
     }
 
-    private void openInboxFragment(Bundle bundle){
+    private void openInboxFragment(){
         Fragment newFragment;
         //Bundle bundle = new Bundle();
-        bundle.putInt("index", 0);
-        newFragment = new InboxFragment();
-        newFragment.setArguments(bundle);
+        //bundle.putInt("index", 0);
+        newFragment = InboxFragment.newInstance("", "");
+        //newFragment.setArguments(bundle);
 
         sBackStackParent = newFragment.getClass().getName();
         transaction = getSupportFragmentManager().beginTransaction();

@@ -20,12 +20,10 @@ import com.autochip.myvehicle.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -49,7 +47,7 @@ public class RemainderService extends Service implements AsyncInterface {
 
     AsyncInterface asyncInterface;
 
-    ArrayList<String[]> alToNotify = new ArrayList<>();
+
 
     Timer timer = new Timer();
     Handler handler = new Handler();
@@ -65,6 +63,7 @@ public class RemainderService extends Service implements AsyncInterface {
     //long endTime = 0;
     //long totalTime = 0;
     DatabaseHandler db;
+    public RemainderDataStorage remainderDataStorage;
 
 
     public RemainderService() {
@@ -79,6 +78,7 @@ public class RemainderService extends Service implements AsyncInterface {
     public void onCreate() {
         super.onCreate();
         db = new DatabaseHandler(getApplicationContext());
+        remainderDataStorage = new RemainderDataStorage();
         /*
         this will make sure service will run on background in oreo and above
         service wont run without a notification from oreo version.
@@ -245,16 +245,16 @@ public class RemainderService extends Service implements AsyncInterface {
                         saNotify[3] = alModelName.get(j);
                         saNotify[4] = alExpiryDate.get(j).get(k);
 
-                        alToNotify.add(saNotify);
+                        remainderDataStorage.alToNotify.add(saNotify);
                     }
                 }
             }
         }
-        if(alToNotify.size()>=1){
+        if(remainderDataStorage.alToNotify.size()>=1){
             notifyUser();
         }
         //Log.d("Return","getMyTime older than getCurrentDateTime ");
-        stopSelf();
+        //stopSelf();
     }
 
     private int checkForNull(ArrayList<String> alTmp) {
@@ -302,7 +302,7 @@ public class RemainderService extends Service implements AsyncInterface {
 
         Intent acceptIntent = new Intent(RemainderService.this, MyVehicleBroadCastReceiver.class);
         acceptIntent.setAction("android.intent.action.ac.user.accept");
-        acceptIntent.putExtra("SA",alToNotify);
+        //acceptIntent.putExtra("SA",alToNotify);
         PendingIntent acceptPI = PendingIntent.getBroadcast(RemainderService.this, 0, acceptIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -337,12 +337,13 @@ public class RemainderService extends Service implements AsyncInterface {
     }
 
 
-    public void acceptListener() {
+
+    /*public void acceptListener() {
         final String phone = sharedPreferenceClass.getUserID();
     }
 
     public void declineListener() {
-    }
+    }*/
 
 
     @Override
@@ -358,5 +359,9 @@ public class RemainderService extends Service implements AsyncInterface {
     @Override
     public void onRegisterVehicleFragment(String sMessage, int nCase, LinkedHashMap<String, ArrayList<String>> lHMFormatData, LinkedHashMap<String, LinkedHashMap<Integer, ArrayList<Integer>>> lHMBrandNameWithIDAndModelID) {
 
+    }
+
+    public class RemainderDataStorage{
+        public ArrayList<String[]> alToNotify = new ArrayList<>();
     }
 }

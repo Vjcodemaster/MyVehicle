@@ -26,10 +26,10 @@ public class MyVehicleBroadCastReceiver extends BroadcastReceiver {
                 context.startService(service);
                 break;*/
             case "android.intent.action.ac.user.accept":
-                Bundle extras = intent.getExtras();
-                String[] saData = extras.getStringArray("SA");
+                /*Bundle extras = intent.getExtras();
+                String[] saData = extras.getStringArray("SA");*/
                 Intent inMain = new Intent(context, MainActivity.class);
-                inMain.putExtra("SA", saData);
+                //inMain.putExtra("SA", saData);
                 context.startActivity(inMain);
                 //TrackingService.refOfService.acceptListener();
                 break;

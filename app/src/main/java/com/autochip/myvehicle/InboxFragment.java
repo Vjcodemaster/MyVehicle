@@ -7,6 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
+import static app_utility.RemainderService.refOfService;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +27,8 @@ public class InboxFragment extends Fragment {
 
     private String mParam1;
     private String mParam2;
+
+    ArrayList<String[]> alToNotify = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
 
@@ -61,6 +67,10 @@ public class InboxFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        if(refOfService!=null && refOfService.remainderDataStorage!=null) {
+            alToNotify = refOfService.remainderDataStorage.alToNotify;
+            refOfService.stopSelf();
+        }
         return inflater.inflate(R.layout.fragment_inbox, container, false);
     }
 
