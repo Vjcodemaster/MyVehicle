@@ -3,10 +3,11 @@ package app_utility;
 import android.content.ContentValues;
 import android.util.Log;
 
+import com.autochip.myvehicle.MainActivity;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +16,6 @@ import java.util.Set;
 import de.timroes.axmlrpc.XMLRPCClient;
 import de.timroes.axmlrpc.XMLRPCException;
 
-import static de.timroes.axmlrpc.XMLRPCClient.FLAGS_DEFAULT_TYPE_STRING;
-import static de.timroes.axmlrpc.XMLRPCClient.FLAGS_FORWARD;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 
@@ -384,6 +383,7 @@ public class OdooConnect {
             }
         } catch (XMLRPCException e) {
             Log.d(CONNECTOR_NAME, e.toString());
+            unableToConnectServer();
         }
         return result;
     }
@@ -432,6 +432,7 @@ public class OdooConnect {
             newObjectId = (Integer) client.call("execute_kw", parameters);
 
         } catch (XMLRPCException e) {
+            unableToConnectServer();
             Log.d(CONNECTOR_NAME, e.toString());
         }
         return newObjectId;
@@ -451,6 +452,7 @@ public class OdooConnect {
                     id, values}};
             writeOk = (Boolean) client.call("execute_kw", parameters);
         } catch (XMLRPCException e) {
+            unableToConnectServer();
             Log.d(CONNECTOR_NAME, e.toString());
         }
         return writeOk;
@@ -510,6 +512,10 @@ public class OdooConnect {
         stringConn.append("password: " + mPassword + "\n");
         stringConn.append("id: " + mUserId + "\n");
         return stringConn.toString();
+    }
+
+    private void unableToConnectServer(){
+        MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("SERVER_ERROR", 2001, 2001, "", null);
     }
 }
 

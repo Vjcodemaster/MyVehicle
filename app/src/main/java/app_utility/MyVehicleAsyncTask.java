@@ -242,51 +242,67 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             case 4:
                 break;
             case 5:
-                String[] saInsuranceData = new String[8];
-                saInsuranceData[0] = iaOne2ManyID[0].toString();
-                saInsuranceData[1] = InsuranceData.split(",")[0];
-                saInsuranceData[2] = "Autochip";
-                saInsuranceData[3] = InsuranceData.split(",")[2];
-                saInsuranceData[4] = InsuranceData.split(",")[3];
-                saInsuranceData[5] = InsuranceData.split(",")[4];
-                saInsuranceData[6] = String.valueOf(createdId);
-                saInsuranceData[7] = "194";
+                ArrayList<String[]> alModelArray = new ArrayList<>();
+
+                if(InsuranceData!=null && !InsuranceData.equals("")) {
+                    String[] saInsuranceData = new String[8];
+                    saInsuranceData[0] = iaOne2ManyID[0].toString();
+                    saInsuranceData[1] = InsuranceData.split(",")[0];
+                    saInsuranceData[2] = "Autochip";
+                    saInsuranceData[3] = InsuranceData.split(",")[2];
+                    saInsuranceData[4] = InsuranceData.split(",")[3];
+                    saInsuranceData[5] = InsuranceData.split(",")[4];
+                    saInsuranceData[6] = String.valueOf(createdId);
+                    saInsuranceData[7] = "194";
+                    alModelArray.add(saInsuranceData);
+                } else {
+                    alModelArray.add(null);
+                }
                 //String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
                 //db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
+                if(EmissionData!=null && !EmissionData.equals("")) {
+                    String[] saEmissionData = new String[7];
+                    saEmissionData[0] = iaOne2ManyID[1].toString();
+                    saEmissionData[1] = EmissionData.split(",")[0];
+                    saEmissionData[2] = EmissionData.split(",")[1];
+                    saEmissionData[3] = EmissionData.split(",")[2];
+                    saEmissionData[4] = EmissionData.split(",")[3];
+                    saEmissionData[5] = EmissionData.split(",")[4];
+                    saEmissionData[6] = String.valueOf(createdId);
+                    alModelArray.add(saEmissionData);
+                }else {
+                    alModelArray.add(null);
+                }
 
-                String[] saEmissionData = new String[7];
-                saEmissionData[0] = iaOne2ManyID[1].toString();
-                saEmissionData[1] = EmissionData.split(",")[0];
-                saEmissionData[2] = EmissionData.split(",")[1];
-                saEmissionData[3] = EmissionData.split(",")[2];
-                saEmissionData[4] = EmissionData.split(",")[3];
-                saEmissionData[5] = EmissionData.split(",")[4];
-                saEmissionData[6] = String.valueOf(createdId);
+                if(RCFCData!=null && !RCFCData.equals("")) {
+                    String[] saRCFCData = new String[6];
+                    saRCFCData[0] = iaOne2ManyID[2].toString();
+                    saRCFCData[1] = RCFCData.split(",")[0];
+                    saRCFCData[2] = RCFCData.split(",")[1];
+                    saRCFCData[3] = RCFCData.split(",")[2];
+                    saRCFCData[4] = RCFCData.split(",")[3];
+                    saRCFCData[5] = String.valueOf(createdId);
+                    alModelArray.add(saRCFCData);
+                }else {
+                    alModelArray.add(null);
+                }
 
-                String[] saRCFCData = new String[6];
-                saRCFCData[0] = iaOne2ManyID[2].toString();
-                saRCFCData[1] = RCFCData.split(",")[0];
-                saRCFCData[2] = RCFCData.split(",")[1];
-                saRCFCData[3] = RCFCData.split(",")[2];
-                saRCFCData[4] = RCFCData.split(",")[3];
-                saRCFCData[5] = String.valueOf(createdId);
-
-                String[] saServiceData = new String[8];
-                saServiceData[0] = iaOne2ManyID[3].toString();
-                saServiceData[1] = ServiceData.split(",")[0];
-                saServiceData[2] = ServiceData.split(",")[1];
-                saServiceData[3] = ServiceData.split(",")[2];
-                saServiceData[4] = ServiceData.split(",")[3];
-                saServiceData[5] = ServiceData.split(",")[4];
-                saServiceData[6] = ServiceData.split(",")[5];
-                saServiceData[7] = String.valueOf(createdId);
+                if(ServiceData!=null && !ServiceData.equals("")) {
+                    String[] saServiceData = new String[8];
+                    saServiceData[0] = iaOne2ManyID[3].toString();
+                    saServiceData[1] = ServiceData.split(",")[0];
+                    saServiceData[2] = ServiceData.split(",")[1];
+                    saServiceData[3] = ServiceData.split(",")[2];
+                    saServiceData[4] = ServiceData.split(",")[3];
+                    saServiceData[5] = ServiceData.split(",")[4];
+                    saServiceData[6] = ServiceData.split(",")[5];
+                    saServiceData[7] = String.valueOf(createdId);
+                    alModelArray.add(saServiceData);
+                }else {
+                    alModelArray.add(null);
+                }
                 //String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
                 //db.updateEmissionInfoByVehicleID(new DataBaseHelper(sJoinedEmissionInfo, Integer.valueOf(saEmissionData[0]), ""), Integer.valueOf(saEmissionData[6]));
-                ArrayList<String[]> alModelArray = new ArrayList<>();
-                alModelArray.add(saInsuranceData);
-                alModelArray.add(saEmissionData);
-                alModelArray.add(saRCFCData);
-                alModelArray.add(saServiceData);
 
                 String saAddedData;
                 saAddedData = String.valueOf(createdId) + "," + sBrandName + "," + brandID + "," + sModelName + "," + ModelID + "," + sRegNo + ","
@@ -326,6 +342,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 sMsgResult = "Connection error";
             }
         } catch (Exception ex) {
+            unableToConnectServer();
             // Any other exception
             sMsgResult = "Error: " + ex;
         }
@@ -1082,6 +1099,10 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         circularProgressBar.setCanceledOnTouchOutside(false);
         circularProgressBar.setCancelable(false);
         circularProgressBar.show();
+    }
+
+    private void unableToConnectServer(){
+        MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("SERVER_ERROR", 2001, 2001, "", null);
     }
 
     /*private void createOne2Many(String Model, final int ID) {

@@ -172,6 +172,17 @@ public class SharedPreferenceClass {
         return sharedPreferences.getBoolean(IS_FROM_NOTIFICATION, false);
     }
 
+    public void setAllHistoryDataToNull(String sData) {
+        SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
+        SharedPreferences.Editor editor;
+        editor = sharedPreferences.edit();
+        editor.putString(INSURANCE_DATA, sData);
+        editor.putString(EMISSION_DATA, sData);
+        editor.putString(RCFC_DATA, sData);
+        editor.putString(SERVICE_DATA, sData);
+        editor.apply();
+    }
+
     public void setUserLogStatus(boolean isLoggedIn, String name, String number) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;

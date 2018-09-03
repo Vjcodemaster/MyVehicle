@@ -148,7 +148,6 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         this.isVisibleToUser = isVisibleToUser;
-
     }
 
     @Override
@@ -285,7 +284,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
                         spinnerModel.setSelection(alModel.indexOf(alDBData.get(0).get_model_name()));
                         sPreviousModel = alDBData.get(0).get_model_name();
                         saveStateBeforeDetach();
-                    } else if(sharedPreferenceClass.getVehicleInfo()!=null){
+                    } else if (sharedPreferenceClass.getVehicleInfo() != null) {
                         String[] saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
 
                         spinnerModel.setSelection(Integer.valueOf(saVehicleInfo[2]));
@@ -319,6 +318,15 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
                 openImageIntent();
             }
         });
+
+        //checks if data is null before setting bitmap to imageView. This will be used whenever user is adding data and other fragment is
+        //being viewed and update button is pressed
+        if (sharedPreferenceClass.getVehicleInfo() != null) {
+            String[] saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
+
+            if (saVehicleInfo.length > 5)
+                ivPreview.setImageBitmap(BitmapBase64.convertToBitmap(saVehicleInfo[5]));
+        }
     }
 
     private void prepareToCreate() {
@@ -344,41 +352,56 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
 
             ModelID = Integer.valueOf(saVehicleInfo[3]);
             sModelName = saVehicleInfo[4];
-        } else */{
-            //saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
-            //int sBrandID = spinnerMake.getSelectedItemPosition();
-            sBrandName = spinnerMake.getSelectedItem().toString();
-            brandID = db.getBrandIDFromString(sBrandName);
+        } else */
+        //saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
+        //int sBrandID = spinnerMake.getSelectedItemPosition();
+        sBrandName = spinnerMake.getSelectedItem().toString();
+        brandID = db.getBrandIDFromString(sBrandName);
+        Bitmap bitmap = null;
 
+        if (sharedPreferenceClass.getVehicleInfo() != null) {
+            saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
+
+            sModelPosition = Integer.valueOf(saVehicleInfo[2]);
+            sModelName = saVehicleInfo[4];
+            if (saVehicleInfo.length > 5)
+                bitmap = BitmapBase64.convertToBitmap(saVehicleInfo[5]);
+        } else {
             sModelPosition = spinnerModel.getSelectedItemPosition();
-
-            ModelID = db.getModelIDFromSelectedModelName(sBrandName, sModelPosition);
             sModelName = spinnerModel.getSelectedItem().toString();
+            if (ivPreview.getDrawable() != null)
+                bitmap = Bitmap.createScaledBitmap(((BitmapDrawable) ivPreview.getDrawable()).getBitmap(), 128, 128, true);
         }
 
+        ModelID = db.getModelIDFromSelectedModelName(sBrandName, sModelPosition);
+        //sModelName = spinnerModel.getSelectedItem().toString();
+
+
         InsuranceData = sharedPreferenceClass.getInsuranceData();
-        if(InsuranceData!=null){
+        if (InsuranceData != null) {
             alOne2Many.add(MODEL_INSURANCE_HISTORY);
         }
 
         EmissionData = sharedPreferenceClass.getEmissionData();
-        if(EmissionData!=null){
+        if (EmissionData != null) {
             alOne2Many.add(MODEL_EMISSION_HISTORY);
         }
 
         RCFCData = sharedPreferenceClass.getRcfcData();
-        if(RCFCData!=null){
+        if (RCFCData != null) {
             alOne2Many.add(MODEL_OWNER_HISTORY);
         }
 
         ServiceData = sharedPreferenceClass.getServiceData();
-        if(ServiceData!=null){
+        if (ServiceData != null) {
             alOne2Many.add(MODEL_SERVICE_HISTORY);
         }
 
         String sRegNo = etRegNo.getText().toString().trim();
 
-        if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(etYOM.getText().toString().trim()) || ((BitmapDrawable) ivPreview.getDrawable()).getBitmap() == null) {
+
+        //((BitmapDrawable) ivPreview.getDrawable()).getBitmap() == null
+        if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(etYOM.getText().toString().trim()) || bitmap == null) {
             Toast.makeText(getActivity(), "Please fill all information including image", Toast.LENGTH_SHORT).show();
             saveOnDetachFlag = 1;
             sharedPreferenceClass.setVehicleInfo(null);
@@ -386,9 +409,12 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             int sManufactureYear = Integer.valueOf(etYOM.getText().toString().trim());
 
             //convert image to base64 before sending it to server
-            Bitmap bitmap = Bitmap.createScaledBitmap(((BitmapDrawable) ivPreview.getDrawable()).getBitmap(), 128, 128, true);
+            //bitmap = Bitmap.createScaledBitmap(((BitmapDrawable) ivPreview.getDrawable()).getBitmap(), 128, 128, true);
+            //bitmap = BitmapBase64.convertToBitmap(saVehicleInfo[5]);
+            Bitmap resizeBitmap = Bitmap.createScaledBitmap(bitmap, 128, 128, true);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
+            //bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
+            resizeBitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             String encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
@@ -449,7 +475,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         String sNewYOM;
         String sNewRegNo;
         int sModelPosition;
-        if(sharedPreferenceClass.getVehicleInfo()!=null) {
+        if (sharedPreferenceClass.getVehicleInfo() != null) {
             saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
 
             sNewMake = saVehicleInfo[0];
@@ -467,13 +493,16 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         sNewYOM = etYOM.getText().toString().trim();
         sNewRegNo = etRegNo.getText().toString().trim();
 
-        Bitmap newBitmap = ((BitmapDrawable) ivPreview.getDrawable()).getBitmap();
+        Bitmap newBitmap = null;
+        if (ivPreview.getDrawable() != null)
+            newBitmap = ((BitmapDrawable) ivPreview.getDrawable()).getBitmap();
 
         //sharedPreferenceClass = new SharedPreferenceClass(getActivity());
         //String[] saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
 
         HashMap<String, Object> mHMEditedList = new HashMap<>();
-        newBitmap.sameAs(mPreviousBitmap);
+        if (newBitmap != null)
+            newBitmap.sameAs(mPreviousBitmap);
         if (!sNewMake.equals(sPreviousMake)) {
             mHMEditedList.put("make", sNewMake);
         }
@@ -496,7 +525,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             mHMEditedList.put("license_plate", sNewRegNo);
         }
 
-        if (!newBitmap.sameAs(mPreviousBitmap)) {
+        if (newBitmap != null && !newBitmap.sameAs(mPreviousBitmap)) {
             Bitmap bitmap = Bitmap.createScaledBitmap(((BitmapDrawable) ivPreview.getDrawable()).getBitmap(), 128, 128, true);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
@@ -600,12 +629,32 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         if (spinnerMake.getSelectedItem() != null && spinnerModel.getSelectedItem() != null) {
             final String sBrandName = spinnerMake.getSelectedItem().toString().trim();
             final String sModelName = spinnerModel.getSelectedItem().toString().trim();
+            String encodedBitmap = "";
 
             int brandID = db.getBrandIDFromString(sBrandName);
 
             int sModelPosition = spinnerModel.getSelectedItemPosition();
             int ModelID = db.getModelIDFromSelectedModelName(sBrandName, sModelPosition);
-            sharedPreferenceClass.setVehicleInfo(sBrandName + "," + brandID + "," + sModelPosition + "," + ModelID + "," + sModelName);
+
+            if (ivPreview.getDrawable() != null) {
+                Bitmap bitmap = ((BitmapDrawable) ivPreview.getDrawable()).getBitmap();
+                if (bitmap != null) {
+
+                    Bitmap resizeBitmap = Bitmap.createScaledBitmap(bitmap, 128, 128, true);
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    //bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
+                    resizeBitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
+                    byte[] byteArray = byteArrayOutputStream.toByteArray();
+                    encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                    //Bitmap bitmap = ((BitmapDrawable) ivPreview.getDrawable()).getBitmap();
+                    /*ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
+                    byte[] byteArray = byteArrayOutputStream.toByteArray();
+                    encodedBitmap = Base64.encodeToString(byteArray, Base64.DEFAULT);*/
+                }
+            }
+
+            sharedPreferenceClass.setVehicleInfo(sBrandName + "," + brandID + "," + sModelPosition + "," + ModelID + "," + sModelName + "," + encodedBitmap);
         }
         /*String sBrandName = spinnerMake.getSelectedItem().toString().trim();
         int brandID = db.getBrandIDFromString(sBrandName);

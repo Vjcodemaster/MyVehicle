@@ -885,21 +885,33 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
                 db.addDataToUserVehicle(new DataBaseHelper(vehicleID, sBrandName, brandID, sModelName, modelID, sLicensePlate, sEncodedDP, sModelYear));
 
-                String[] saInsuranceData = alModelArray.get(0);
-                String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
-                db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
+                if(alModelArray.get(0)!=null) {
+                    String[] saInsuranceData = alModelArray.get(0);
+                    String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
+                    db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
+                }
 
-                String[] saEmissionData = alModelArray.get(1);
-                String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
-                db.updateEmissionInfoByVehicleID(new DataBaseHelper(sJoinedEmissionInfo, Integer.valueOf(saEmissionData[0]), ""), Integer.valueOf(saEmissionData[6]));
+                if(alModelArray.get(1)!=null) {
+                    String[] saEmissionData = alModelArray.get(1);
+                    String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
+                    db.updateEmissionInfoByVehicleID(new DataBaseHelper(sJoinedEmissionInfo, Integer.valueOf(saEmissionData[0]), ""), Integer.valueOf(saEmissionData[6]));
+                }
 
-                String[] saRCFCData = alModelArray.get(2);
-                String sJoinedRCFCInfo = TextUtils.join(",", saRCFCData);
-                db.updateRCFCInfoByVehicleID(new DataBaseHelper(sJoinedRCFCInfo, Integer.valueOf(saRCFCData[0]), ""), Integer.valueOf(saRCFCData[5]));
+                if(alModelArray.get(2)!=null) {
+                    String[] saRCFCData = alModelArray.get(2);
+                    String sJoinedRCFCInfo = TextUtils.join(",", saRCFCData);
+                    db.updateRCFCInfoByVehicleID(new DataBaseHelper(sJoinedRCFCInfo, Integer.valueOf(saRCFCData[0]), ""), Integer.valueOf(saRCFCData[5]));
+                }
 
-                String[] saServiceData = alModelArray.get(3);
-                String sJoinedServiceInfo = TextUtils.join(",", saServiceData);
-                db.updateServiceInfoByVehicleID(new DataBaseHelper(sJoinedServiceInfo, Integer.valueOf(saServiceData[0]), ""), Integer.valueOf(saServiceData[7]));
+                if(alModelArray.get(3)!=null) {
+                    String[] saServiceData = alModelArray.get(3);
+                    String sJoinedServiceInfo = TextUtils.join(",", saServiceData);
+                    db.updateServiceInfoByVehicleID(new DataBaseHelper(sJoinedServiceInfo, Integer.valueOf(saServiceData[0]), ""), Integer.valueOf(saServiceData[7]));
+                }
+                sharedPreferenceClass.setAllHistoryDataToNull(null);
+                break;
+            case "SERVER_ERROR":
+                Toast.makeText(MainActivity.this,"Unable to contact server. Please try again later", Toast.LENGTH_LONG).show();
                 break;
         }
     }
