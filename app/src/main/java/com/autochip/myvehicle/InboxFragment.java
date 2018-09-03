@@ -3,11 +3,15 @@ package com.autochip.myvehicle;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import static app_utility.RemainderService.refOfService;
 
@@ -25,10 +29,14 @@ public class InboxFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private RecyclerView recyclerView;
+    public RemainderRVAdapter remainderRVAdapter;
+
     private String mParam1;
     private String mParam2;
 
-    ArrayList<String[]> alToNotify = new ArrayList<>();
+    //ArrayList<String[]> alToNotify = new ArrayList<>();
+    public LinkedHashMap<Integer, ArrayList<String>> lhmVehicleID = new LinkedHashMap<>();
 
     private OnFragmentInteractionListener mListener;
 
@@ -67,11 +75,22 @@ public class InboxFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_inbox, container, false);
         if(refOfService!=null && refOfService.remainderDataStorage!=null) {
-            alToNotify = refOfService.remainderDataStorage.alToNotify;
+            lhmVehicleID = refOfService.remainderDataStorage.lhmVehicleID;
             refOfService.stopSelf();
         }
-        return inflater.inflate(R.layout.fragment_inbox, container, false);
+        recyclerView = view.findViewById(R.id.rv_remainder_list);
+        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(mLinearLayoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        recyclerView.setHasFixedSize(true);
+
+        remainderRVAdapter = new RemainderRVAdapter(getActivity(), recyclerView, lhmVehicleID);
+        recyclerView.setAdapter(remainderRVAdapter);
+
+        return view;
     }
 
 

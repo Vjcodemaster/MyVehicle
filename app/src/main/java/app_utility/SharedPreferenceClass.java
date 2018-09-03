@@ -52,6 +52,8 @@ public class SharedPreferenceClass {
 
     private static final String EDIT_MODE = "EDIT_MODE";
 
+    private static final String IS_FROM_NOTIFICATION = "FROM_NOTIFICATION";
+
     // Constructor
     public SharedPreferenceClass(Context context) {
         this._context = context;
@@ -61,7 +63,7 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
-    public void setFetchedBrandsFromOdooFirstTime(boolean isFetched){
+    public void setFetchedBrandsFromOdooFirstTime(boolean isFetched) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();
@@ -73,7 +75,7 @@ public class SharedPreferenceClass {
         return sharedPreferences.getBoolean(IS_BRAND_FETCHED_FROM_ODOO, false);
     }
 
-    public void setInsuranceData(String sInsurance){
+    public void setInsuranceData(String sInsurance) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();
@@ -85,7 +87,7 @@ public class SharedPreferenceClass {
         return sharedPreferences.getString(INSURANCE_DATA, null);
     }
 
-    public void setEmissionData(String sEmission){
+    public void setEmissionData(String sEmission) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();
@@ -97,7 +99,7 @@ public class SharedPreferenceClass {
         return sharedPreferences.getString(EMISSION_DATA, null);
     }
 
-    public void setRcfcData(String sRcfc){
+    public void setRcfcData(String sRcfc) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();
@@ -109,7 +111,7 @@ public class SharedPreferenceClass {
         return sharedPreferences.getString(RCFC_DATA, null);
     }
 
-    public void setServiceData(String sService){
+    public void setServiceData(String sService) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();
@@ -121,7 +123,7 @@ public class SharedPreferenceClass {
         return sharedPreferences.getString(SERVICE_DATA, null);
     }
 
-    public void setVehicleInfo(String sVehicleInfo){
+    public void setVehicleInfo(String sVehicleInfo) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();
@@ -130,7 +132,7 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
-    public void setAllVehicleInfoToNull(String sVehicleInfo, String sInsurance, String sEmission){
+    public void setAllVehicleInfoToNull(String sVehicleInfo, String sInsurance, String sEmission) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();
@@ -141,12 +143,12 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
-    public String getVehicleInfo(){
+    public String getVehicleInfo() {
         return sharedPreferences.getString(VEHICLE_INFO, null);
     }
 
 
-    public void setEditMode(boolean isEditMode){
+    public void setEditMode(boolean isEditMode) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();
@@ -154,12 +156,23 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
-    public boolean getEditModeStatus()
-    {
+    public boolean getEditModeStatus() {
         return sharedPreferences.getBoolean(EDIT_MODE, false);
     }
 
-    public void setUserLogStatus(boolean isLoggedIn, String name, String number){
+    public void setIsFromNotification(boolean isFromNotification) {
+        SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
+        SharedPreferences.Editor editor;
+        editor = sharedPreferences.edit();
+        editor.putBoolean(IS_FROM_NOTIFICATION, isFromNotification);
+        editor.apply();
+    }
+
+    public boolean getIsFromNotification() {
+        return sharedPreferences.getBoolean(IS_FROM_NOTIFICATION, false);
+    }
+
+    public void setUserLogStatus(boolean isLoggedIn, String name, String number) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();
@@ -173,15 +186,15 @@ public class SharedPreferenceClass {
         return sharedPreferences.getBoolean(IS_LOGGED_IN, false);
     }
 
-    public String getUserName(){
+    public String getUserName() {
         return sharedPreferences.getString(USER_NAME, "");
     }
 
-    public String getUserID(){
+    public String getUserID() {
         return sharedPreferences.getString(USER_PHONE_NO, "");
     }
 
-    public void setIfUserIsTraceable(boolean isTraceable){
+    public void setIfUserIsTraceable(boolean isTraceable) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();
@@ -189,7 +202,7 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
-    public void setUserType(int userType){
+    public void setUserType(int userType) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();
@@ -197,7 +210,7 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
-    public int getUserType(){
+    public int getUserType() {
         return sharedPreferences.getInt(USER_TYPE, 1);
     }
 
@@ -205,13 +218,13 @@ public class SharedPreferenceClass {
         return sharedPreferences.getBoolean(IS_TRACEABLE, false);
     }
 
-    public void setUserList(ArrayList<String> alUsers, ArrayList<String> alNames, ArrayList<String> alAdminPermissionList){
+    public void setUserList(ArrayList<String> alUsers, ArrayList<String> alNames, ArrayList<String> alAdminPermissionList) {
         Set<String> set = new LinkedHashSet<>(alUsers);
         Set<String> setName = new LinkedHashSet<>(alNames);
 
         StringBuilder sb = new StringBuilder(alAdminPermissionList.size());
         String sPermissionList;
-        for(int i=0; i<alAdminPermissionList.size(); i++){
+        for (int i = 0; i < alAdminPermissionList.size(); i++) {
             sb.append(alAdminPermissionList.get(i));
             sb.append(",");
         }
@@ -226,16 +239,16 @@ public class SharedPreferenceClass {
         editor.apply();
     }
 
-    public Set<String> getUserList(){
+    public Set<String> getUserList() {
         return sharedPreferences.getStringSet(USER_LIST, null);
     }
 
-    public Set<String> getNamesList(){
+    public Set<String> getNamesList() {
         return sharedPreferences.getStringSet(USER_LIST_NAME, null);
     }
 
-    public ArrayList<String> getAdminPermissionList(){
-        if(sharedPreferences.getString(ADMIN_PERMISSION_LIST, null)!=null) {
+    public ArrayList<String> getAdminPermissionList() {
+        if (sharedPreferences.getString(ADMIN_PERMISSION_LIST, null) != null) {
             String[] s = Objects.requireNonNull(sharedPreferences.getString(ADMIN_PERMISSION_LIST, null)).split(",");
             return new ArrayList<>(Arrays.asList(s));
         }
@@ -243,7 +256,7 @@ public class SharedPreferenceClass {
     }
 
     //only for xiaomi devices
-    public void setUserAutoStartPermission(boolean isGranted){
+    public void setUserAutoStartPermission(boolean isGranted) {
         SharedPreferences sharedPreferences = _context.getSharedPreferences(APP_PREFERENCES, PRIVATE_MODE);
         SharedPreferences.Editor editor;
         editor = sharedPreferences.edit();

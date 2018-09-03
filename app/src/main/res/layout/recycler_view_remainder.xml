@@ -1,142 +1,255 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/cv_parent"
-    android:background="@android:color/white">
+    android:layout_margin="5dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardBackgroundColor="#E6FFFFFF"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="8dp"
+    app:contentPadding="5dp">
 
-    <LinearLayout
-        android:id="@+id/ll_parent_expand"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="10dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:layout_marginBottom="5dp"
-        android:layout_marginEnd="10dp"
-        android:clickable="true"
-        android:focusable="true"
         android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="Vehicle Info"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@color/secondaryText"
+                android:textStyle="bold" />
+
+            <!--android:drawablePadding="10dp"
+            android:drawableStart="@android:drawable/ic_menu_sort_by_size"-->
+            <ImageButton
+                android:id="@+id/ib_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginEnd="5dp"
+                android:layout_toStartOf="@+id/ib_close"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/app_name"
+                android:src="@android:drawable/ic_menu_edit" />
+
+            <ImageButton
+                android:id="@+id/ib_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/app_name"
+                android:src="@android:drawable/ic_menu_close_clear_cancel" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@android:color/darker_gray" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginEnd="10dp"
+                android:gravity="center"
                 android:orientation="vertical">
 
                 <app_utility.CircleImageView
-                    android:id="@+id/rv_my_vehicle_list_avatar"
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginStart="12dp"/>
+                    android:id="@+id/civ_dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="5dp" />
+
+                <TextView
+                    android:id="@+id/tv_brand_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Insurance"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/colorAccent" />
+
+                <TextView
+                    android:id="@+id/tv_model_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Insurance"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/colorAccent" />
 
             </LinearLayout>
 
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:gravity="end"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_make_model_rv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
                     android:gravity="center"
-                    android:textAppearance="?android:textAppearanceSmall"
-                    android:textColor="@color/secondaryText"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_reg_no_rv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textAppearance="?android:textAppearanceSmall"
+                    android:text="Reg No"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
                     android:textColor="@color/secondaryText" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:text="YOM"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/secondaryText" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/tv_insurance_expiry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:text="Insurance Exp."
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/secondaryText" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/tv_emission_expiry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:text="Emission Exp."
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/secondaryText" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/tv_service_due"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:text="Service Date"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/secondaryText" />
 
             </LinearLayout>
 
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="end"
+                android:gravity="start"
                 android:orientation="vertical">
 
-
-                <TextView
-                    android:id="@+id/tv_yom_rv"
+                <!--<TextView
+                    android:id="@+id/tv_4_wheeler"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:textAppearance="?android:textAppearanceSmall"
-                    android:textColor="@color/secondaryText" />
+                    android:layout_margin="10dp"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:text="Car"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/secondaryText" />-->
+
+                <TextView
+                    android:id="@+id/tv_license_plate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:text="Insurance"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/colorAccent" />
+
+                <TextView
+                    android:id="@+id/tv_yom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:text="Insurance"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/colorAccent" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/tv_insurance_expiry_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:text="24/11/2018"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/colorAccent" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/tv_emission_expiry_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:text="05/09/2018"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/colorAccent" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/tv_service_due_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:text="18/03/2018"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/colorAccent" />
 
 
+                <!--<LinearLayout
+                    android:id="@+id/ll_filter_dynamic_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp">
 
+                </LinearLayout>-->
             </LinearLayout>
         </LinearLayout>
 
-        <!--<net.cachapa.expandablelayout.ExpandableLayout
-            android:id="@+id/rv_admin_expandable_layout"
-            android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:layout_marginTop="5dp"
-            android:background="@color/colorPrimaryDark"
-            app:el_duration="300"
-            app:el_expanded="false">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp">
-
-                <Button
-                    android:id="@+id/btn_edit"
-                    style="@style/Widget.AppCompat.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:background="@drawable/cornered_button"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:text="@string/edit"
-                    android:textAllCaps="false"
-                    android:layout_marginEnd="2dp"
-                    android:textAppearance="?android:textAppearanceSmall"
-                    android:textColor="@android:color/white" />
-
-                <Button
-                    android:id="@+id/btn_remove"
-                    style="@style/Widget.AppCompat.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_marginStart="2dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:background="@drawable/cornered_button"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:text="@string/remove"
-                    android:textAllCaps="false"
-                    android:textAppearance="?android:textAppearanceSmall"
-                    android:textColor="@android:color/white" />
-
-            </LinearLayout>
-
-
-            &lt;!&ndash;<TextView
-                android:id="@+id/tv_track"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="Content"
-                android:textColor="@color/primaryText" />&ndash;&gt;
-
-        </net.cachapa.expandablelayout.ExpandableLayout>-->
     </LinearLayout>
 </android.support.v7.widget.CardView>

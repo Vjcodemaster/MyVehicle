@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -46,7 +47,6 @@ public class RemainderService extends Service implements AsyncInterface {
     NotificationCompat.InboxStyle inboxStyle;
 
     AsyncInterface asyncInterface;
-
 
 
     Timer timer = new Timer();
@@ -156,7 +156,9 @@ public class RemainderService extends Service implements AsyncInterface {
         ArrayList<String> alModelName = new ArrayList<>();
         ArrayList<ArrayList<String>> alExpiryDate = new ArrayList<>();
         ArrayList<ArrayList<String>> alRemainderDate = new ArrayList<>();
-
+        ArrayList<String> alDisplayPicture = new ArrayList<>();
+        ArrayList<String> alLicensePlate = new ArrayList<>();
+        ArrayList<String> alModelYear = new ArrayList<>();
 
         alDBData = new ArrayList<>(db.getAllVehicleID());
 
@@ -218,6 +220,9 @@ public class RemainderService extends Service implements AsyncInterface {
                 alVehicleID.add(alDBData.get(i).get_vehicle_id());
                 alVehicleBrand.add(alDBData.get(i).get_brand_name());
                 alModelName.add(alDBData.get(i).get_model_name());
+                alDisplayPicture.add(alDBData.get(i).get_image_base64());
+                alLicensePlate.add(alDBData.get(i).get_license_plate());
+                alModelYear.add(alDBData.get(i).get_model_year());
                 alRemainderDate.add(alAllData);
             }
         }
@@ -238,19 +243,45 @@ public class RemainderService extends Service implements AsyncInterface {
                     //current object is greater than other object and zero if both objects are equal to each other.
                     //getCurrentDateTime: 05/23/2016 18:49 PM
                     if (getCurrentDateTime.compareTo(getMyTime) == 2) {
-                        String[] saNotify = new String[5];
+                        //if(remainderDataStorage.lhmVehicleID.containsKey(alVehicleID.get(j))){
+                        //}
+                        ArrayList<String> alTmp;
+                        StringBuilder sb = new StringBuilder();
+                        alTmp = remainderDataStorage.lhmVehicleID.get(alVehicleID.get(j));
+                        if (alTmp != null && alTmp.size() >= 4) {
+                            sb.append(String.valueOf(alSwitchCase.get(k))).append(",").append(alExpiryDate.get(j).get(k));
+                            alTmp.add(sb.toString());
+                        } else {
+                            alTmp = new ArrayList<>();
+                            alTmp.add(alVehicleID.get(j).toString());
+                            alTmp.add(alVehicleBrand.get(j));
+                            alTmp.add(alModelName.get(j));
+                            if (alDisplayPicture.get(j) != null)
+                                alTmp.add(alDisplayPicture.get(j));
+                            else
+                                alTmp.add("");
+                            alTmp.add(alLicensePlate.get(j));
+                            alTmp.add(alModelYear.get(j));
+                            sb.append(String.valueOf(alSwitchCase.get(k))).append(",").append(alExpiryDate.get(j).get(k));
+                            alTmp.add(sb.toString());
+                            //alTmp.add(alExpiryDate.get(j).get(k));
+                            //alTmp.add(String.valueOf(alSwitchCase.get(k)));
+                        }
+                        remainderDataStorage.lhmVehicleID.put(alVehicleID.get(j), alTmp);
+
+                        /*String[] saNotify = new String[5];
                         saNotify[0] = String.valueOf(alSwitchCase.get(k));
                         saNotify[1] = alVehicleID.get(j).toString();
                         saNotify[2] = alVehicleBrand.get(j);
                         saNotify[3] = alModelName.get(j);
                         saNotify[4] = alExpiryDate.get(j).get(k);
-
-                        remainderDataStorage.alToNotify.add(saNotify);
+                        remainderDataStorage.alToNotify.add(saNotify);*/
                     }
                 }
             }
         }
-        if(remainderDataStorage.alToNotify.size()>=1){
+        //remainderDataStorage.alToNotify.size() >= 1
+        if (remainderDataStorage.lhmVehicleID.size() >= 1) {
             notifyUser();
         }
         //Log.d("Return","getMyTime older than getCurrentDateTime ");
@@ -361,7 +392,10 @@ public class RemainderService extends Service implements AsyncInterface {
 
     }
 
-    public class RemainderDataStorage{
-        public ArrayList<String[]> alToNotify = new ArrayList<>();
+    public class RemainderDataStorage {
+        //public ArrayList<String[]> alToNotify = new ArrayList<>();
+
+        public LinkedHashMap<Integer, ArrayList<String>> lhmVehicleID = new LinkedHashMap<>();
+
     }
 }

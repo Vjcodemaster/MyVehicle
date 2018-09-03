@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 import app_utility.AsyncInterface;
 import app_utility.BitmapBase64;
@@ -132,12 +133,12 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         init();
 
-        final Intent intent = getIntent();
-        if(intent!=null){
+        if(sharedPreferenceClass.getIsFromNotification()){
             openInboxFragment();
-            //String[] saData = bundle.getStringArray("SA");
+            tvSubtitle.setVisibility(View.VISIBLE);
+            tvSubtitle.setText(R.string.title_inbox);
+            sharedPreferenceClass.setIsFromNotification(false);
         }
-
 
         /*myVehicleTrackingRVAdapter = new MyVehicleTrackingRVAdapter(MainActivity.this, recyclerView, alMakeModel, alRegNo, alYearOfManufacture);
         recyclerView.setAdapter(myVehicleTrackingRVAdapter);*/
@@ -182,9 +183,6 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 startService(in);
             }
         }
-
-        /*myVehicleAsyncTask = new MyVehicleAsyncTask(MainActivity.this);
-        myVehicleAsyncTask.execute(String.valueOf(3), "");*/
     }
 
     void init() {
@@ -275,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
         recyclerView.setHasFixedSize(true);
     }
 
-    private void openInboxFragment(){
+    private void openInboxFragment() {
         Fragment newFragment;
         //Bundle bundle = new Bundle();
         //bundle.putInt("index", 0);
