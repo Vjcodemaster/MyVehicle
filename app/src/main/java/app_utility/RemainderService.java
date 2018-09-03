@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -357,7 +356,7 @@ public class RemainderService extends Service implements AsyncInterface {
                 //.addAction(R.drawable.download, "Decline", declinePI)
                 .setContentIntent(acceptPI)
                 //.setContentIntent(declinePI)
-                .setOnlyAlertOnce(true)
+                //.setOnlyAlertOnce(true)
                 .setAutoCancel(true)
                 .setPriority(Notification.PRIORITY_MAX);
         // Allows notification to be cancelled when user clicks it

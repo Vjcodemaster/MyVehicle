@@ -31,6 +31,7 @@ public class MyVehicleBroadCastReceiver extends BroadcastReceiver {
                 /*Bundle extras = intent.getExtras();
                 String[] saData = extras.getStringArray("SA");*/
                 Intent inMain = new Intent(context, MainActivity.class);
+                inMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 context.startActivity(inMain);
                 //TrackingService.refOfService.acceptListener();
                 break;

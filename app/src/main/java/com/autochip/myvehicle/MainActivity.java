@@ -8,11 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -49,6 +52,7 @@ import app_utility.CircleImageView;
 import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
+import app_utility.RemainderService;
 import app_utility.SharedPreferenceClass;
 import dialogs.DialogMultiple;
 
@@ -133,10 +137,12 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         init();
 
-        if(sharedPreferenceClass.getIsFromNotification()){
-            openInboxFragment();
+        if (sharedPreferenceClass.getIsFromNotification()) {
             tvSubtitle.setVisibility(View.VISIBLE);
             tvSubtitle.setText(R.string.title_inbox);
+            if (menu != null)
+                menu.getItem(R.id.action_add).setVisible(false);
+            openInboxFragment();
             sharedPreferenceClass.setIsFromNotification(false);
         }
 
@@ -175,14 +181,29 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
             recyclerView.setAdapter(myVehicleTrackingRVAdapter);
         }
 
-        if (!isMyServiceRunning(app_utility.RemainderService.class)) {
-            Intent in = new Intent(MainActivity.this, app_utility.RemainderService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(in);
-            } else {
-                startService(in);
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                Intent in = new Intent(MainActivity.this, app_utility.RemainderService.class);
+                if (!isMyServiceRunning(app_utility.RemainderService.class)) {
+                    //Intent in = new Intent(MainActivity.this, app_utility.RemainderService.class);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(in);
+                    } else {
+                        startService(in);
+                    }
+                } else {
+                    RemainderService.refOfService.stopSelf();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(in);
+                    } else {
+                        startService(in);
+                    }
+                }
             }
-        }
+        }, 10000);
+
+
+
     }
 
     void init() {
