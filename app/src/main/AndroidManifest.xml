@@ -22,7 +22,7 @@
         </activity>
 
         <service
-            android:name="app_utility.RemainderService"
+            android:name="app_utility.ReminderService"
             android:enabled="true"
             android:exported="false">
             <intent-filter android:label="@string/service_name">

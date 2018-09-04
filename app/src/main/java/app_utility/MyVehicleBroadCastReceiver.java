@@ -3,7 +3,6 @@ package app_utility;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import com.autochip.myvehicle.MainActivity;
 
@@ -18,7 +17,7 @@ public class MyVehicleBroadCastReceiver extends BroadcastReceiver {
         switch(in)
         {
             case "android.intent.action.BOOT_COMPLETED":
-                service = new Intent(context, RemainderService.class);
+                service = new Intent(context, ReminderService.class);
                 context.startService(service);
                 break;
             /*case "app_utility.TrackingService.ServiceStopped":

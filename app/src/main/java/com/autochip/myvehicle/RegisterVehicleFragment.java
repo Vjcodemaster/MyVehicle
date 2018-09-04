@@ -17,7 +17,9 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +45,8 @@ import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
 import app_utility.SharedPreferenceClass;
 
+import static app_utility.StaticReferenceClass.COLOR_ACCENT;
+import static app_utility.StaticReferenceClass.COLOR_GREY;
 import static app_utility.StaticReferenceClass.MODEL_EMISSION_HISTORY;
 import static app_utility.StaticReferenceClass.MODEL_INSURANCE_HISTORY;
 import static app_utility.StaticReferenceClass.MODEL_OWNER_HISTORY;
@@ -226,6 +230,60 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
                 //Toast.makeText(getActivity(), "left", Toast.LENGTH_SHORT).show();
             }
         });*/
+        etRegNo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                validateAllData();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+
+        etRegNo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b && isVisibleToUser) {
+                    String sRegNo = etRegNo.getText().toString().trim();
+                    if (sRegNo.length() <= 11)
+                        Toast.makeText(getActivity(), "Invalid Register Number", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        etYOM.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                validateAllData();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        etYOM.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b && isVisibleToUser) {
+                    String sRegNo = etYOM.getText().toString().trim();
+                    if (sRegNo.length() < 4)
+                        Toast.makeText(getActivity(), "Invalid Year", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         spinnerVehicle = view.findViewById(R.id.spinner_vehicle);
         adapterVehicle = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, getResources()
@@ -243,6 +301,7 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         adapterModel = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, alModel);
         adapterModel.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerModel.setAdapter(adapterModel);
+
 
         try {
             @SuppressLint("ResourceType") XmlResourceParser parser = getResources().getXml(R.drawable.eee);
@@ -330,6 +389,19 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
     }
 
     private void prepareToCreate() {
+
+        String sRegNo = etRegNo.getText().toString().trim();
+        if (sRegNo.length() <= 11) {
+            Toast.makeText(getActivity(), "Invalid Register number", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String sYOM = etYOM.getText().toString().trim();
+        if (sYOM.length() != 4) {
+            Toast.makeText(getActivity(), "Invalid Year", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String[] saVehicleInfo;
         String sBrandName;
         int brandID;
@@ -397,11 +469,9 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
             alOne2Many.add(MODEL_SERVICE_HISTORY);
         }
 
-        String sRegNo = etRegNo.getText().toString().trim();
-
 
         //((BitmapDrawable) ivPreview.getDrawable()).getBitmap() == null
-        if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(etYOM.getText().toString().trim()) || bitmap == null) {
+        if (TextUtils.isEmpty(sRegNo) || TextUtils.isEmpty(sYOM) || bitmap == null) {
             Toast.makeText(getActivity(), "Please fill all information including image", Toast.LENGTH_SHORT).show();
             saveOnDetachFlag = 1;
             sharedPreferenceClass.setVehicleInfo(null);
@@ -758,7 +828,25 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         switch (sMessage) {
             case "SET_BITMAP":
                 ivPreview.setImageBitmap(bitmap);
+                validateAllData();
                 break;
+        }
+    }
+
+    private void validateAllData() {
+        String sRegNo = etRegNo.getText().toString().trim();
+        String sYOM = etYOM.getText().toString().trim();
+        Bitmap bitmap = null;
+        if (ivPreview.getDrawable() != null)
+            bitmap = ((BitmapDrawable) ivPreview.getDrawable()).getBitmap();
+       /* if (sRegNo.length() <= 11) {
+            Toast.makeText(getActivity(), "Invalid Register Number", Toast.LENGTH_SHORT).show();
+            return;
+        }*/
+        if (!TextUtils.isEmpty(sRegNo) && !TextUtils.isEmpty(sYOM) && sYOM.length() == 4 && bitmap != null) {
+            MainActivity.homeInterfaceListener.onHomeCalled("CHANGE_UPDATE_BUTTON_COLOR", COLOR_ACCENT, "", null);
+        } else {
+            MainActivity.homeInterfaceListener.onHomeCalled("CHANGE_UPDATE_BUTTON_COLOR", COLOR_GREY, "", null);
         }
     }
 }

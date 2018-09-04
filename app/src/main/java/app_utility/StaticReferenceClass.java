@@ -37,5 +37,11 @@ public class StaticReferenceClass {
 
     public static final int REGISTER_IMAGE_REQUEST_CODE = 9101;
 
+    public static final int COLOR_GREY = 9201;
+
+    public static final int COLOR_ACCENT = 9202;
+
+    public static final int NETWORK_ERROR_CODE = 9301;
+
 }
 

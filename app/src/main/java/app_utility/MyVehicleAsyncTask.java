@@ -18,22 +18,13 @@ import android.widget.Toast;
 import com.autochip.myvehicle.CircularProgressBar;
 import com.autochip.myvehicle.MainActivity;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import static android.content.ContentValues.TAG;
 import static app_utility.StaticReferenceClass.DB_NAME;
 import static app_utility.StaticReferenceClass.MODEL_EMISSION_FIELDS;
 import static app_utility.StaticReferenceClass.MODEL_EMISSION_HISTORY;
@@ -43,6 +34,7 @@ import static app_utility.StaticReferenceClass.MODEL_OWNER_FIELDS;
 import static app_utility.StaticReferenceClass.MODEL_OWNER_HISTORY;
 import static app_utility.StaticReferenceClass.MODEL_SERVICE_FIELDS;
 import static app_utility.StaticReferenceClass.MODEL_SERVICE_HISTORY;
+import static app_utility.StaticReferenceClass.NETWORK_ERROR_CODE;
 import static app_utility.StaticReferenceClass.PASSWORD;
 import static app_utility.StaticReferenceClass.PORT_NO;
 import static app_utility.StaticReferenceClass.SERVER_URL;
@@ -98,8 +90,10 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
     private ArrayList<String> alOne2ManyModelNames;
     private ArrayList<String> alModelNamesToFetch;
 
-    private ArrayList<String[]> alInsuranceHistory = new ArrayList<>();
-    private ArrayList<String[]> alEmissionHistory = new ArrayList<>();
+    //private ArrayList<String[]> alInsuranceHistory = new ArrayList<>();
+    //private ArrayList<String[]> alEmissionHistory = new ArrayList<>();
+
+    private int ERROR_CODE = 0;
 
     public MyVehicleAsyncTask(Activity aActivity) {
         this.aActivity = aActivity;
@@ -161,7 +155,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 readTask();
                 break;
             case 4:
-                snapRoadTask(params[1]);
+                //snapRoadTask(params[1]);
                 break;
             case 5:
                 createTask();
@@ -206,6 +200,15 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         JSONArray jsonArrayLegs;
         JSONObject jsonExtract;
         JSONObject jsonResponse;*/
+        if (ERROR_CODE != 0) {
+            switch (ERROR_CODE) {
+                case NETWORK_ERROR_CODE:
+                    unableToConnectServer(ERROR_CODE);
+                    break;
+            }
+            ERROR_CODE = 0;
+            return;
+        }
         switch (type) {
             case 1:
                 if (isConnected) {
@@ -244,7 +247,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             case 5:
                 ArrayList<String[]> alModelArray = new ArrayList<>();
 
-                if(InsuranceData!=null && !InsuranceData.equals("")) {
+                if (InsuranceData != null && !InsuranceData.equals("")) {
                     String[] saInsuranceData = new String[8];
                     saInsuranceData[0] = iaOne2ManyID[0].toString();
                     saInsuranceData[1] = InsuranceData.split(",")[0];
@@ -260,7 +263,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 }
                 //String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
                 //db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
-                if(EmissionData!=null && !EmissionData.equals("")) {
+                if (EmissionData != null && !EmissionData.equals("")) {
                     String[] saEmissionData = new String[7];
                     saEmissionData[0] = iaOne2ManyID[1].toString();
                     saEmissionData[1] = EmissionData.split(",")[0];
@@ -270,11 +273,11 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     saEmissionData[5] = EmissionData.split(",")[4];
                     saEmissionData[6] = String.valueOf(createdId);
                     alModelArray.add(saEmissionData);
-                }else {
+                } else {
                     alModelArray.add(null);
                 }
 
-                if(RCFCData!=null && !RCFCData.equals("")) {
+                if (RCFCData != null && !RCFCData.equals("")) {
                     String[] saRCFCData = new String[6];
                     saRCFCData[0] = iaOne2ManyID[2].toString();
                     saRCFCData[1] = RCFCData.split(",")[0];
@@ -283,11 +286,11 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     saRCFCData[4] = RCFCData.split(",")[3];
                     saRCFCData[5] = String.valueOf(createdId);
                     alModelArray.add(saRCFCData);
-                }else {
+                } else {
                     alModelArray.add(null);
                 }
 
-                if(ServiceData!=null && !ServiceData.equals("")) {
+                if (ServiceData != null && !ServiceData.equals("")) {
                     String[] saServiceData = new String[8];
                     saServiceData[0] = iaOne2ManyID[3].toString();
                     saServiceData[1] = ServiceData.split(",")[0];
@@ -298,7 +301,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     saServiceData[6] = ServiceData.split(",")[5];
                     saServiceData[7] = String.valueOf(createdId);
                     alModelArray.add(saServiceData);
-                }else {
+                } else {
                     alModelArray.add(null);
                 }
                 //String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
@@ -342,7 +345,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 sMsgResult = "Connection error";
             }
         } catch (Exception ex) {
-            unableToConnectServer();
+            ERROR_CODE = NETWORK_ERROR_CODE;
             // Any other exception
             sMsgResult = "Error: " + ex;
         }
@@ -504,6 +507,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             createOne2Many(alOne2ManyModelNames, "insurance.history", idC);
 
         } catch (Exception e) {
+            ERROR_CODE = NETWORK_ERROR_CODE;
+            //Toast.makeText(context, "Unable to contact server, please try again later", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
@@ -597,6 +602,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                 iaOne2ManyID[3] = one2ManyService;
             }
         } catch (Exception e) {
+            ERROR_CODE = NETWORK_ERROR_CODE;
             e.printStackTrace();
         }
         //return one2Many;
@@ -735,7 +741,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     //slightly modified for tab because this is acting weird with yureka and lenovo tablet
                     if (!saInsuranceData[6].equals("") && data.get(i).containsKey("vender_name_no")) {
                         saInsuranceData[7] = data.get(i).get("vender_name_no").toString();
-                        alInsuranceHistory.add(saInsuranceData);
+                        //alInsuranceHistory.add(saInsuranceData);
                         String sJoinedInsuranceInfo = TextUtils.join(",", saInsuranceData);
                         db.updateInsuranceInfoByVehicleID(new DataBaseHelper(sJoinedInsuranceInfo, Integer.valueOf(saInsuranceData[0])), Integer.valueOf(saInsuranceData[6]));
                     } else {
@@ -767,14 +773,14 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                         saEmissionData[6] = "";
                     }
                     if (!saEmissionData[6].equals("")) {
-                        alEmissionHistory.add(saEmissionData);
+                        //alEmissionHistory.add(saEmissionData);
                         String sJoinedEmissionInfo = TextUtils.join(",", saEmissionData);
                         db.updateEmissionInfoByVehicleID(new DataBaseHelper(sJoinedEmissionInfo, Integer.valueOf(saEmissionData[0]), ""), Integer.valueOf(saEmissionData[6]));
                     }
                     break;
                 case MODEL_OWNER_HISTORY:
                     if (data.get(i).get("id").toString() != null && !data.get(i).get("vehicle_id").toString().equals("false") &&
-                    !data.get(i).get("custmer_name").toString().equals("false")) {
+                            !data.get(i).get("custmer_name").toString().equals("false")) {
                         String[] saRCFCData = new String[7];
 
                         saRCFCData[0] = data.get(i).get("id").toString();
@@ -795,7 +801,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
                     }
                     break;
                 case MODEL_SERVICE_HISTORY:
-                    if (data.get(i).get("id").toString() != null  && !data.get(i).get("vehicle_id").toString().equals("false")) {
+                    if (data.get(i).get("id").toString() != null && !data.get(i).get("vehicle_id").toString().equals("false")) {
                         String[] saServiceData = new String[8];
 
                         saServiceData[0] = data.get(i).get("id").toString();
@@ -847,6 +853,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             Log.e("Update result", msgResult);
         } catch (Exception ex) {
             //msgResult = "Error: " + ex;
+            ERROR_CODE = NETWORK_ERROR_CODE;
             Log.e("Updating error", ex.toString());
         }
     }
@@ -895,6 +902,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             Log.e("Update result", msgResult);
         } catch (Exception ex) {
             //msgResult = "Error: " + ex;
+            ERROR_CODE = NETWORK_ERROR_CODE;
             Log.e("Updating error", ex.toString());
         }
     }
@@ -973,7 +981,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         //dLongitude = Double.valueOf(sLatLng[1]);
     }*/
 
-    private String snapRoadTask(String uri) {
+    /*private String snapRoadTask(String uri) {
         HttpsURLConnection urlConnection;
         String result;
         Reader rd = null;
@@ -982,8 +990,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         try {
             URL url = new URL(uri);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setReadTimeout(10000 /* milliseconds */);
-            con.setConnectTimeout(15000 /* milliseconds */);
+            con.setReadTimeout(10000 *//* milliseconds *//*);
+            con.setConnectTimeout(15000 *//* milliseconds *//*);
             con.connect();
             if (con.getResponseCode() == 200) {
 
@@ -1011,9 +1019,9 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
             }
         }
         return res;
-    }
+    }*/
 
-    public void delete(int id) {
+    private void delete(int id) {
         OdooConnect oc = OdooConnect.connect(SERVER_URL, PORT_NO, DB_NAME, USER_ID, PASSWORD);
         //Boolean idC = oc.unlink("web.service.child", new Object[]{id});
         Boolean idC = oc.unlink("fleet.vehicle", new Object[]{id});
@@ -1101,8 +1109,8 @@ public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
         circularProgressBar.show();
     }
 
-    private void unableToConnectServer(){
-        MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("SERVER_ERROR", 2001, 2001, "", null);
+    private void unableToConnectServer(int errorCode) {
+        MainActivity.asyncInterface.onAsyncTaskCompleteGeneral("SERVER_ERROR", 2001, errorCode, "", null);
     }
 
     /*private void createOne2Many(String Model, final int ID) {

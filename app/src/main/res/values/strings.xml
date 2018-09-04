@@ -38,7 +38,7 @@
         <item>Vendor Name</item>
         <item>Insurance Start Date</item>
         <item>Insurance End Date</item>
-        <item>Remainder Date</item>
+        <item>Reminder Date</item>
     </string-array>
 
     <string-array name="emission_array">
@@ -47,7 +47,7 @@
         <item>Agency Name</item>
         <item>Emission Start Date</item>
         <item>Emission End Date</item>
-        <item>Remainder Date</item>
+        <item>Reminder Date</item>
     </string-array>
 
     <string-array name="rc_fc_array">
@@ -65,7 +65,7 @@
         <item>Mileage</item>
         <item>Date :</item>
         <item>Next Service Date:</item>
-        <item>Remainder Date :</item>
+        <item>Reminder Date :</item>
     </string-array>
 
     <string name="customer_name">Customer Name</string>
@@ -73,10 +73,10 @@
     <string name="mobile">Mobile</string>
     <string name="date">Date of Ownership</string>
 
-    <string name="remainder_date">Remainder Date</string>
+    <string name="reminder_date">Reminder Date</string>
     <string name="next_due">Next Service Due</string>
     <string name="service_type">Service Type</string>
     <string name="mileage">Mileage</string>
 
-    <string name="service_name">Remainder Service</string>
+    <string name="service_name">Reminder Service</string>
 </resources>

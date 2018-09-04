@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
@@ -31,7 +30,6 @@ import com.autochip.myvehicle.OnImageUtilsListener;
 import com.autochip.myvehicle.R;
 import com.autochip.myvehicle.RCFCFragment;
 import com.autochip.myvehicle.ServiceHistoryFragment;
-import com.bumptech.glide.load.engine.Resource;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -48,26 +46,22 @@ import static com.autochip.myvehicle.MainActivity.PICTURE_REQUEST_CODE;
 
 public class DialogMultiple implements OnImageUtilsListener {
     private Activity aActivity;
-    private File sdImageMainDirectory;
 
     public static OnImageUtilsListener mListener;
 
-    DialogDataStorage dataStorage;
+    private DialogDataStorage dataStorage;
 
     private OnImageUtilsListener onImageUtilsListener;
 
     public Dialog dialog;
-    private Button btnDone;
     public TextView tvStartDateValue, tvExpiryDateValue, tvRemainderDateValue;
     public TextView tvTitle;
     //EditText etCustomOne, etCustomTwo, etCustomThree;
     public TextInputLayout etCustomOne, etCustomTwo, etCustomThree;
-    public LinearLayout llDate, llDateValue;
+    private LinearLayout llDate;
+    public LinearLayout llDateValue;
     private final Calendar myCalendar = Calendar.getInstance();
-    private Uri outputFileUri;
-    private ImageView ivPreview, ibClose;
-
-    SharedPreferenceClass sharedPreferenceClass;
+    private ImageView ivPreview;
 
     TextView tvStartDate;
     TextView tvExpiryDate;
@@ -90,7 +84,7 @@ public class DialogMultiple implements OnImageUtilsListener {
         dialog.setContentView(R.layout.dialog_add_allinone);
         dialog.setCancelable(true);
 
-        ibClose = dialog.findViewById(R.id.ib_close);
+        ImageView ibClose = dialog.findViewById(R.id.ib_close);
         ivPreview = dialog.findViewById(R.id.iv_preview);
 
         etCustomOne = dialog.findViewById(R.id.et_custom_one);
@@ -104,7 +98,7 @@ public class DialogMultiple implements OnImageUtilsListener {
         tvStartDateValue = dialog.findViewById(R.id.tv_sd_value);
         tvExpiryDateValue = dialog.findViewById(R.id.tv_ed_value);
         tvRemainderDateValue = dialog.findViewById(R.id.tv_rd_value);
-        btnDone = dialog.findViewById(R.id.btn_done);
+        Button btnDone = dialog.findViewById(R.id.btn_done);
 
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -318,8 +312,8 @@ public class DialogMultiple implements OnImageUtilsListener {
         final File root = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + "Android/data/" + File.separator + aActivity.getPackageName() + File.separator);
         root.mkdirs();
         final String fname = System.currentTimeMillis() + "insurance";
-        sdImageMainDirectory = new File(root, fname);
-        outputFileUri = Uri.fromFile(sdImageMainDirectory);
+        File sdImageMainDirectory = new File(root, fname);
+        Uri outputFileUri = Uri.fromFile(sdImageMainDirectory);
 
         // Camera.
         final List<Intent> cameraIntents = new ArrayList<>();
@@ -384,7 +378,7 @@ public class DialogMultiple implements OnImageUtilsListener {
 
         void storeTask(int nType) {
             StringBuilder sb;
-            sharedPreferenceClass = new SharedPreferenceClass(aActivity);
+            SharedPreferenceClass sharedPreferenceClass = new SharedPreferenceClass(aActivity);
             switch (nType) {
                 case 1:
                     sb = new StringBuilder();

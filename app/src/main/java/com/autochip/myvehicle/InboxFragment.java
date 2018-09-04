@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import static app_utility.RemainderService.refOfService;
+import static app_utility.ReminderService.refOfService;
 
 
 /**

@@ -8,14 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -44,7 +42,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Objects;
 
 import app_utility.AsyncInterface;
 import app_utility.BitmapBase64;
@@ -52,10 +49,11 @@ import app_utility.CircleImageView;
 import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
-import app_utility.RemainderService;
+import app_utility.ReminderService;
 import app_utility.SharedPreferenceClass;
 import dialogs.DialogMultiple;
 
+import static app_utility.StaticReferenceClass.COLOR_GREY;
 import static app_utility.StaticReferenceClass.MODEL_EMISSION_HISTORY;
 import static app_utility.StaticReferenceClass.MODEL_INSURANCE_HISTORY;
 import static app_utility.StaticReferenceClass.MODEL_OWNER_HISTORY;
@@ -183,16 +181,16 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                Intent in = new Intent(MainActivity.this, app_utility.RemainderService.class);
-                if (!isMyServiceRunning(app_utility.RemainderService.class)) {
-                    //Intent in = new Intent(MainActivity.this, app_utility.RemainderService.class);
+                Intent in = new Intent(MainActivity.this, ReminderService.class);
+                if (!isMyServiceRunning(ReminderService.class)) {
+                    //Intent in = new Intent(MainActivity.this, app_utility.ReminderService.class);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         startForegroundService(in);
                     } else {
                         startService(in);
                     }
                 } else {
-                    RemainderService.refOfService.stopSelf();
+                    ReminderService.refOfService.stopSelf();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         startForegroundService(in);
                     } else {
@@ -751,6 +749,13 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                     myVehicleAsyncTask.execute(String.valueOf(10), "");*/
                 dialogViewInfo.show();
                 break;
+            case "CHANGE_UPDATE_BUTTON_COLOR":
+                if(nCase == COLOR_GREY) {
+                    tvUpdate.setTextColor(getResources().getColor(android.R.color.darker_gray));
+                } else {
+                    tvUpdate.setTextColor(getResources().getColor(R.color.colorAccent));
+                }
+                break;
             default:
 
                 break;
@@ -912,6 +917,8 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 break;
             case "SERVER_ERROR":
                 Toast.makeText(MainActivity.this,"Unable to contact server. Please try again later", Toast.LENGTH_LONG).show();
+                sharedPreferenceClass.setVehicleInfo(null);
+                sharedPreferenceClass.setAllHistoryDataToNull(null);
                 break;
         }
     }
