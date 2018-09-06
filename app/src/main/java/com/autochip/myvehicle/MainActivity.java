@@ -905,13 +905,13 @@ public class MainActivity extends AppCompatActivity implements HomeInterfaceList
                 if(alModelArray.get(2)!=null) {
                     String[] saRCFCData = alModelArray.get(2);
                     String sJoinedRCFCInfo = TextUtils.join(",", saRCFCData);
-                    db.updateRCFCInfoByVehicleID(new DataBaseHelper(sJoinedRCFCInfo, Integer.valueOf(saRCFCData[0]), ""), Integer.valueOf(saRCFCData[5]));
+                    db.updateRCFCInfoByVehicleID(new DataBaseHelper(sJoinedRCFCInfo, Integer.valueOf(saRCFCData[0]), 3), Integer.valueOf(saRCFCData[5]));
                 }
 
                 if(alModelArray.get(3)!=null) {
                     String[] saServiceData = alModelArray.get(3);
                     String sJoinedServiceInfo = TextUtils.join(",", saServiceData);
-                    db.updateServiceInfoByVehicleID(new DataBaseHelper(sJoinedServiceInfo, Integer.valueOf(saServiceData[0]), ""), Integer.valueOf(saServiceData[7]));
+                    db.updateServiceInfoByVehicleID(new DataBaseHelper(sJoinedServiceInfo, Integer.valueOf(saServiceData[0]), 4), Integer.valueOf(saServiceData[7]));
                 }
                 sharedPreferenceClass.setAllHistoryDataToNull(null);
                 break;

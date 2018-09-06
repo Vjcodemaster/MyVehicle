@@ -427,18 +427,25 @@ public class RegisterVehicleFragment extends Fragment implements OnFragmentInter
         } else */
         //saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
         //int sBrandID = spinnerMake.getSelectedItemPosition();
-        sBrandName = spinnerMake.getSelectedItem().toString();
-        brandID = db.getBrandIDFromString(sBrandName);
+        /*if (spinnerMake.getSelectedItem() != null) {
+            sBrandName = spinnerMake.getSelectedItem().toString();
+
+            brandID = db.getBrandIDFromString(sBrandName);
+        }*/
         Bitmap bitmap = null;
 
         if (sharedPreferenceClass.getVehicleInfo() != null) {
             saVehicleInfo = sharedPreferenceClass.getVehicleInfo().split(",");
-
+            sBrandName = saVehicleInfo[0];
+            brandID = db.getBrandIDFromString(sBrandName);
             sModelPosition = Integer.valueOf(saVehicleInfo[2]);
             sModelName = saVehicleInfo[4];
             if (saVehicleInfo.length > 5)
                 bitmap = BitmapBase64.convertToBitmap(saVehicleInfo[5]);
         } else {
+            sBrandName = spinnerMake.getSelectedItem().toString();
+
+            brandID = db.getBrandIDFromString(sBrandName);
             sModelPosition = spinnerModel.getSelectedItemPosition();
             sModelName = spinnerModel.getSelectedItem().toString();
             if (ivPreview.getDrawable() != null)
