@@ -44,7 +44,7 @@ import static java.util.Arrays.asList;
 public class MyVehicleAsyncTask extends AsyncTask<String, Void, String> {
 
     @SuppressLint("StaticFieldLeak")
-    private static int createUID = 107; //113
+    private static int createUID = 113; //107; //
     private Activity aActivity;
     private String res = "";
     private int createdId = -1;
