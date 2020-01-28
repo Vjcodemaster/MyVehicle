@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -30,6 +29,7 @@ import com.autochip.myvehicle.OnImageUtilsListener;
 import com.autochip.myvehicle.R;
 import com.autochip.myvehicle.RCFCFragment;
 import com.autochip.myvehicle.ServiceHistoryFragment;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
 import java.text.SimpleDateFormat;

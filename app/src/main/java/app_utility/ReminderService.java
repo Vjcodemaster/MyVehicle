@@ -12,8 +12,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
 import com.autochip.myvehicle.R;
@@ -28,7 +28,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static android.content.ContentValues.TAG;
-import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
+import static androidx.core.app.NotificationCompat.PRIORITY_MAX;
 
 public class ReminderService extends Service implements AsyncInterface {
 

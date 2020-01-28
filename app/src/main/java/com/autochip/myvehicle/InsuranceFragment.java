@@ -7,8 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,16 +113,16 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
         }
     }
 
-    @Override
+    /*@Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
             //dialogMultiple = new DialogMultiple(getActivity(),1, mBitmapCompressListener);
-        }/* else {
+        }*//* else {
             checkAndHide();
-        }*/
-    }
+        }*//*
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -141,7 +141,7 @@ public class InsuranceFragment extends Fragment implements OnFragmentInteraction
             rowLength = 0;
         } else {
             alDBData = new ArrayList<>(databaseHandler.getSingleVehicleHistoryByVehicleID(editModeVehicleID));
-            fab.setVisibility(View.GONE);
+            fab.hide();
             rowLength = 1;
         }
 

@@ -2,9 +2,9 @@ package com.autochip.myvehicle;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -127,8 +127,6 @@ public class RCFCFragment extends Fragment implements OnFragmentInteractionListe
             alDBData = new ArrayList<>(databaseHandler.getSingleVehicleHistoryByVehicleID(editModeVehicleID));
             rowLength = 1;
         }
-
-
 
         TableRow trHeading = (TableRow) inflater.inflate(R.layout.table_row_heading, null);
         TextView tvCustomerName = trHeading.findViewById(R.id.tv_custom_one);
